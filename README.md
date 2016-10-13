@@ -78,5 +78,5 @@ Module                                                          | Version       
 [LPegLJ](https://github.com/sacek/LPegLJ)[1]                    | 1.0.0           | MIT
 [ljsyscall](https://github.com/justincormack/ljsyscall/)[2]     | 0.12            | MIT
 
-[1] Renamed to lpeg. `require"lpeg"` to require it.
-[2] lfs moved `vendor/lua` so `require"lfs"` works.
+[1] Renamed to lpeg. `require"lpeg"` to require it.<br/>
+[2] lfs moved to `vendor/lua` so `require"lfs"` works.<br/>
