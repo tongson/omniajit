@@ -1,8 +1,8 @@
 EXE:= test
 SRC:= src moon_src
 SRC_DIR:= moon
-VENDOR:= cwtest
-VENDOR_DIR:=
+VENDOR:= tapered lfs syscall
+VENDOR_DIR:= syscall syscall/shared syscall/osx syscall/bsd syscall/linux syscall/linux/x64
 MAKEFLAGS=
 HOST_CC= cc -m32
 CC= cc
