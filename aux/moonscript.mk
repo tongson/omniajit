@@ -6,7 +6,7 @@ MOONSCRIPT= moonscript/*.lua moonscript/parse/*.lua moonscript/compile/*.lua moo
 LPEGLJ= lpcap.lua	lpcode.lua lpeg.lua lpprint.lua	lpvm.lua
 CLEAN+= clean_moonscript
 
-$(MOONC_T): $(LUAJIT_A) $(LUA_T)
+$(MOONC_T): $(LUA_T) | $(LUAJIT_A)
 	$(E) "CC        $@"
 	for d in $(LPEGLJ) moonscript cimicida.lua ; do cp -R vendor/lua/$$d . ; done
 	CC=$(CC) NM=$(NM) $(LUA_T) $(LUASTATIC) $(MOONC) cimicida.lua $(MOONSCRIPT) $(LPEGLJ) \
