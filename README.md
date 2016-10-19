@@ -77,6 +77,7 @@ Module                                                          | Version       
 [cwtest](https://github.com/catwell/cwtest)                     | b027449         | MIT
 [LPegLJ](https://github.com/sacek/LPegLJ)[1]                    | 1.0.0           | MIT
 [ljsyscall](https://github.com/justincormack/ljsyscall/)[2]     | 0.12            | MIT
+[tapered](https://bitbucket.org/telemachus/tapered)             | 2.1.0           | BSD 3C
 
 [1] Renamed to lpeg. `require"lpeg"` to require it.<br/>
 [2] lfs moved to `vendor/lua` so `require"lfs"` works.<br/>
