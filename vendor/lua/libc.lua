@@ -140,7 +140,7 @@ local timespec_mt = {
 			return res;
 		end;
 
-		setFromSeconds = function(self, seconds)
+		set_from_seconds = function(self, seconds)
 			-- the seconds without fraction can become tv_sec
 			local secs, frac = math.modf(seconds)
 			local nsecs = frac * 1000000000;
