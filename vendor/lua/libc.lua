@@ -910,26 +910,6 @@ local exports = {
 
 
 setmetatable(exports, {
-  __call = function(self, tbl)
-    tbl = tbl or _G;
-
-    for k,v in pairs(self) do
-      tbl[k] = v;
-    end;
-
-    for k,v in pairs(C) do
-      if type(v) == "table" then
-        for key, value in pairs(v) do
-          tbl[key] = value;
-        end
-      else
-        tbl[k] = v;
-      end
-    end;
-
-    return self;
-  end,
-
   __index = function(self, key)
 
     -- look for the key in the local functions
