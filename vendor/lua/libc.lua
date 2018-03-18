@@ -1,11 +1,10 @@
---libc.lua
 local ffi = require("ffi")
 local bit = require("bit")
 local band, bor = bit.band, bit.bor
 local lshift, rshift = bit.lshift, bit.rshift
 
-local C = {}	-- Constants
-local F = {}	-- Functions
+local C = {} -- Constants
+local F = {} -- Functions
 local T = {} -- Types
 
 -- utility functions
