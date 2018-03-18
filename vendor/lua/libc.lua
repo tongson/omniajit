@@ -1,4 +1,4 @@
-local ffi = require("ffi")
+Local ffi = require("ffi")
 local bit = require("bit")
 local band, bor = bit.band, bit.bor
 local lshift, rshift = bit.lshift, bit.rshift
@@ -9,19 +9,19 @@ local T = {} -- Types
 
 -- utility functions
 function F.octal(val)
-	return tonumber(val,8);
+  return tonumber(val,8);
 end
 
 -- reverse dictionary lookup
 -- given a value, return the key or nil
 function F.key_of_value(tbl, value)
-	for k,v in pairs(tbl) do
-		if v == value
-			then return k
-		end
-	end
+  for k,v in pairs(tbl) do
+    if v == value
+      then return k
+    end
+  end
 
-	return string.format("UNKNOWN VALUE: %d", value);
+  return string.format("UNKNOWN VALUE: %d", value);
 end
 
 if ffi.abi("64bit") then
@@ -54,36 +54,36 @@ typedef uint64_t fsfilcnt_t;
 
 
 ffi.cdef[[
-typedef int32_t		__pid_t;
-typedef uint32_t	__uid_t;
-typedef long		__clock_t;
-typedef int32_t		__clockid_t;
-typedef int32_t		__gid_t;
+typedef int32_t   __pid_t;
+typedef uint32_t  __uid_t;
+typedef long    __clock_t;
+typedef int32_t   __clockid_t;
+typedef int32_t   __gid_t;
 ]]
 
 ffi.cdef[[
-typedef int 			pid_t;
-typedef unsigned int 	id_t;
-typedef unsigned int 	uid_t;
-typedef unsigned int 	gid_t;
+typedef int       pid_t;
+typedef unsigned int  id_t;
+typedef unsigned int  uid_t;
+typedef unsigned int  gid_t;
 typedef int key_t;
 ]]
 
 ffi.cdef[[
-typedef uint32_t 		__useconds_t;
+typedef uint32_t    __useconds_t;
 ]]
 
 ffi.cdef[[
-typedef __useconds_t 	useconds_t;
-typedef long 			suseconds_t;
-typedef long 			time_t;
-typedef int32_t     	clockid_t;
-typedef void * 			timer_t;
+typedef __useconds_t  useconds_t;
+typedef long      suseconds_t;
+typedef long      time_t;
+typedef int32_t     clockid_t;
+typedef void *      timer_t;
 ]]
 
 ffi.cdef[[
-typedef unsigned int 	wint_t;
-typedef unsigned long 	wctype_t;
+typedef unsigned int  wint_t;
+typedef unsigned long wctype_t;
 ]]
 
 ffi.cdef[[
@@ -95,66 +95,66 @@ int clock_gettime(clockid_t clk_id, struct timespec *tp);
 int clock_settime(clockid_t clk_id, const struct timespec *tp);
 int clock_nanosleep(clockid_t clock_id, int flags, const struct timespec *request, struct timespec *remain);
 
-static const int CLOCK_REALTIME         = 0;
-static const int CLOCK_MONOTONIC            = 1;
-static const int CLOCK_PROCESS_CPUTIME_ID   = 2;
-static const int CLOCK_THREAD_CPUTIME_ID    = 3;
-static const int CLOCK_MONOTONIC_RAW        = 4;
-static const int CLOCK_REALTIME_COARSE      = 5;
+static const int CLOCK_REALTIME     = 0;
+static const int CLOCK_MONOTONIC      = 1;
+static const int CLOCK_PROCESS_CPUTIME_ID = 2;
+static const int CLOCK_THREAD_CPUTIME_ID  = 3;
+static const int CLOCK_MONOTONIC_RAW    = 4;
+static const int CLOCK_REALTIME_COARSE    = 5;
 static const int CLOCK_MONOTONIC_COARSE = 6;
-static const int CLOCK_BOOTTIME         = 7;
-static const int CLOCK_REALTIME_ALARM       = 8;
-static const int CLOCK_BOOTTIME_ALARM       = 9;
-static const int CLOCK_SGI_CYCLE            = 10;   // Hardware specific
-static const int CLOCK_TAI                  = 11;
+static const int CLOCK_BOOTTIME     = 7;
+static const int CLOCK_REALTIME_ALARM   = 8;
+static const int CLOCK_BOOTTIME_ALARM   = 9;
+static const int CLOCK_SGI_CYCLE      = 10; // Hardware specific
+static const int CLOCK_TAI          = 11;
 ]]
 
 
 
 T.timespec = ffi.typeof("struct timespec")
 local timespec_mt = {
-	__add = function(lhs, rhs)
-		local newspec = timespec(lhs.tv_sec+rhs.tv_sec, lhs.tv_nsec+rhs.tv_nsec);
-		return newspec;
-	end;
+  __add = function(lhs, rhs)
+    local newspec = timespec(lhs.tv_sec+rhs.tv_sec, lhs.tv_nsec+rhs.tv_nsec);
+    return newspec;
+  end;
 
-	__sub = function(lhs, rhs)
-		local newspec = timespec(lhs.tv_sec-rhs.tv_sec, lhs.tv_nsec-rhs.tv_nsec);
-		return newspec;
-	end;
+  __sub = function(lhs, rhs)
+    local newspec = timespec(lhs.tv_sec-rhs.tv_sec, lhs.tv_nsec-rhs.tv_nsec);
+    return newspec;
+  end;
 
-	__tostring = function(self)
-		return string.format("%d.%d", tonumber(self.tv_sec), tonumber(self.tv_nsec));
-	end;
+  __tostring = function(self)
+    return string.format("%d.%d", tonumber(self.tv_sec), tonumber(self.tv_nsec));
+  end;
 
-	__index = {
-		gettime = function(self, clockid)
-			clockid = clockid or ffi.C.CLOCK_REALTIME;
-			local res = ffi.C.clock_gettime(clockid, self)
-			return res;
-		end;
+  __index = {
+    gettime = function(self, clockid)
+      clockid = clockid or ffi.C.CLOCK_REALTIME;
+      local res = ffi.C.clock_gettime(clockid, self)
+      return res;
+    end;
 
-		getresolution = function(self, clockid)
-			clockid = clockid or ffi.C.CLOCK_REALTIME;
-			local res = ffi.C.clock_getres(clockid, self);
-			return res;
-		end;
+    getresolution = function(self, clockid)
+      clockid = clockid or ffi.C.CLOCK_REALTIME;
+      local res = ffi.C.clock_getres(clockid, self);
+      return res;
+    end;
 
-		set_from_seconds = function(self, seconds)
-			-- the seconds without fraction can become tv_sec
-			local secs, frac = math.modf(seconds)
-			local nsecs = frac * 1000000000;
-			self.tv_sec = secs;
-			self.tv_nsec = nsecs;
+    set_from_seconds = function(self, seconds)
+      -- the seconds without fraction can become tv_sec
+      local secs, frac = math.modf(seconds)
+      local nsecs = frac * 1000000000;
+      self.tv_sec = secs;
+      self.tv_nsec = nsecs;
 
-			return true;
-		end;
+      return true;
+    end;
 
-		seconds = function(self)
-			return tonumber(self.tv_sec) + (tonumber(self.tv_nsec) / 1000000000);	-- one billion'th of a second
-		end;
+    seconds = function(self)
+      return tonumber(self.tv_sec) + (tonumber(self.tv_nsec) / 1000000000); -- one billion'th of a second
+    end;
 
-	};
+  };
 }
 ffi.metatype(T.timespec, timespec_mt)
 
@@ -172,9 +172,9 @@ local function ioc(dir, ch, nr, size)
   if type(ch) == "string" then ch = ch:byte() end
 
   return bor(lshift(dir, IOC.DIRSHIFT),
-       lshift(ch, IOC.TYPESHIFT),
-       lshift(nr, IOC.NRSHIFT),
-       lshift(size, IOC.SIZESHIFT))
+     lshift(ch, IOC.TYPESHIFT),
+     lshift(nr, IOC.NRSHIFT),
+     lshift(size, IOC.SIZESHIFT))
 end
 
 local function _IOC(a,b,c,d)
@@ -196,18 +196,18 @@ int ioctl (int, int, ...);
 ]]
 
 function F.xioctl(fd, request, param)
-    local r;
+  local r;
 
-    repeat
-        r = libc.ioctl(fd, request, param);
-    until (-1 ~= r or (libc.errnos.EINTR ~= ffi.errno()));
+  repeat
+    r = libc.ioctl(fd, request, param);
+  until (-1 ~= r or (libc.errnos.EINTR ~= ffi.errno()));
 
-    return r;
+  return r;
 end
 
 
 --[[
-	stat() and file related
+  stat() and file related
 --]]
 ffi.cdef[[
 typedef struct _IO_FILE FILE;
@@ -215,21 +215,21 @@ typedef struct _IO_FILE FILE;
 
 -- dirent.h
 ffi.cdef[[
-	typedef off_t off64_t;
-	typedef ino_t ino64_t;
+  typedef off_t off64_t;
+  typedef ino_t ino64_t;
 ]]
 
 ffi.cdef[[
 enum {
-	DT_UNKNOWN = 0,
-	DT_FIFO = 1,
-	DT_CHR = 2,
-	DT_DIR = 4,
-	DT_BLK = 6,
-	DT_REG = 8,
-	DT_LNK = 10,
-	DT_SOCK = 12,
-	DT_WHT = 14
+  DT_UNKNOWN = 0,
+  DT_FIFO = 1,
+  DT_CHR = 2,
+  DT_DIR = 4,
+  DT_BLK = 6,
+  DT_REG = 8,
+  DT_LNK = 10,
+  DT_SOCK = 12,
+  DT_WHT = 14
 };
 ]]
 
@@ -238,42 +238,42 @@ typedef struct __dirstream DIR;
 
 struct dirent
 {
-	ino_t d_ino;
-	off_t d_off;
-	unsigned short d_reclen;
-	unsigned char d_type;
-	char d_name[256];
+  ino_t d_ino;
+  off_t d_off;
+  unsigned short d_reclen;
+  unsigned char d_type;
+  char d_name[256];
 };
 ]]
 
 ffi.cdef[[
-int            closedir(DIR *);
-DIR           *opendir(const char *);
+int        closedir(DIR *);
+DIR       *opendir(const char *);
 struct dirent *readdir(DIR *);
-int            readdir_r(DIR *__restrict, struct dirent *__restrict, struct dirent **__restrict);
+int        readdir_r(DIR *__restrict, struct dirent *__restrict, struct dirent **__restrict);
 
 ]]
 
 
 ffi.cdef[[
 typedef struct stat {
-	dev_t st_dev;
-	ino_t st_ino;
-	nlink_t st_nlink;
+  dev_t st_dev;
+  ino_t st_ino;
+  nlink_t st_nlink;
 
-	mode_t st_mode;
-	uid_t st_uid;
-	gid_t st_gid;
-	unsigned int    __pad0;
-	dev_t st_rdev;
-	off_t st_size;
-	blksize_t st_blksize;
-	blkcnt_t st_blocks;
+  mode_t st_mode;
+  uid_t st_uid;
+  gid_t st_gid;
+  unsigned int  __pad0;
+  dev_t st_rdev;
+  off_t st_size;
+  blksize_t st_blksize;
+  blkcnt_t st_blocks;
 
-	struct timespec st_atim;
-	struct timespec st_mtim;
-	struct timespec st_ctim;
-	long __unused[3];
+  struct timespec st_atim;
+  struct timespec st_mtim;
+  struct timespec st_ctim;
+  long __unused[3];
 } stat_t;
 ]]
 
@@ -306,38 +306,38 @@ int utimensat(int, const char *, const struct timespec [2], int);
 ]]
 
 
-	C.S_IFMT   = F.octal('00170000');
-	C.S_IFSOCK = F.octal('0140000');
-	C.S_IFLNK  = F.octal('0120000');
-	C.S_IFREG  = F.octal('0100000');
-	C.S_IFBLK  = F.octal('0060000');
-	C.S_IFDIR  = F.octal('0040000');
-	C.S_IFCHR  = F.octal('0020000');
-	C.S_IFIFO  = F.octal('0010000');
-	C.S_ISUID  = F.octal('0004000');
-	C.S_ISGID  = F.octal('0002000');
-	C.S_ISVTX  = F.octal('0001000');
+  C.S_IFMT   = F.octal('00170000');
+  C.S_IFSOCK = F.octal('0140000');
+  C.S_IFLNK  = F.octal('0120000');
+  C.S_IFREG  = F.octal('0100000');
+  C.S_IFBLK  = F.octal('0060000');
+  C.S_IFDIR  = F.octal('0040000');
+  C.S_IFCHR  = F.octal('0020000');
+  C.S_IFIFO  = F.octal('0010000');
+  C.S_ISUID  = F.octal('0004000');
+  C.S_ISGID  = F.octal('0002000');
+  C.S_ISVTX  = F.octal('0001000');
 
 
-	C.S_IRWXU = F.octal('00700');
-	C.S_IRUSR = F.octal('00400');
-	C.S_IWUSR = F.octal('00200');
-	C.S_IXUSR = F.octal('00100');
+  C.S_IRWXU = F.octal('00700');
+  C.S_IRUSR = F.octal('00400');
+  C.S_IWUSR = F.octal('00200');
+  C.S_IXUSR = F.octal('00100');
 
-	C.S_IRWXG = F.octal('00070');
-	C.S_IRGRP = F.octal('00040');
-	C.S_IWGRP = F.octal('00020');
-	C.S_IXGRP = F.octal('00010');
+  C.S_IRWXG = F.octal('00070');
+  C.S_IRGRP = F.octal('00040');
+  C.S_IWGRP = F.octal('00020');
+  C.S_IXGRP = F.octal('00010');
 
-	C.S_IRWXO = F.octal('00007');
-	C.S_IROTH = F.octal('00004');
-	C.S_IWOTH = F.octal('00002');
-	C.S_IXOTH = F.octal('00001');
+  C.S_IRWXO = F.octal('00007');
+  C.S_IROTH = F.octal('00004');
+  C.S_IWOTH = F.octal('00002');
+  C.S_IXOTH = F.octal('00001');
 
-local _STAT_VER_KERNEL	= 0;
-local _STAT_VER_LINUX	= 1;
+local _STAT_VER_KERNEL  = 0;
+local _STAT_VER_LINUX = 1;
 
-C._STAT_VER	= _STAT_VER_LINUX;
+C._STAT_VER = _STAT_VER_LINUX;
 
 
 function F.S_ISLNK(m) return (band((m), C.S_IFMT) == C.S_IFLNK) end
@@ -353,7 +353,7 @@ function F.lstat(path, buf) return ffi.C.__lxstat(C._STAT_VER, path, buf) end
 
 
 --[[
-	Memory Management
+  Memory Management
 --]]
 ffi.cdef[[
 void *calloc(size_t nitems, size_t size);
@@ -378,13 +378,13 @@ size_t strlen(const char *);
 ]]
 
 --[[
-	File Management
+  File Management
 --]]
 ffi.cdef[[
-	int open (const char *__file, int __oflag, ...);
-	int close(int fd);
-	int read(int fd, char *buffer, unsigned int length);
-	int write(int fd, char *buffer, unsigned int length);
+  int open (const char *__file, int __oflag, ...);
+  int close(int fd);
+  int read(int fd, char *buffer, unsigned int length);
+  int write(int fd, char *buffer, unsigned int length);
 ]]
 
 -- the iodesc type gives an easy place to hang things
@@ -412,68 +412,68 @@ C.STDERR_FILENO = 2;
 
 local iodesc = ffi.typeof("struct iodesc")
 local iodesc_mt = {
-    __new = function(ct, fd)
-        local obj = ffi.new(ct, fd);
+  __new = function(ct, fd)
+    local obj = ffi.new(ct, fd);
 
-        return obj;
-    end;
+    return obj;
+  end;
 
-    __gc = function(self)
-        if self.fd > -1 then
-            self:close();
-        end
-    end;
+  __gc = function(self)
+    if self.fd > -1 then
+      self:close();
+    end
+  end;
 
-    __index = {
-        close = function(self)
-            ffi.C.close(self.fd);
-            self.fd = -1; -- make it invalid
-        end,
+  __index = {
+    close = function(self)
+      ffi.C.close(self.fd);
+      self.fd = -1; -- make it invalid
+    end,
 
-        read = function(self, buff, bufflen)
-            local bytes = tonumber(ffi.C.read(self.fd, buff, bufflen));
+    read = function(self, buff, bufflen)
+      local bytes = tonumber(ffi.C.read(self.fd, buff, bufflen));
 
-            if bytes > 0 then
-                return bytes;
-            end
+      if bytes > 0 then
+        return bytes;
+      end
 
-            if bytes == 0 then
-              return 0;
-            end
+      if bytes == 0 then
+        return 0;
+      end
 
-            return false, ffi.errno();
-        end,
+      return false, ffi.errno();
+    end,
 
-        write = function(self, buff, bufflen)
-            local bytes = tonumber(ffi.C.write(self.fd, buff, bufflen));
+    write = function(self, buff, bufflen)
+      local bytes = tonumber(ffi.C.write(self.fd, buff, bufflen));
 
-            if bytes > 0 then
-                return bytes;
-            end
+      if bytes > 0 then
+        return bytes;
+      end
 
-            if bytes == 0 then
-              return 0;
-            end
+      if bytes == 0 then
+        return 0;
+      end
 
-            return false, ffi.errno();
-        end,
+      return false, ffi.errno();
+    end,
 
-        set_nonblocking = function(self)
-            local feature_on = ffi.new("int[1]",1)
-            local ret = ffi.C.ioctl(self.fd, C.FIONBIO, feature_on)
+    set_nonblocking = function(self)
+      local feature_on = ffi.new("int[1]",1)
+      local ret = ffi.C.ioctl(self.fd, C.FIONBIO, feature_on)
 
-            return ret == 0;
+      return ret == 0;
 
-        end,
+    end,
 
-    };
+  };
 }
 ffi.metatype(iodesc, iodesc_mt);
 T.iodesc = iodesc;
 
 
 --[[
-	Stream Management
+  Stream Management
 --]]
 
 ffi.cdef[[
@@ -495,24 +495,24 @@ int rename(const char *, const char *);
 ]]
 
 --[[
-	Random Numbers
+  Random Numbers
 --]]
 ffi.cdef[[
-	int rand (void);
-	void srand (unsigned int __seed);
+  int rand (void);
+  void srand (unsigned int __seed);
 ]]
 
 --[[
-	Time Handling
+  Time Handling
 --]]
 ffi.cdef[[
-	int usleep (__useconds_t __useconds);
-	time_t time(time_t *t);
-	unsigned int sleep(unsigned int);
+  int usleep (__useconds_t __useconds);
+  time_t time(time_t *t);
+  unsigned int sleep(unsigned int);
 ]]
 
 --[[
-	unistd.h
+  unistd.h
 --]]
 
 ffi.cdef[[
@@ -524,27 +524,27 @@ int chown(const char *, uid_t, gid_t);
 
 -- local versions of classics
 function F.printf(fmt, ...)
-    io.write(string.format(fmt, ...));
+  io.write(string.format(fmt, ...));
 end
 
 function F.fprintf(f, fmt, ...)
-	f:write(string.format(fmt, ...));
+  f:write(string.format(fmt, ...));
 end
 
 
 -- ffi helpers
 function F.stringvalue(str, default)
-	if str == nil then
-		return default;
-	end
+  if str == nil then
+    return default;
+  end
 
-	return ffi.string(str)
+  return ffi.string(str)
 end
 
 F.safeffistring = F.stringvalue;
 
 --[[
-	Things related to epoll
+  Things related to epoll
 --]]
 
 ffi.cdef[[
@@ -572,255 +572,255 @@ int epoll_ctl (int __epfd, int __op, int __fd, struct epoll_event *__event) ;
 int epoll_wait (int __epfd, struct epoll_event *__events, int __maxevents, int __timeout);
 
 //int epoll_pwait (int __epfd, struct epoll_event *__events,
-//          int __maxevents, int __timeout,
-//          const __sigset_t *__ss);
+//      int __maxevents, int __timeout,
+//      const __sigset_t *__ss);
 ]]
 
 
 C.EPOLL_CLOEXEC = F.octal('02000000');
-C.EPOLLIN 	= 0x0001;
-C.EPOLLPRI 	= 0x0002;
-C.EPOLLOUT 	= 0x0004;
-C.EPOLLRDNORM = 0x0040;			-- SAME AS EPOLLIN
+C.EPOLLIN = 0x0001;
+C.EPOLLPRI  = 0x0002;
+C.EPOLLOUT  = 0x0004;
+C.EPOLLRDNORM = 0x0040;     -- SAME AS EPOLLIN
 C.EPOLLRDBAND = 0x0080;
-C.EPOLLWRNORM = 0x0100;			-- SAME AS EPOLLOUT
+C.EPOLLWRNORM = 0x0100;     -- SAME AS EPOLLOUT
 C.EPOLLWRBAND = 0x0200;
-C.EPOLLMSG	= 0x0400;			-- NOT USED
-C.EPOLLERR 	= 0x0008;
-C.EPOLLHUP 	= 0x0010;
-C.EPOLLRDHUP 	= 0x2000;
+C.EPOLLMSG  = 0x0400;     -- NOT USED
+C.EPOLLERR  = 0x0008;
+C.EPOLLHUP  = 0x0010;
+C.EPOLLRDHUP  = 0x2000;
 C.EPOLLWAKEUP = lshift(1,29);
 C.EPOLLONESHOT = lshift(1,30);
-C.EPOLLET 	= lshift(1,31);
+C.EPOLLET = lshift(1,31);
 
 -- Valid opcodes ( "op" parameter ) to issue to epoll_ctl().
-C.EPOLL_CTL_ADD =1;	-- Add a file descriptor to the interface.
-C.EPOLL_CTL_DEL =2;	-- Remove a file descriptor from the interface.
-C.EPOLL_CTL_MOD =3;	-- Change file descriptor epoll_event structure.
+C.EPOLL_CTL_ADD =1; -- Add a file descriptor to the interface.
+C.EPOLL_CTL_DEL =2; -- Remove a file descriptor from the interface.
+C.EPOLL_CTL_MOD =3; -- Change file descriptor epoll_event structure.
 
 ffi.cdef[[
 struct epollset {
-	int epfd;		// epoll file descriptor
+  int epfd;   // epoll file descriptor
 } ;
 ]]
 
 local epollset = ffi.typeof("struct epollset")
 local epollset_mt = {
-	__new = function(ct, epfd)
-		if not epfd then
-			epfd = ffi.C.epoll_create1(0);
-		end
+  __new = function(ct, epfd)
+    if not epfd then
+      epfd = ffi.C.epoll_create1(0);
+    end
 
-		if epfd < 0 then
-			return nil;
-		end
+    if epfd < 0 then
+      return nil;
+    end
 
-		return ffi.new(ct, epfd)
-	end,
+    return ffi.new(ct, epfd)
+  end,
 
-	__gc = function(self)
-		-- ffi.C.close(self.epfd);
-	end;
+  __gc = function(self)
+    -- ffi.C.close(self.epfd);
+  end;
 
-	__index = {
-		add = function(self, fd, event)
-			local ret = ffi.C.epoll_ctl(self.epfd, C.EPOLL_CTL_ADD, fd, event)
-			if ret > -1 then
-				return ret;
-			end
+  __index = {
+    add = function(self, fd, event)
+      local ret = ffi.C.epoll_ctl(self.epfd, C.EPOLL_CTL_ADD, fd, event)
+      if ret > -1 then
+        return ret;
+      end
 
-			return false, ffi.errno();
-		end,
+      return false, ffi.errno();
+    end,
 
-		delete = function(self, fd, event)
-			local ret = ffi.C.epoll_ctl(self.epfd, C.EPOLL_CTL_DEL, fd, event)
+    delete = function(self, fd, event)
+      local ret = ffi.C.epoll_ctl(self.epfd, C.EPOLL_CTL_DEL, fd, event)
 
-			if ret > -1 then
-				return ret;
-			end
+      if ret > -1 then
+        return ret;
+      end
 
-			return false, ffi.errno();
-		end,
+      return false, ffi.errno();
+    end,
 
-		modify = function(self, fd, event)
-			local ret = ffi.C.epoll_ctl(self.epfd, C.EPOLL_CTL_MOD, fd, event)
-			if ret > -1 then
-				return ret;
-			end
+    modify = function(self, fd, event)
+      local ret = ffi.C.epoll_ctl(self.epfd, C.EPOLL_CTL_MOD, fd, event)
+      if ret > -1 then
+        return ret;
+      end
 
-			return false, ffi.errno();
-		end,
+      return false, ffi.errno();
+    end,
 
-		-- struct epoll_event *__events
-		wait = function(self, events, maxevents, timeout)
-			maxevents = maxevents or 1
-			timeout = timeout or -1
+    -- struct epoll_event *__events
+    wait = function(self, events, maxevents, timeout)
+      maxevents = maxevents or 1
+      timeout = timeout or -1
 
-			-- gets either number of ready events
-			-- or -1 indicating an error
-			local ret = ffi.C.epoll_wait (self.epfd, events, maxevents, timeout);
-			if ret == -1 then
-				return false, ffi.errno();
-			end
+      -- gets either number of ready events
+      -- or -1 indicating an error
+      local ret = ffi.C.epoll_wait (self.epfd, events, maxevents, timeout);
+      if ret == -1 then
+        return false, ffi.errno();
+      end
 
-			return ret;
-		end,
-	};
+      return ret;
+    end,
+  };
 }
 ffi.metatype(epollset, epollset_mt);
 T.epollset = epollset;
 
 
 local errnos = {
-	-- Constants
-	-- errno-base
-	EPERM		= 1	; -- Operation not permitted
-	ENOENT		= 2	; -- No such file or directory
-	ESRCH		= 3	; -- No such process
-	EINTR		= 4	; -- Interrupted system call
-	EIO			= 5	; -- I/O error
-	ENXIO		= 6	; -- No such device or address
-	E2BIG		= 7	; -- Argument list too long
-	ENOEXEC		= 8	; -- Exec format error
-	EBADF		= 9	; -- Bad file number
-	ECHILD		=10	; -- No child processes
-	EAGAIN		=11	; -- Try again
-	ENOMEM		=12	; -- Out of memory
-	EACCES		=13	; -- Permission denied
-	EFAULT		=14	; -- Bad address
-	ENOTBLK		=15	; -- Block device required
-	EBUSY		=16	; -- Device or resource busy
-	EEXIST		=17	; -- File exists
-	EXDEV		=18	; -- Cross-device link
-	ENODEV		=19	; -- No such device
-	ENOTDIR		=20	; -- Not a directory
-	EISDIR		=21	; -- Is a directory
-	EINVAL		=22	; -- Invalid argument
-	ENFILE		=23	; -- File table overflow
-	EMFILE		=24	; -- Too many open files
-	ENOTTY		=25	; -- Not a typewriter
-	ETXTBSY		=26	; -- Text file busy
-	EFBIG		=27	; -- File too large
-	ENOSPC		=28	; -- No space left on device
-	ESPIPE		=29	; -- Illegal seek
-	EROFS		=30	; -- Read-only file system
-	EMLINK		=31	; -- Too many links
-	EPIPE		=32	; -- Broken pipe
-	EDOM		=33	; -- Math argument out of domain of func
-	ERANGE		=34	; -- Math result not representable
+  -- Constants
+  -- errno-base
+  EPERM   = 1 ; -- Operation not permitted
+  ENOENT    = 2 ; -- No such file or directory
+  ESRCH   = 3 ; -- No such process
+  EINTR   = 4 ; -- Interrupted system call
+  EIO     = 5 ; -- I/O error
+  ENXIO   = 6 ; -- No such device or address
+  E2BIG   = 7 ; -- Argument list too long
+  ENOEXEC   = 8 ; -- Exec format error
+  EBADF   = 9 ; -- Bad file number
+  ECHILD    =10 ; -- No child processes
+  EAGAIN    =11 ; -- Try again
+  ENOMEM    =12 ; -- Out of memory
+  EACCES    =13 ; -- Permission denied
+  EFAULT    =14 ; -- Bad address
+  ENOTBLK   =15 ; -- Block device required
+  EBUSY   =16 ; -- Device or resource busy
+  EEXIST    =17 ; -- File exists
+  EXDEV   =18 ; -- Cross-device link
+  ENODEV    =19 ; -- No such device
+  ENOTDIR   =20 ; -- Not a directory
+  EISDIR    =21 ; -- Is a directory
+  EINVAL    =22 ; -- Invalid argument
+  ENFILE    =23 ; -- File table overflow
+  EMFILE    =24 ; -- Too many open files
+  ENOTTY    =25 ; -- Not a typewriter
+  ETXTBSY   =26 ; -- Text file busy
+  EFBIG   =27 ; -- File too large
+  ENOSPC    =28 ; -- No space left on device
+  ESPIPE    =29 ; -- Illegal seek
+  EROFS   =30 ; -- Read-only file system
+  EMLINK    =31 ; -- Too many links
+  EPIPE   =32 ; -- Broken pipe
+  EDOM    =33 ; -- Math argument out of domain of func
+  ERANGE    =34 ; -- Math result not representable
 
-    EDEADLK 	= 35;  -- Resource deadlock would occur
-    EDEADLOCK  	= 35; 	-- EDEADLK;
+  EDEADLK   = 35;  -- Resource deadlock would occur
+  EDEADLOCK = 35; -- EDEADLK;
 
-    ENAMETOOLONG = 36;  -- File name too long
-    ENOLCK 		= 37;  -- No record locks available
-    ENOSYS 		= 38;  -- Function not implemented
-    ENOTEMPTY 	= 39;  -- Directory not empty
-    ELOOP 		= 40;  -- Too many symbolic links encountered
-    EWOULDBLOCK = 11;	-- EAGAIN;  -- Operation would block
-    ENOMSG 		= 42;  -- No message of desired type
-    EIDRM 		= 43;  -- Identifier removed
-    ECHRNG 		= 44;  -- Channel number out of range
-    EL2NSYNC 	= 45;  -- Level 2 not synchronized
-    EL3HLT 		= 46;  -- Level 3 halted
-    EL3RST 		= 47;  -- Level 3 reset
-    ELNRNG 		= 48;  -- Link number out of range
-    EUNATCH 	= 49;  -- Protocol driver not attached
-    ENOCSI 		= 50;  -- No CSI structure available
-    EL2HLT 		= 51;  -- Level 2 halted
-    EBADE 		= 52;  -- Invalid exchange
-    EBADR 		= 53;  -- Invalid request descriptor
-    EXFULL 		= 54;  -- Exchange full
-    ENOANO 		= 55;  -- No anode
-    EBADRQC 	= 56;  -- Invalid request code
-    EBADSLT 	= 57;  -- Invalid slot
+  ENAMETOOLONG = 36;  -- File name too long
+  ENOLCK    = 37;  -- No record locks available
+  ENOSYS    = 38;  -- Function not implemented
+  ENOTEMPTY = 39;  -- Directory not empty
+  ELOOP   = 40;  -- Too many symbolic links encountered
+  EWOULDBLOCK = 11; -- EAGAIN;  -- Operation would block
+  ENOMSG    = 42;  -- No message of desired type
+  EIDRM   = 43;  -- Identifier removed
+  ECHRNG    = 44;  -- Channel number out of range
+  EL2NSYNC  = 45;  -- Level 2 not synchronized
+  EL3HLT    = 46;  -- Level 3 halted
+  EL3RST    = 47;  -- Level 3 reset
+  ELNRNG    = 48;  -- Link number out of range
+  EUNATCH   = 49;  -- Protocol driver not attached
+  ENOCSI    = 50;  -- No CSI structure available
+  EL2HLT    = 51;  -- Level 2 halted
+  EBADE   = 52;  -- Invalid exchange
+  EBADR   = 53;  -- Invalid request descriptor
+  EXFULL    = 54;  -- Exchange full
+  ENOANO    = 55;  -- No anode
+  EBADRQC   = 56;  -- Invalid request code
+  EBADSLT   = 57;  -- Invalid slot
 
 
-    EBFONT 		= 59;  -- Bad font file format
-    ENOSTR 		= 60;  -- Device not a stream
-    ENODATA 	= 61;  -- No data available
-    ETIME 		= 62;  -- Timer expired
-    ENOSR 		= 63;  -- Out of streams resources
-    ENONET 		= 64;  -- Machine is not on the network
-    ENOPKG 		= 65;  -- Package not installed
-    EREMOTE 	= 66;  -- Object is remote
-    ENOLINK 	= 67;  -- Link has been severed
-    EADV 		= 68;  -- Advertise error
-    ESRMNT 		= 69;  -- Srmount error
-    ECOMM 		= 70;  -- Communication error on send
-    EPROTO 		= 71;  -- Protocol error
-    EMULTIHOP 	= 72;  -- Multihop attempted
-    EDOTDOT 	= 73;  -- RFS specific error
-    EBADMSG 	= 74;  -- Not a data message
-    EOVERFLOW 	= 75;  -- Value too large for defined data type
-    ENOTUNIQ 	= 76;  -- Name not unique on network
-    EBADFD 		= 77;  -- File descriptor in bad state
-    EREMCHG 	= 78;  -- Remote address changed
-    ELIBACC 	= 79;  -- Can not access a needed shared library
-    ELIBBAD 	= 80;  -- Accessing a corrupted shared library
-    ELIBSCN 	= 81;  -- .lib section in a.out corrupted
-    ELIBMAX 	= 82;  -- Attempting to link in too many shared libraries
-    ELIBEXEC 	= 83;  -- Cannot exec a shared library directly
-    EILSEQ 		= 84;  -- Illegal byte sequence
-    ERESTART 	= 85;  -- Interrupted system call should be restarted
-    ESTRPIPE 	= 86;  -- Streams pipe error
-    EUSERS 		= 87;  -- Too many users
+  EBFONT    = 59;  -- Bad font file format
+  ENOSTR    = 60;  -- Device not a stream
+  ENODATA   = 61;  -- No data available
+  ETIME   = 62;  -- Timer expired
+  ENOSR   = 63;  -- Out of streams resources
+  ENONET    = 64;  -- Machine is not on the network
+  ENOPKG    = 65;  -- Package not installed
+  EREMOTE   = 66;  -- Object is remote
+  ENOLINK   = 67;  -- Link has been severed
+  EADV    = 68;  -- Advertise error
+  ESRMNT    = 69;  -- Srmount error
+  ECOMM   = 70;  -- Communication error on send
+  EPROTO    = 71;  -- Protocol error
+  EMULTIHOP = 72;  -- Multihop attempted
+  EDOTDOT   = 73;  -- RFS specific error
+  EBADMSG   = 74;  -- Not a data message
+  EOVERFLOW = 75;  -- Value too large for defined data type
+  ENOTUNIQ  = 76;  -- Name not unique on network
+  EBADFD    = 77;  -- File descriptor in bad state
+  EREMCHG   = 78;  -- Remote address changed
+  ELIBACC   = 79;  -- Can not access a needed shared library
+  ELIBBAD   = 80;  -- Accessing a corrupted shared library
+  ELIBSCN   = 81;  -- .lib section in a.out corrupted
+  ELIBMAX   = 82;  -- Attempting to link in too many shared libraries
+  ELIBEXEC  = 83;  -- Cannot exec a shared library directly
+  EILSEQ    = 84;  -- Illegal byte sequence
+  ERESTART  = 85;  -- Interrupted system call should be restarted
+  ESTRPIPE  = 86;  -- Streams pipe error
+  EUSERS    = 87;  -- Too many users
 
-    ENOTSOCK 	= 88;  -- Socket operation on non-socket
-    EDESTADDRREQ = 89;  -- Destination address required
-    EMSGSIZE 	= 90;  -- Message too long
-    EPROTOTYPE 	= 91;  -- Protocol wrong type for socket
-    ENOPROTOOPT = 92;  -- Protocol not available
-    EPROTONOSUPPORT = 93;  -- Protocol not supported
-    ESOCKTNOSUPPORT = 94;  -- Socket type not supported
-    EOPNOTSUPP 		= 95;  -- Operation not supported on transport endpoint
-    EPFNOSUPPORT 	= 96;  -- Protocol family not supported
-    EAFNOSUPPORT 	= 97;  -- Address family not supported by protocol
-    EADDRINUSE 		= 98;  -- Address already in use
-    EADDRNOTAVAIL 	= 99;  -- Cannot assign requested address
-    ENETDOWN 		= 100;  -- Network is down
-    ENETUNREACH 	= 101;  -- Network is unreachable
-    ENETRESET 		= 102;  -- Network dropped connection because of reset
-    ECONNABORTED 	= 103;  -- Software caused connection abort
-    ECONNRESET 		= 104;  -- Connection reset by peer
-    ENOBUFS = 105;  -- No buffer space available
-    EISCONN = 106;  -- Transport endpoint is already connected
-    ENOTCONN = 107;  -- Transport endpoint is not connected
-    ESHUTDOWN = 108;  -- Cannot send after transport endpoint shutdown
-    ETOOMANYREFS = 109;  -- Too many references: cannot splice
-    ETIMEDOUT = 110;  -- Connection timed out
-    ECONNREFUSED = 111;  -- Connection refused
-    EHOSTDOWN = 112;  -- Host is down
-    EHOSTUNREACH = 113;  -- No route to host
-    EALREADY = 114;  -- Operation already in progress
-    EINPROGRESS = 115;  -- Operation now in progress
-    ESTALE = 116;  -- Stale file handle
-    EUCLEAN = 117;  -- Structure needs cleaning
-    ENOTNAM = 118;  -- Not a XENIX named type file
-    ENAVAIL = 119;  -- No XENIX semaphores available
-    EISNAM = 120;  -- Is a named type file
-    EREMOTEIO = 121;  -- Remote I/O error
-    EDQUOT = 122;  -- Quota exceeded
+  ENOTSOCK  = 88;  -- Socket operation on non-socket
+  EDESTADDRREQ = 89;  -- Destination address required
+  EMSGSIZE  = 90;  -- Message too long
+  EPROTOTYPE  = 91;  -- Protocol wrong type for socket
+  ENOPROTOOPT = 92;  -- Protocol not available
+  EPROTONOSUPPORT = 93;  -- Protocol not supported
+  ESOCKTNOSUPPORT = 94;  -- Socket type not supported
+  EOPNOTSUPP    = 95;  -- Operation not supported on transport endpoint
+  EPFNOSUPPORT  = 96;  -- Protocol family not supported
+  EAFNOSUPPORT  = 97;  -- Address family not supported by protocol
+  EADDRINUSE    = 98;  -- Address already in use
+  EADDRNOTAVAIL = 99;  -- Cannot assign requested address
+  ENETDOWN    = 100;  -- Network is down
+  ENETUNREACH   = 101;  -- Network is unreachable
+  ENETRESET   = 102;  -- Network dropped connection because of reset
+  ECONNABORTED  = 103;  -- Software caused connection abort
+  ECONNRESET    = 104;  -- Connection reset by peer
+  ENOBUFS = 105;  -- No buffer space available
+  EISCONN = 106;  -- Transport endpoint is already connected
+  ENOTCONN = 107;  -- Transport endpoint is not connected
+  ESHUTDOWN = 108;  -- Cannot send after transport endpoint shutdown
+  ETOOMANYREFS = 109;  -- Too many references: cannot splice
+  ETIMEDOUT = 110;  -- Connection timed out
+  ECONNREFUSED = 111;  -- Connection refused
+  EHOSTDOWN = 112;  -- Host is down
+  EHOSTUNREACH = 113;  -- No route to host
+  EALREADY = 114;  -- Operation already in progress
+  EINPROGRESS = 115;  -- Operation now in progress
+  ESTALE = 116;  -- Stale file handle
+  EUCLEAN = 117;  -- Structure needs cleaning
+  ENOTNAM = 118;  -- Not a XENIX named type file
+  ENAVAIL = 119;  -- No XENIX semaphores available
+  EISNAM = 120;  -- Is a named type file
+  EREMOTEIO = 121;  -- Remote I/O error
+  EDQUOT = 122;  -- Quota exceeded
 
-    ENOMEDIUM = 123;  -- No medium found
-    EMEDIUMTYPE = 124;  -- Wrong medium type
-    ECANCELED = 125;  -- Operation Canceled
-    ENOKEY = 126;  -- Required key not available
-    EKEYEXPIRED = 127;  -- Key has expired
-    EKEYREVOKED = 128;  -- Key has been revoked
-    EKEYREJECTED = 129;  -- Key was rejected by service
+  ENOMEDIUM = 123;  -- No medium found
+  EMEDIUMTYPE = 124;  -- Wrong medium type
+  ECANCELED = 125;  -- Operation Canceled
+  ENOKEY = 126;  -- Required key not available
+  EKEYEXPIRED = 127;  -- Key has expired
+  EKEYREVOKED = 128;  -- Key has been revoked
+  EKEYREJECTED = 129;  -- Key was rejected by service
 
-	-- for robust mutexes
-    EOWNERDEAD 		= 130;  -- Owner died
-    ENOTRECOVERABLE = 131;  -- State not recoverable
-    ERFKILL 		= 132;  -- Operation not possible due to RF-kill
-    EHWPOISON 		= 133;  -- Memory page has hardware error
+  -- for robust mutexes
+  EOWNERDEAD    = 130;  -- Owner died
+  ENOTRECOVERABLE = 131;  -- State not recoverable
+  ERFKILL     = 132;  -- Operation not possible due to RF-kill
+  EHWPOISON   = 133;  -- Memory page has hardware error
 }
 C.errnos = errnos;
 
 
 -- non-blocking IO
-C.FIONBIO        = F._IOW('f', 126, "int");		-- FIONBIO = 0x5421
+C.FIONBIO    = F._IOW('f', 126, "int");   -- FIONBIO = 0x5421
 
 -- mmap
 C.MAP_FAILED  = ffi.cast("void *", -1);
@@ -835,140 +835,140 @@ C.MAP_PRIVATE =   0x02;
 C.MAP_FIXED   =   0x10;
 
 -- fcntl
-C.O_RDONLY	= F.octal('00000000');
-C.O_WRONLY	= F.octal('00000001');
-C.O_RDWR		= F.octal('00000002');
-C.O_NONBLOCK	= F.octal('00004000');
-C.O_CLOEXEC	= F.octal('02000000');	-- set close_on_exec
+C.O_RDONLY  = F.octal('00000000');
+C.O_WRONLY  = F.octal('00000001');
+C.O_RDWR    = F.octal('00000002');
+C.O_NONBLOCK  = F.octal('00004000');
+C.O_CLOEXEC = F.octal('02000000');  -- set close_on_exec
 
 
 
 
 function F.strerror(num)
-	num = num or ffi.errno();
-	return F.key_of_value(errnos, num)
+  num = num or ffi.errno();
+  return F.key_of_value(errnos, num)
 end
 
 
 local exports = {
 --[[
-	_IOC_NONE = _IOC_NONE;
-	_IOC_READ = _IOC_READ;
-	_IOC_WRITE = _IOC_WRITE;
+  _IOC_NONE = _IOC_NONE;
+  _IOC_READ = _IOC_READ;
+  _IOC_WRITE = _IOC_WRITE;
 
 
-	-- local functions
-	_IOC = _IOC;
-	_IO = _IO;
-	_IOR = _IOR;
-	_IOW = _IOW;
-	_IOWR = _IOWR;
+  -- local functions
+  _IOC = _IOC;
+  _IO = _IO;
+  _IOR = _IOR;
+  _IOW = _IOW;
+  _IOWR = _IOWR;
 
 
-	fprintf = fprintf;
-	printf = printf;
-	strerror = strerror;
-	stringvalue = stringvalue;
-	safeffistring = stringvalue;
+  fprintf = fprintf;
+  printf = printf;
+  strerror = strerror;
+  stringvalue = stringvalue;
+  safeffistring = stringvalue;
   key_of_value = key_of_value;
 --]]
 
 --[[
-	-- Memory Management
-	free = ffi.C.free;
-	malloc = ffi.C.malloc;
-	memcpy = ffi.C.memcpy;
-	memset = ffi.C.memset;
-	mmap = ffi.C.mmap;
-	munmap = ffi.C.munmap;
+  -- Memory Management
+  free = ffi.C.free;
+  malloc = ffi.C.malloc;
+  memcpy = ffi.C.memcpy;
+  memset = ffi.C.memset;
+  mmap = ffi.C.mmap;
+  munmap = ffi.C.munmap;
 
-	-- File manipulation
-	fopen = ffi.C.fopen;
-	fclose = ffi.C.fclose;
-	fprintf = ffi.C.fprintf;
-	fwrite = ffi.C.fwrite;
+  -- File manipulation
+  fopen = ffi.C.fopen;
+  fclose = ffi.C.fclose;
+  fprintf = ffi.C.fprintf;
+  fwrite = ffi.C.fwrite;
 
-	open = ffi.C.open;
-	close = ffi.C.close;
-	read = ffi.C.read;
-	write = ffi.C.write;
+  open = ffi.C.open;
+  close = ffi.C.close;
+  read = ffi.C.read;
+  write = ffi.C.write;
 
-	-- Random numbers
-	rand = ffi.C.rand;
-	srand = ffi.C.srand;
+  -- Random numbers
+  rand = ffi.C.rand;
+  srand = ffi.C.srand;
 
-	sleep = ffi.C.sleep;
-	usleep = ffi.C.usleep;
-	time = ffi.C.time;
+  sleep = ffi.C.sleep;
+  usleep = ffi.C.usleep;
+  time = ffi.C.time;
 --]]
 
-	-- epoll related
---	epollset = epollset;
+  -- epoll related
+--  epollset = epollset;
 }
 
 
 
 
 setmetatable(exports, {
-	__call = function(self, tbl)
-		tbl = tbl or _G;
+  __call = function(self, tbl)
+    tbl = tbl or _G;
 
-		for k,v in pairs(self) do
-			tbl[k] = v;
-		end;
+    for k,v in pairs(self) do
+      tbl[k] = v;
+    end;
 
-		for k,v in pairs(C) do
-			if type(v) == "table" then
-				for key, value in pairs(v) do
-					tbl[key] = value;
-				end
-			else
-				tbl[k] = v;
-			end
-		end;
+    for k,v in pairs(C) do
+      if type(v) == "table" then
+        for key, value in pairs(v) do
+          tbl[key] = value;
+        end
+      else
+        tbl[k] = v;
+      end
+    end;
 
-		return self;
-	end,
+    return self;
+  end,
 
-	__index = function(self, key)
+  __index = function(self, key)
 
-		-- look for the key in the local functions
-		local value = F[key]
-		if value then
-			rawset(self, key, value);
-			return value;
-		end
+    -- look for the key in the local functions
+    local value = F[key]
+    if value then
+      rawset(self, key, value);
+      return value;
+    end
 
-		-- try the constants
-		value = C[key];
-		if value then
-			rawset(self, key, value);
-			return value;
-		end
+    -- try the constants
+    value = C[key];
+    if value then
+      rawset(self, key, value);
+      return value;
+    end
 
-		-- try looking in the local types
-		value = T[key]
-		if value then
-			rawset(self, key, value);
-			return value;
-		end
+    -- try looking in the local types
+    value = T[key]
+    if value then
+      rawset(self, key, value);
+      return value;
+    end
 
-		-- try looking in the libc library
-		local success, value = pcall(function() return ffi.C[key] end)
-		if success then
-			rawset(self, key, value);
-			return value;
-		end
+    -- try looking in the libc library
+    local success, value = pcall(function() return ffi.C[key] end)
+    if success then
+      rawset(self, key, value);
+      return value;
+    end
 
-		-- Or maybe it's a type
-		success, value = pcall(function() return ffi.typeof(key) end)
-		if success then
-			rawset(self, key, value);
-			return value;
-		end
+    -- Or maybe it's a type
+    success, value = pcall(function() return ffi.typeof(key) end)
+    if success then
+      rawset(self, key, value);
+      return value;
+    end
 
-		return nil;
-	end,
+    return nil;
+  end,
 
 })
 
