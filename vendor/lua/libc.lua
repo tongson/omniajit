@@ -6,7 +6,7 @@ local lshift, rshift = bit.lshift, bit.rshift
 
 local C = {}	-- Constants
 local F = {}	-- Functions
-local Types = {} -- Types
+local T = {} -- Types
 
 -- utility functions
 function F.octal(val)
@@ -112,7 +112,7 @@ static const int CLOCK_TAI                  = 11;
 
 
 
-Types.timespec = ffi.typeof("struct timespec")
+T.timespec = ffi.typeof("struct timespec")
 local timespec_mt = {
 	__add = function(lhs, rhs)
 		local newspec = timespec(lhs.tv_sec+rhs.tv_sec, lhs.tv_nsec+rhs.tv_nsec);
@@ -157,7 +157,7 @@ local timespec_mt = {
 
 	};
 }
-ffi.metatype(Types.timespec, timespec_mt)
+ffi.metatype(T.timespec, timespec_mt)
 
 
 -- ioctl related
@@ -471,7 +471,7 @@ local iodesc_mt = {
     };
 }
 ffi.metatype(iodesc, iodesc_mt);
-Types.iodesc = iodesc;
+T.iodesc = iodesc;
 
 
 --[[
@@ -672,7 +672,7 @@ print("epollset.add(), fd,  event, ret: ", fd, event, ret, F.strerror());
 	};
 }
 ffi.metatype(epollset, epollset_mt);
-Types.epollset = epollset;
+T.epollset = epollset;
 
 
 local errnos = {
@@ -951,7 +951,7 @@ setmetatable(exports, {
 		end
 
 		-- try looking in the local types
-		value = Types[key]
+		value = T[key]
 		if value then
 			rawset(self, key, value);
 			return value;
