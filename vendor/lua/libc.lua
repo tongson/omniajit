@@ -461,7 +461,6 @@ local iodesc_mt = {
         set_nonblocking = function(self)
             local feature_on = ffi.new("int[1]",1)
             local ret = ffi.C.ioctl(self.fd, C.FIONBIO, feature_on)
-	    print("set_nonblocking: ", ret, ffi.errno())
 
             return ret == 0;
 
@@ -610,7 +609,6 @@ local epollset_mt = {
 	__new = function(ct, epfd)
 		if not epfd then
 			epfd = ffi.C.epoll_create1(0);
-			print("epollset.__new(): ", epfd)
 		end
 
 		if epfd < 0 then
@@ -627,7 +625,6 @@ local epollset_mt = {
 	__index = {
 		add = function(self, fd, event)
 			local ret = ffi.C.epoll_ctl(self.epfd, C.EPOLL_CTL_ADD, fd, event)
-print("epollset.add(), fd,  event, ret: ", fd, event, ret, F.strerror());
 			if ret > -1 then
 				return ret;
 			end
