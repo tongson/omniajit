@@ -458,10 +458,10 @@ local iodesc_mt = {
             return false, ffi.errno();
         end,
 
-        setNonBlocking = function(self)
+        set_nonblocking = function(self)
             local feature_on = ffi.new("int[1]",1)
             local ret = ffi.C.ioctl(self.fd, C.FIONBIO, feature_on)
-	    print("setNonBlocking: ", ret, ffi.errno())
+	    print("set_nonblocking: ", ret, ffi.errno())
 
             return ret == 0;
 
