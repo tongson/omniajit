@@ -1,4 +1,4 @@
-Local ffi = require("ffi")
+local ffi = require("ffi")
 local bit = require("bit")
 local band, bor = bit.band, bit.bor
 local lshift, rshift = bit.lshift, bit.rshift
@@ -303,6 +303,11 @@ int mkfifoat(int, const char *, mode_t);
 
 int futimens(int, const struct timespec [2]);
 int utimensat(int, const char *, const struct timespec [2], int);
+]]
+
+ffi.cdef[[
+int execve(const char *, char *const, char *const);
+int execvp(const char *, char *const);
 ]]
 
 
