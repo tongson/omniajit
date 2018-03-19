@@ -1,6 +1,6 @@
 /*
 ** FFI library.
-** Copyright (C) 2005-2016 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
 */
 
 #define lib_ffi_c
@@ -727,7 +727,7 @@ LJLIB_CF(ffi_abi)	LJLIB_REC(.)
 {
   GCstr *s = lj_lib_checkstr(L, 1);
   int b = 0;
-  switch (s->hash) {
+  switch (lj_str_indep_hash(s)) {
 #if LJ_64
   case H_(849858eb,ad35fd06): b = 1; break;  /* 64bit */
 #else
@@ -829,7 +829,7 @@ static GCtab *ffi_finalizer(lua_State *L)
   settabV(L, L->top++, t);
   setgcref(t->metatable, obj2gco(t));
   setstrV(L, lj_tab_setstr(L, t, lj_str_newlit(L, "__mode")),
-	  lj_str_newlit(L, "K"));
+	  lj_str_newlit(L, "k"));
   t->nomm = (uint8_t)(~(1u<<MM_mode));
   return t;
 }

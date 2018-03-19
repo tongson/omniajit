@@ -1,6 +1,6 @@
 /*
 ** String handling.
-** Copyright (C) 2005-2016 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
 */
 
 #ifndef _LJ_STR_H
@@ -23,5 +23,7 @@ LJ_FUNC void LJ_FASTCALL lj_str_free(global_State *g, GCstr *s);
 
 #define lj_str_newz(L, s)	(lj_str_new(L, s, strlen(s)))
 #define lj_str_newlit(L, s)	(lj_str_new(L, "" s, sizeof(s)-1))
+
+MSize lj_str_indep_hash(GCstr *str);
 
 #endif

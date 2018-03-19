@@ -1,6 +1,6 @@
 /*
 ** String handling.
-** Copyright (C) 2005-2016 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
 */
 
 #define lj_str_c
@@ -47,6 +47,7 @@ int32_t LJ_FASTCALL lj_str_cmp(GCstr *a, GCstr *b)
   return (int32_t)(a->len - b->len);
 }
 
+#ifndef LUAJIT_USE_VALGRIND
 /* Fast string data comparison. Caveat: unaligned access to 1st string! */
 static LJ_AINLINE int str_fastcmp(const char *a, const char *b, MSize len)
 {
@@ -67,6 +68,7 @@ static LJ_AINLINE int str_fastcmp(const char *a, const char *b, MSize len)
   } while (i < len);
   return 0;
 }
+#endif
 
 /* Find fixed string p inside string s. */
 const char *lj_str_find(const char *s, const char *p, MSize slen, MSize plen)
@@ -128,17 +130,11 @@ void lj_str_resize(lua_State *L, MSize newmask)
   g->strhash = newhash;
 }
 
-/* Intern a string and return string object. */
-GCstr *lj_str_new(lua_State *L, const char *str, size_t lenx)
-{
-  global_State *g;
-  GCstr *s;
-  GCobj *o;
+static MSize
+lj_str_original_hash(const char *str, size_t lenx) {
   MSize len = (MSize)lenx;
   MSize a, b, h = len;
-  if (lenx >= LJ_MAX_STR)
-    lj_err_msg(L, LJ_ERR_STROV);
-  g = G(L);
+
   /* Compute string hash. Constants taken from lookup3 hash by Bob Jenkins. */
   if (len >= 4) {  /* Caveat: unaligned access! */
     a = lj_getu32(str);
@@ -152,18 +148,54 @@ GCstr *lj_str_new(lua_State *L, const char *str, size_t lenx)
     b = *(const uint8_t *)(str+(len>>1));
     h ^= b; h -= lj_rol(b, 14);
   } else {
-    return &g->strempty;
+    return 0;
   }
+
   a ^= h; a -= lj_rol(h, 11);
   b ^= a; b -= lj_rol(a, 25);
   h ^= b; h -= lj_rol(b, 16);
+
+  return h;
+}
+
+MSize
+lj_str_indep_hash(GCstr *str) {
+  return lj_str_original_hash(strdata(str), str->len);
+}
+
+#include "x64/src/lj_str_hash_x64.h"
+
+#if defined(LJ_ARCH_STR_HASH)
+#define LJ_STR_HASH LJ_ARCH_STR_HASH
+#else
+#define LJ_STR_HASH lj_str_original_hash
+#endif
+
+/* Intern a string and return string object. */
+GCstr *lj_str_new(lua_State *L, const char *str, size_t lenx)
+{
+  global_State *g;
+  GCstr *s;
+  GCobj *o;
+  MSize len = (MSize)lenx;
+  MSize h;
+
+  if (lenx >= LJ_MAX_STR)
+    lj_err_msg(L, LJ_ERR_STROV);
+  g = G(L);
+  if (LJ_UNLIKELY(lenx == 0)) {
+    return &g->strempty;
+  }
+
+  h = LJ_STR_HASH(str, lenx);
+
   /* Check if the string has already been interned. */
   o = gcref(g->strhash[h & g->strmask]);
 #ifndef LUAJIT_USE_VALGRIND
   if (LJ_LIKELY((((uintptr_t)str+len-1) & (LJ_PAGESIZE-1)) <= LJ_PAGESIZE-4)) {
     while (o != NULL) {
       GCstr *sx = gco2str(o);
-      if (sx->len == len && str_fastcmp(str, strdata(sx), len) == 0) {
+      if (sx->len == len && sx->hash == h && str_fastcmp(str, strdata(sx), len) == 0) {
 	/* Resurrect if dead. Can only happen with fixstring() (keywords). */
 	if (isdead(g, o)) flipwhite(o);
 	return sx;  /* Return existing string. */
@@ -174,7 +206,7 @@ GCstr *lj_str_new(lua_State *L, const char *str, size_t lenx)
 #endif
     while (o != NULL) {
       GCstr *sx = gco2str(o);
-      if (sx->len == len && memcmp(str, strdata(sx), len) == 0) {
+      if (sx->len == len && sx->hash == h && memcmp(str, strdata(sx), len) == 0) {
 	/* Resurrect if dead. Can only happen with fixstring() (keywords). */
 	if (isdead(g, o)) flipwhite(o);
 	return sx;  /* Return existing string. */
