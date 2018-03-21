@@ -1,3 +1,4 @@
+#!bin/lua
 local script = arg[1]
 local lua_script = arg[2]
 local lib = require "cimicida"
