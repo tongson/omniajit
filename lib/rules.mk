@@ -1,10 +1,5 @@
-$(LUA_T):
-	$(ECHOT) CC $@
-	$(HOST_CC) -o $@ -Ilib/lua -DMAKE_LUA -DLUA_USE_POSIX $(ONE).c -lm
-
 $(LIBLUAJIT_A):
 	$(MAKE) -C lib/luajit/src \
-       		HOST_CC="$(HOST_CC)" \
                 TARGET_CFLAGS="$(TARGET_CFLAGS)" \
                 TARGET_LD="$(TARGET_LD)" \
                 TARGET_LDFLAGS="$(TARGET_LDFLAGS)" \
@@ -12,7 +7,17 @@ $(LIBLUAJIT_A):
                 TARGET_DYNCC="$(TARGET_DYNCC)" \
                 TARGET_CC="$(TARGET_DYNCC)" \
                 TARGET_AR="$(TARGET_AR) rcs" \
-                XCFLAGS="$(ljDEFINES)" libluajit.a "LJCORE_O=ljamalg.o"
+                libluajit.a "LJCORE_O=ljamalg.o"
+$(LUA_T): $(LIBLUAJIT_A)
+	$(ECHOT) CC $@
+	$(MAKE) -C lib/luajit/src \
+		BUILDMODE="static" \
+                TARGET_FLAGS="-O2 -mtune=generic -mmmx -msse -msse2 -fomit-frame-pointer -pipe" \
+		TARGET_LDFLAGS="-Wl,--strip-all" \
+                TARGET_LD="$(HOST_CC)" \
+	        luajit
+	$(ECHOT) MV $@
+	mv lib/luajit/src/luajit bin/lua
 
 $(VENDOR_TOP):
 	$(ECHOT) CP VENDOR
