@@ -65,18 +65,13 @@ A copy of `mooni` is also included. To compile, run `make bin/mooni`.
 Project                                                     | Version             | License
 ------------------------------------------------------------|---------------------|---------
 [LuaJIT](http://www.luajit.org)                             | LuaJIT-2.1-20160517 | MIT
-[Lua](http://www.lua.org)                                   | 5.3.3               | MIT
 [luastatic](https://github.com/ers35/luastatic)             | 0.0.4               | CC0
-[MoonScript](http://moonscript.org)                         | 0.5.0               | MIT
-[mooni](https://luarocks.org/modules/steved/mooni)          | 0.5                 | MIT
 
 #### Available modules (Feel free to open a Github issue if you want help with adding a new Lua module.)
 
 Module                                                          | Version         | License
 ----------------------------------------------------------------|-----------------|---------
-[cwtest](https://github.com/catwell/cwtest)                     | b027449         | MIT
 [LPegLJ](https://github.com/sacek/LPegLJ)[1]                    | 1.0.0           | MIT
-[ljsyscall](https://github.com/justincormack/ljsyscall/)[2]     | 0.12            | MIT
 [tapered](https://bitbucket.org/telemachus/tapered)             | 2.1.0           | BSD 3C
 
 [1] Renamed to lpeg. `require"lpeg"` to require it.<br/>
