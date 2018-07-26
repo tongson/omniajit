@@ -206,6 +206,9 @@ local function parser(getbyte, filename)
         if r == 10 then line = line + 1 end
         return r
     end
+    local function parseError(msg)
+        return error(msg .. ' in ' .. (filename or 'unknown') .. ':' .. line, 0)
+    end
 
     -- Parse stream
     return function ()
@@ -230,7 +233,7 @@ local function parser(getbyte, filename)
                 b = getb()
             until not b or not iswhitespace(b)
             if not b then
-                if #stack > 0 then error 'unexpected end of source' end
+                if #stack > 0 then parseError 'unexpected end of source' end
                 return nil
             end
 
@@ -246,11 +249,12 @@ local function parser(getbyte, filename)
                     bytestart = byteindex
                 }, LIST_MT))
             elseif delims[b] then -- Closing delimiter
-                if #stack == 0 then error 'unexpected closing delimiter' end
+                if #stack == 0 then parseError 'unexpected closing delimiter' end
                 local last = stack[#stack]
                 local val
                 if last.closer ~= b then
-                    error('unexpected delimiter ' .. string.char(b) .. ', expected ' .. string.char(last.closer))
+                    parseError('unexpected delimiter ' .. string.char(b) ..
+                               ', expected ' .. string.char(last.closer))
                 end
                 last.byteend = byteindex -- Set closing byte index
                 if b == 41 then -- )
@@ -262,7 +266,7 @@ local function parser(getbyte, filename)
                     end
                 else -- }
                     if #last % 2 ~= 0 then
-                        error 'expected even number of values in table literal'
+                        parseError('expected even number of values in table literal')
                     end
                     val = {}
                     for i = 1, #last, 2 do
@@ -289,7 +293,7 @@ local function parser(getbyte, filename)
                         state = "base"
                     end
                 until not b or (state == "done")
-                if not b then error 'unexpected end of source' end
+                if not b then parseError('unexpected end of source') end
                 local raw = string.char(unpack(chars))
                 local loadFn = loadCode(('return %s'):format(raw), nil, filename)
                 dispatch(loadFn())
@@ -311,7 +315,7 @@ local function parser(getbyte, filename)
                     local forceNumber = rawstr:match('^%d')
                     local x
                     if forceNumber then
-                        x = tonumber(rawstr) or error('could not read token "' .. rawstr .. '"')
+                        x = tonumber(rawstr) or parseError('could not read token "' .. rawstr .. '"')
                     else
                         x = tonumber(rawstr) or sym(rawstr, nil, {
                             line = line,
@@ -361,13 +365,15 @@ end
 local function assertCompile(condition, msg, ast)
     -- if we use regular `assert' we can't provide the `level' argument of zero
     if not condition then
-        error(string.format("Compile error in '%s' %s:%s: %s", ast[1][1],
+        error(string.format("Compile error in '%s' %s:%s: %s",
+                            isSym(ast[1]) and ast[1][1] or ast[1] or '()',
                             ast.filename or "unknown", ast.line or '?', msg), 0)
     end
     return condition
 end
 
 local GLOBAL_SCOPE = makeScope()
+GLOBAL_SCOPE.vararg = true
 local SPECIALS = GLOBAL_SCOPE.specials
 local COMPILER_SCOPE = makeScope(GLOBAL_SCOPE)
 
@@ -448,13 +454,13 @@ end
 -- Creates a symbol from a string by mangling it.
 -- ensures that the generated symbol is unique
 -- if the input string is unique in the scope.
-local function localMangling(str, scope)
+local function localMangling(str, scope, ast)
     if scope.manglings[str] then
         return scope.manglings[str]
     end
     local append = 0
     local mangling = str
-    if isMultiSym(str) then error 'did not expect a multi symbol' end
+    assertCompile(not isMultiSym(str), 'did not expect multi symbol ' .. str, ast)
 
     -- Mapping mangling to a valid Lua identifier
     if luaKeywords[mangling] or mangling:match('^%d') then
@@ -504,17 +510,34 @@ end
 local function declareLocal(symbol, meta, scope, ast)
     local name = symbol[1]
     assertCompile(not isMultiSym(name), "did not expect mutltisym", ast)
-    local mangling = localMangling(name, scope)
+    local mangling = localMangling(name, scope, ast)
     scope.symmeta[name] = meta
     return mangling
 end
 
+-- If there's a provided list of allowed globals, don't let references
+-- thru that aren't on the list. This list is set at the compiler
+-- entry points of compile and compileStream.
+local allowedGlobals
+
+local function globalAllowed(name)
+    if not allowedGlobals then return true end
+    for _, g in ipairs(allowedGlobals) do
+        if g == name then return true end
+    end
+end
+
 -- Convert symbol to Lua code. Will only work for local symbols
 -- if they have already been declared via declareLocal
-local function symbolToExpression(symbol, scope)
+local function symbolToExpression(symbol, scope, isReference)
     local name = symbol[1]
     local parts = isMultiSym(name) or {name}
     local etype = (#parts > 1) and "expression" or "sym"
+    local isLocal = scope.manglings[parts[1]]
+    -- if it's a reference and not a symbol which introduces a new binding
+    -- then we need to check for allowed globals
+    assertCompile(not isReference or isLocal or globalAllowed(parts[1]),
+                  'unknown global in strict mode: ' .. parts[1], symbol)
     return expr(combineParts(parts, scope), etype)
 end
 
@@ -543,6 +566,33 @@ local function peephole(chunk)
         chunk[i] = peephole(v)
     end
     return chunk
+end
+
+-- correlate line numbers in input with line numbers in output
+local function flattenChunkCorrelated(mainChunk)
+    local function flatten(chunk, out, lastLine, file)
+        if chunk.leaf then
+            out[lastLine] = (out[lastLine] or "") .. " " .. chunk.leaf
+        else
+            for _, subchunk in ipairs(chunk) do
+                -- Ignore empty chunks
+                if subchunk.leaf or #subchunk > 0 then
+                    -- don't increase line unless it's from the same file
+                    if subchunk.ast and file == subchunk.ast.file then
+                        lastLine = math.max(lastLine, subchunk.ast.line or 0)
+                    end
+                    lastLine = flatten(subchunk, out, lastLine, file)
+                end
+            end
+        end
+        return lastLine
+    end
+    local out = {}
+    local last = flatten(mainChunk, out, 1, mainChunk.file)
+    for i = 1, last do
+        if out[i] == nil then out[i] = "" end
+    end
+    return table.concat(out, "\n")
 end
 
 -- Flatten a tree of indented Lua source code lines.
@@ -590,21 +640,25 @@ end
 local function flatten(chunk, options)
     local sm = options.sourcemap and {}
     chunk = peephole(chunk)
-    local ret = flattenChunk(sm, chunk, options.indent, 0)
-    if sm then
-        local key, short_src
-        if options.filename then
-            short_src = options.filename
-            key = '@' .. short_src
-        else
-            key = ret
-            short_src = makeShortSrc(options.source or ret)
+    if(options.correlate) then
+        return flattenChunkCorrelated(chunk), {}
+    else
+        local ret = flattenChunk(sm, chunk, options.indent, 0)
+        if sm then
+            local key, short_src
+            if options.filename then
+                short_src = options.filename
+                key = '@' .. short_src
+            else
+                key = ret
+                short_src = makeShortSrc(options.source or ret)
+            end
+            sm.short_src = short_src
+            sm.key = key
+            fennelSourcemap[key] = sm
         end
-        sm.short_src = short_src
-        sm.key = key
-        fennelSourcemap[key] = sm
+        return ret, sm
     end
-    return ret, sm
 end
 
 -- Convert expressions to Lua string
@@ -696,7 +750,7 @@ local function compile1(ast, scope, parent, opts)
     if isList(ast) then
         -- Function call or special form
         local len = #ast
-        assert(len > 0, "expected a function to call")
+        assertCompile(len > 0, "expected a function to call", ast)
         -- Test for special form
         local first = ast[1]
         if isSym(first) then -- Resolve symbol
@@ -725,7 +779,8 @@ local function compile1(ast, scope, parent, opts)
             local fcallee = compile1(ast[1], scope, parent, {
                 nval = 1
             })[1]
-            assert(fcallee.type ~= 'literal', 'cannot call literal value')
+            assertCompile(fcallee.type ~= 'literal',
+                          'cannot call literal value', ast)
             fcallee = tostring(fcallee)
             for i = 2, len do
                 local subexprs = compile1(ast[i], scope, parent, {
@@ -746,6 +801,7 @@ local function compile1(ast, scope, parent, opts)
             exprs = handleCompileOpts({expr(call, 'statement')}, parent, opts, ast)
         end
     elseif isVarg(ast) then
+        assertCompile(scope.vararg, "unexpected vararg", ast)
         exprs = handleCompileOpts({expr('...', 'varg')}, parent, opts, ast)
     elseif isSym(ast) then
         local e
@@ -754,7 +810,7 @@ local function compile1(ast, scope, parent, opts)
         if ast[1] == 'nil' then
             e = expr('nil', 'literal')
         else
-            e = symbolToExpression(ast, scope)
+            e = symbolToExpression(ast, scope, true)
         end
         exprs = handleCompileOpts({e}, parent, opts, ast)
     elseif type(ast) == 'nil' or type(ast) == 'boolean' then
@@ -768,7 +824,8 @@ local function compile1(ast, scope, parent, opts)
     elseif type(ast) == 'table' then
         local buffer = {}
         for i = 1, #ast do -- Write numeric keyed values.
-            buffer[#buffer + 1] = tostring(compile1(ast[i], scope, parent, {nval = 1})[1])
+            local nval = i ~= #ast and 1
+            buffer[#buffer + 1] = exprs1(compile1(ast[i], scope, parent, {nval = nval}))
         end
         local keys = {}
         for k, _ in pairs(ast) do -- Write other keys.
@@ -788,10 +845,10 @@ local function compile1(ast, scope, parent, opts)
             buffer[#buffer + 1] = ('%s = %s'):format(
                 k[1], tostring(compile1(v, scope, parent, {nval = 1})[1]))
         end
-        local tbl = '({' .. table.concat(buffer, ', ') ..'})'
+        local tbl = '{' .. table.concat(buffer, ', ') ..'}'
         exprs = handleCompileOpts({expr(tbl, 'expression')}, parent, opts, ast)
     else
-        error('could not compile value of type ' .. type(ast))
+        assertCompile(false, 'could not compile value of type ' .. type(ast), ast)
     end
     exprs.returned = true
     return exprs
@@ -825,6 +882,7 @@ local function destructure(to, from, ast, scope, parent, opts)
     local nomulti = opts.nomulti
     local noundef = opts.noundef
     local forceglobal = opts.forceglobal
+    local forceset = opts.forceset
     local setter = declaration and "local %s = %s" or "%s = %s"
 
     -- Get Lua source for symbol, and check for errors
@@ -837,7 +895,7 @@ local function destructure(to, from, ast, scope, parent, opts)
         else
             local parts = isMultiSym(raw) or {raw}
             local meta = scope.symmeta[parts[1]]
-            if #parts == 1 then
+            if #parts == 1 and not forceset then
                 assertCompile(not(forceglobal and meta),
                     'expected global, found var', up1)
                 assertCompile(meta or not noundef,
@@ -957,8 +1015,9 @@ local function doImpl(ast, scope, parent, opts, start, chunk, subScope)
         else
             -- We will use an IIFE for the do
             local fname = gensym(scope)
-            emit(parent, ('local function %s()'):format(fname), ast)
-            retexprs = expr(fname .. '()', 'statement')
+            local fargs = scope.vararg and '...' or ''
+            emit(parent, ('local function %s(%s)'):format(fname, fargs), ast)
+            retexprs = expr(fname .. '(' .. fargs .. ')', 'statement')
             outerTail = true
             outerTarget = nil
         end
@@ -1003,6 +1062,7 @@ SPECIALS['fn'] = function(ast, scope, parent)
     local index = 2
     local fnName = isSym(ast[index])
     local isLocalFn
+    fScope.vararg = false
     if fnName and fnName[1] ~= 'nil' then
         isLocalFn = not isMultiSym(fnName[1])
         if isLocalFn then
@@ -1020,6 +1080,7 @@ SPECIALS['fn'] = function(ast, scope, parent)
     local argNameList = {}
     for i = 1, #argList do
         if isVarg(argList[i]) then
+            assertCompile(i == #argList, "expected vararg in last parameter position", ast)
             argNameList[i] = '...'
             fScope.vararg = true
         elseif isSym(argList[i])
@@ -1080,6 +1141,7 @@ end
 
 SPECIALS['global'] = function(ast, scope, parent)
     assertCompile(#ast == 3, "expected name and value", ast)
+    if allowedGlobals then table.insert(allowedGlobals, ast[2][1]) end
     destructure(ast[2], ast[3], ast, scope, parent, {
         nomulti = true,
         forceglobal = true
@@ -1090,6 +1152,13 @@ SPECIALS['set'] = function(ast, scope, parent)
     assertCompile(#ast == 3, "expected name and value", ast)
     destructure(ast[2], ast[3], ast, scope, parent, {
         noundef = true
+    })
+end
+
+SPECIALS['set-forcibly!'] = function(ast, scope, parent)
+    assertCompile(#ast == 3, "expected name and value", ast)
+    destructure(ast[2], ast[3], ast, scope, parent, {
+        forceset = true
     })
 end
 
@@ -1214,10 +1283,11 @@ SPECIALS['if'] = function(ast, scope, parent, opts)
     end
 
     if wrapper == 'iife' then
-        emit(parent, ('local function %s()'):format(tostring(s)), ast)
+        local iifeargs = scope.vararg and '...' or ''
+        emit(parent, ('local function %s(%s)'):format(tostring(s), iifeargs), ast)
         emit(parent, buffer, ast)
         emit(parent, 'end', ast)
-        return expr(('%s()'):format(tostring(s)), 'statement')
+        return expr(('%s(%s)'):format(tostring(s), iifeargs), 'statement')
     elseif wrapper == 'none' then
         -- Splice result right into code
         for i = 1, #buffer do
@@ -1328,12 +1398,13 @@ SPECIALS[':'] = function(ast, scope, parent)
         table.concat(args, ', ')), 'statement')
 end
 
-local function defineArithmeticSpecial(name, unaryPrefix)
+local function defineArithmeticSpecial(name, zeroArity, unaryPrefix)
     local paddedOp = ' ' .. name .. ' '
     SPECIALS[name] = function(ast, scope, parent)
         local len = #ast
         if len == 1 then
-            return unaryPrefix or '0'
+            assertCompile(zeroArity ~= nil, 'Expected more than 0 arguments', ast)
+            return expr(zeroArity, 'literal')
         else
             local operands = {}
             for i = 2, len do
@@ -1344,8 +1415,12 @@ local function defineArithmeticSpecial(name, unaryPrefix)
                     operands[#operands + 1] = tostring(subexprs[j])
                 end
             end
-            if #operands == 1 and unaryPrefix then
-                return '(' .. unaryPrefix .. paddedOp .. operands[1] .. ')'
+            if #operands == 1 then
+                if unaryPrefix then
+                    return '(' .. unaryPrefix .. paddedOp .. operands[1] .. ')'
+                else
+                    return operands[1]
+                end
             else
                 return '(' .. table.concat(operands, paddedOp) .. ')'
             end
@@ -1353,33 +1428,37 @@ local function defineArithmeticSpecial(name, unaryPrefix)
     end
 end
 
-defineArithmeticSpecial('+')
-defineArithmeticSpecial('..')
+defineArithmeticSpecial('+', '0')
+defineArithmeticSpecial('..', "''")
 defineArithmeticSpecial('^')
-defineArithmeticSpecial('-', '')
-defineArithmeticSpecial('*')
+defineArithmeticSpecial('-', nil, '')
+defineArithmeticSpecial('*', '1')
 defineArithmeticSpecial('%')
-defineArithmeticSpecial('/', 1)
-defineArithmeticSpecial('//', 1)
-defineArithmeticSpecial('or')
-defineArithmeticSpecial('and')
+defineArithmeticSpecial('/', nil, '1')
+defineArithmeticSpecial('//', nil, '1')
+defineArithmeticSpecial('or', 'false')
+defineArithmeticSpecial('and', 'true')
 
 local function defineComparatorSpecial(name, realop)
     local op = realop or name
     SPECIALS[name] = function(ast, scope, parent)
-        assertCompile(#ast > 2, 'expected at least two arguments', ast)
+        local len = #ast
+        assertCompile(len > 2, 'expected at least two arguments', ast)
         local lhs = compile1(ast[2], scope, parent, {nval = 1})[1]
         local lastval = compile1(ast[3], scope, parent, {nval = 1})[1]
         -- avoid double-eval by introducing locals for possible side-effects
-        if #ast > 3 then lastval = once(lastval, ast[3], scope, parent) end
-        local out = ('(%s) %s (%s)'):
+        if len > 3 then lastval = once(lastval, ast[3], scope, parent) end
+        local out = ('(%s %s %s)'):
             format(tostring(lhs), op, tostring(lastval))
-        for i = 4, #ast do -- variadic comparison
-            local nextval = once(compile1(ast[i], scope, parent, {nval = 1})[1],
-                                 ast[i], scope, parent)
-            out = (out .. " and ((%s) %s (%s))"):
-                format(tostring(lastval), op, tostring(nextval))
-            lastval = nextval
+        if len > 3 then
+            for i = 4, len do -- variadic comparison
+                local nextval = once(compile1(ast[i], scope, parent, {nval = 1})[1],
+                                     ast[i], scope, parent)
+                out = (out .. " and (%s %s %s)"):
+                    format(tostring(lastval), op, tostring(nextval))
+                lastval = nextval
+            end
+            out = '(' .. out .. ')'
         end
         return out
     end
@@ -1414,6 +1493,7 @@ end
 
 local function compile(ast, options)
     options = options or {}
+    allowedGlobals = options.allowedGlobals
     if options.indent == nil then options.indent = '  ' end
     local chunk = {}
     local scope = options.scope or makeScope(GLOBAL_SCOPE)
@@ -1424,6 +1504,7 @@ end
 
 local function compileStream(strm, options)
     options = options or {}
+    allowedGlobals = options.allowedGlobals
     if options.indent == nil then options.indent = '  ' end
     local scope = options.scope or makeScope(GLOBAL_SCOPE)
     local vals = {}
@@ -1495,8 +1576,19 @@ local function traceback(msg, start)
     return table.concat(lines, '\n')
 end
 
+local function currentGlobalNames()
+    local names = {}
+    for k in pairs(_G) do table.insert(names, k) end
+    return names
+end
+
 local function eval(str, options, ...)
     options = options or {}
+    -- eval and dofile are considered "live" entry points, so we can assume
+    -- that the globals available at compile time are a reasonable allowed list
+    if options.allowedGlobals == nil then
+        options.allowedGlobals = currentGlobalNames()
+    end
     local luaSource = compileString(str, options)
     local loader = loadCode(luaSource, options.env,
         options.filename and ('@' .. options.filename) or str)
@@ -1505,6 +1597,9 @@ end
 
 local function dofile_fennel(filename, options, ...)
     options = options or {sourcemap = true}
+    if options.allowedGlobals == nil then
+        options.allowedGlobals = currentGlobalNames()
+    end
     local f = assert(io.open(filename, "rb"))
     local source = f:read("*all")
     f:close()
@@ -1516,6 +1611,11 @@ end
 local function repl(options)
 
     local opts = options or {}
+    -- This would get set for us when calling eval, but we want to seed it
+    -- with a value that is persistent so it doesn't get reset on each eval.
+    if opts.allowedGlobals == nil then
+        options.allowedGlobals = currentGlobalNames()
+    end
 
     local env = opts.env or setmetatable({}, {
         __index = _ENV or _G
@@ -1602,6 +1702,8 @@ local function repl(options)
     end
 end
 
+local macroLoaded = {}
+
 local module = {
     parser = parser,
     granulate = granulate,
@@ -1620,6 +1722,7 @@ local module = {
     eval = eval,
     repl = repl,
     dofile = dofile_fennel,
+    macroLoaded = macroLoaded,
     path = "./?.fnl;./?/init.fnl",
     traceback = traceback
 }
@@ -1636,16 +1739,22 @@ local function searchModule(modulename)
     end
 end
 
+module.make_searcher = function(options)
+   return function(modulename)
+      local opts = {}
+      for k,v in pairs(options or {}) do opts[k] = v end
+      local filename = searchModule(modulename)
+      if filename then
+         return function(modname)
+            return dofile_fennel(filename, opts, modname)
+         end
+      end
+   end
+end
+
 -- This will allow regular `require` to work with Fennel:
 -- table.insert(package.loaders, fennel.searcher)
-module.searcher = function(modulename)
-    local filename = searchModule(modulename)
-    if filename then
-        return function(modname)
-            return dofile_fennel(filename, nil, modname)
-        end
-    end
-end
+module.searcher = module.make_searcher()
 
 local function makeCompilerEnv(ast, scope, parent)
     return setmetatable({
@@ -1670,13 +1779,37 @@ local function makeCompilerEnv(ast, scope, parent)
     }, { __index = _ENV or _G })
 end
 
+local function macroGlobals(env)
+    if allowedGlobals then
+        local allowed = {}
+        for k in pairs(env) do
+            local g = globalUnmangling(k)
+            table.insert(allowed, g)
+        end
+        for _,k in pairs(allowedGlobals) do
+            table.insert(allowed, k)
+        end
+        return allowed
+    end
+end
+
 SPECIALS['require-macros'] = function(ast, scope, parent)
     for i = 2, #ast do
-        local filename = assertCompile(searchModule(ast[i]),
-                                       ast[i] .. " not found.", ast)
-        local mod = dofile_fennel(filename, {env=makeCompilerEnv(ast, scope, parent)})
-        for k, v in pairs(assertCompile(isTable(mod), 'expected ' .. ast[i] ..
-                                        'module to be table', ast)) do
+        local modname = ast[i]
+        local mod
+        if macroLoaded[modname] then
+            mod = macroLoaded[modname]
+        else
+            local filename = assertCompile(searchModule(modname),
+                                           modname .. " not found.", ast)
+            local env = makeCompilerEnv(ast, scope, parent)
+            mod = dofile_fennel(filename, {env=env,
+                                           allowedGlobals=macroGlobals(env)})
+            macroLoaded[modname] = mod
+        end
+        for k, v in pairs(assertCompile(isTable(mod), 'expected ' .. modname ..
+                                        ' module to be table', ast)) do
+            if allowedGlobals then table.insert(allowedGlobals, k) end
             scope.specials[k] = macroToSpecial(v)
         end
     end
@@ -1707,9 +1840,7 @@ local stdmacros = [===[
          x)
  :defn (fn [name args ...]
          (assert (sym? name) "defn: function names must be symbols")
-         (let [op (if (multi-sym? (. name 1)) :set :local)]
-           (list (sym op) name
-                 (list (sym :fn) args ...))))
+         (list (sym :fn) name args ...))
  :when (fn [condition body1 ...]
          (assert body1 "expected body")
          (list (sym 'if') condition
@@ -1724,21 +1855,22 @@ local stdmacros = [===[
                  arglist (if has-internal-name? (. args 2) (. args 1))
                  arity-check-position (if has-internal-name? 3 2)]
              (assert (> (# args) 1) "missing body expression")
-             (each [i arg (ipairs arglist)]
-               (if (and (not (: (tostring arg) :match "^?"))
-                        (~= (tostring arg) "..."))
+             (each [i a (ipairs arglist)]
+               (if (and (not (: (tostring a) :match "^?"))
+                        (~= (tostring a) "..."))
                    (table.insert args arity-check-position
                                  (list (sym "assert")
-                                       (list (sym "~=") (sym "nil") arg)
+                                       (list (sym "~=") (sym "nil") a)
                                        (: "Missing argument %s on %s:%s"
-                                          :format (tostring arg)
-                                          (or arg.filename "unknown")
-                                          (or arg.line "?"))))))
+                                          :format (tostring a)
+                                          (or a.filename "unknown")
+                                          (or a.line "?"))))))
              (list (sym "fn") ((or unpack table.unpack) args))))
 }
 ]===]
 for name, fn in pairs(eval(stdmacros, {
-    env = makeCompilerEnv(nil, GLOBAL_SCOPE, {})
+    env = makeCompilerEnv(nil, GLOBAL_SCOPE, {}),
+    allowedGlobals = false,
 })) do
     SPECIALS[name] = macroToSpecial(fn)
 end
