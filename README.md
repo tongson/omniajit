@@ -52,27 +52,19 @@ For modules with multiple levels of directories you will have to pass each direc
 
 Lua does not have facilities to traverse directories and I'd like to avoid shell out functions.
 
-#### MoonScript support
-
-Just treat MoonScript source the same as Lua source. The Make routines will handle the compilation of MoonScript sources and link the appropriate compiled Lua source to the final executable.
-
-The MoonScript standard library is included but you have to add `moon` to the `VENDOR` line in the Makefile.
-
-A copy of `mooni` is also included. To compile, run `make bin/mooni`.
-
 #### Included projects
 
 Project                                                     | Version             | License
 ------------------------------------------------------------|---------------------|---------
 [LuaJIT](http://www.luajit.org)                             | LuaJIT-2.1-20160517 | MIT
 [luastatic](https://github.com/ers35/luastatic)             | 0.0.4               | CC0
+[Fennel](https://github.com/bakpakin/Fennel/)               | ad998c9             | MIT
 
 #### Available modules (Feel free to open a Github issue if you want help with adding a new Lua module.)
 
 Module                                                          | Version         | License
 ----------------------------------------------------------------|-----------------|---------
 [LPegLJ](https://github.com/sacek/LPegLJ)[1]                    | 1.0.0           | MIT
-[tapered](https://bitbucket.org/telemachus/tapered)             | 2.1.0           | BSD 3C
 
 [1] Renamed to lpeg. `require"lpeg"` to require it.<br/>
 [2] lfs moved to `vendor/lua` so `require"lfs"` works.<br/>
