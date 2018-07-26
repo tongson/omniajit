@@ -3,7 +3,7 @@ OmniaJIT
 
 Fork of [Omnia](https://github.com/tongson/omnia), LuaJIT instead of PUC-Rio Lua.
 
-Compile LuaJIT and MoonScript source code into standalone executables. This makes it easy to use them for general purpose scripting.
+Compile LuaJIT and Fennel source code into standalone executables. This makes it easy to use them for general purpose scripting.
 
 Ideally you would do development with LuaJIT and Luarocks then deploy to production using OmniaJIT.
 
