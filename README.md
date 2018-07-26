@@ -56,7 +56,7 @@ Lua does not have facilities to traverse directories and I'd like to avoid shell
 
 Project                                                     | Version             | License
 ------------------------------------------------------------|---------------------|---------
-[LuaJIT](http://www.luajit.org)                             | LuaJIT-2.1-20160517 | MIT
+[LuaJIT](http://www.luajit.org)                             | v2.1-20171103       | MIT
 [luastatic](https://github.com/ers35/luastatic)             | 0.0.4               | CC0
 [Fennel](https://github.com/bakpakin/Fennel/)               | ad998c9             | MIT
 
