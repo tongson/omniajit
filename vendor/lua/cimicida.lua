@@ -94,7 +94,7 @@ local t_find = function(tbl, str, plain)
 end
 
 local f_find = function(file, str, plain, fmt)
-  fmt = fmt or "L"
+  fmt = fmt or "*L"
   for s in io.lines(file, fmt) do
     if string.find(s, str, 1, plain) then
       return true
@@ -104,7 +104,7 @@ end
 
 local f_match = function(file, str, fmt)
   local m
-  fmt = fmt or "L"
+  fmt = fmt or "*L"
   for s in io.lines(file, fmt) do
     m = string.match(s, str)
     if m then break end
