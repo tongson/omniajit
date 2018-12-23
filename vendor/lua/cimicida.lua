@@ -256,7 +256,7 @@ local f_read = function(file)
 end
 
 local f_write = function(path, str, mode)
-  mode = mode or "we+"
+  mode = mode or "w+"
   local fd = io.open(path, mode)
   if fd then
     fd:setvbuf("no")
