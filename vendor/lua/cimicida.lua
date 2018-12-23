@@ -435,7 +435,7 @@ local escape_quotes = function(str)
 end
 
 local l_file = function(file, ident, msg)
-  local fd = io.open(file, "ae+")
+  local fd = io.open(file, "a+")
   if fd then
     fd:setvbuf("line")
     local _, err = fprintf(fd, "%s %s: %s\n", os.date("%a %b %d %T"), ident, msg)
