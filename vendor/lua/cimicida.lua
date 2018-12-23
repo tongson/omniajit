@@ -93,8 +93,9 @@ local t_find = function(tbl, str, plain)
   end
 end
 
-local f_find = function(file, str, plain)
-  for s in io.lines(file) do
+local f_find = function(file, str, plain, fmt)
+  fmt = fmt or "L"
+  for s in io.lines(file, fmt) do
     if string.find(s, str, 1, plain) then
       return true
     end
