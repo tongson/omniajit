@@ -56,7 +56,7 @@ Project                                                     | Version           
 ------------------------------------------------------------|---------------------|---------
 [LuaJIT](http://www.luajit.org)                             | v2.1-20180420       | MIT
 [luastatic](https://github.com/ers35/luastatic)             | 0.0.4               | CC0
-[Fennel](https://github.com/bakpakin/Fennel/)               | ad998c9             | MIT
+[Fennel](https://github.com/bakpakin/Fennel/)               | 0.1.1               | MIT
 
 #### Available modules (Feel free to open a Github issue if you want help with adding a new Lua module.)
 
