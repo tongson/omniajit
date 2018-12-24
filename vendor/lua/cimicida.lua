@@ -188,7 +188,7 @@ local t_filter = function(tbl, patt, plain)
 end
 
 local f_to_seq = function(file, fmt)
-  fmt = fmt or "L"
+  fmt = fmt or "*L"
   local _, fd = pcall(io.open, file, 're')
   if fd then
     io.flush(fd)
