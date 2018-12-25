@@ -63,6 +63,7 @@ Project                                                     | Version           
 Module                                                          | Version         | License
 ----------------------------------------------------------------|-----------------|---------
 [LPegLJ](https://github.com/sacek/LPegLJ)[1]                    | 1.0.0           | MIT
+[u-test](https://github.com/IUdalov/u-test)                     | a785dda         | MIT
 
 [1] Renamed to lpeg. `require"lpeg"` to require it.<br/>
 [2] lfs moved to `vendor/lua` so `require"lfs"` works.<br/>
