@@ -283,15 +283,6 @@ local template = function(s, v)
   return string.gsub(s, "%${[%s]-([^}%G]+)[%s]-}", v)
 end
 
-local exit_string = function(proc, status, code)
-  if status == "exit" or status == "exited" then
-    return string.format("%s: Exited with code %s", proc, code)
-  end
-  if status == "signal" or status == "killed" then
-    return string.format("%s: Caught signal %s", proc, code)
-  end
-end
-
 local truthy = function(s)
   local _
   _, s = pcall(string.lower, s)
