@@ -26,7 +26,7 @@ TARGET_STRIP= $(CROSS)$(STRIP)
 # FLAGS when cross compiling
 ifneq (,$(CROSS))
   TARGET_CCOPT:= -Os -fomit-frame-pointer -pipe
-  TARGET_LDFLAGS= -Wl,--gc-sections -Wl,--strip-all
+  TARGET_LDFLAGS= -Wl,--strip-all
 endif
 
 # Append -static-libgcc to CFLAGS if GCC is detected.
