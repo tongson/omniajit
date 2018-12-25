@@ -1,5 +1,5 @@
 .DEFAULT_GOAL= release
-EXE:= luajit
+EXE:= omniajit
 SRC:=
 SRC_DIR:=
 VENDOR:= cimicida u-test fennel fun
