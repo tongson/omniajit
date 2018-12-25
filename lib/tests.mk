@@ -36,9 +36,11 @@ ifeq ($(IS_CC), GCC)
 endif
 
 ifeq ($(shell $(CONFIGURE_P)/test-gcc47.sh $(TARGET_STCC)), true)
-  TARGET_RANLIB:= $(CROSS)gcc-$(RANLIB)
-  TARGET_AR:= $(CROSS)gcc-$(AR)
-  TARGET_NM:= $(CROSS)gcc-$(NM)
+  ifeq ($(shell $(CONFIGURE_P)/test-binutils-plugins.sh $(CROSS)gcc-$(AR)), true)
+    TARGET_RANLIB:= $(CROSS)gcc-$(RANLIB)
+    TARGET_AR:= $(CROSS)gcc-$(AR)
+    TARGET_NM:= $(CROSS)gcc-$(NM)
+  endif
 endif
 
 ifeq ($(or $(MAKECMDGOALS),$(.DEFAULT_GOAL)), development)
