@@ -650,7 +650,6 @@ return {
     split = split
   },
   exec = {
-    exit_string = exit_string,
     popen = popen,
     pwrite = pwrite,
     system = system,
