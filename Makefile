@@ -1,8 +1,8 @@
 .DEFAULT_GOAL= release
-EXE:= x
+EXE:= luajit
 SRC:=
 SRC_DIR:=
-VENDOR:=
+VENDOR:= cimicida u-test fennel fun
 VENDOR_DIR:=
 MAKEFLAGS= --silent
 HOST_CC= cc
