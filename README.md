@@ -66,6 +66,7 @@ Module                                                          | Version       
 [u-test](https://github.com/IUdalov/u-test)                     | a785dda         | MIT
 [luafun](https://github.com/luafun/luafun)                      | 04c99f9         | MIT
 [argparse](https://github.com/mpeterv/argparse)                 | 0.6.0           | MIT
+[ftcsv](https://github.com/FourierTransformer/ftcsv)            | 665f789 / 1.1.6 | MIT
 
 [1] Renamed to lpeg. `require"lpeg"` to require it.<br/>
 [2] lfs moved to `vendor/lua` so `require"lfs"` works.<br/>
