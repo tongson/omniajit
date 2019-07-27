@@ -265,9 +265,9 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
   end
 end
 exec.context = function(exe)
-  local args = {}
-  return setmetatable(args, {__call = function(_, ...)
-    for a = 1, #args do args[a] = nil end
+  local set = {}
+  return setmetatable(set, {__call = function(_, ...)
+    local args = {}
     local n = select("#", ...)
     if n == 1 then
       for k in string.gmatch(..., "%S+") do
@@ -278,7 +278,7 @@ exec.context = function(exe)
         args[#args+1] = k
       end
     end
-    return exec.spawn(exe, args, args.env, args.cwd, args.stdin, args.stdout, args.stderr, args.ignore, args.errexit)
+    return exec.spawn(exe, args, set.env, set.cwd, set.stdin, set.stdout, set.stderr, set.ignore, set.errexit)
   end})
 end
 exec.ctx = exec.context
