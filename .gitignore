@@ -3,3 +3,4 @@
 /lib/luajit/src/*.a
 /lib/luajit/src/host/*.o
 /*.lua
+/Makefile
