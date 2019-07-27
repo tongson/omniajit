@@ -43,6 +43,10 @@ local from = function(base, cwd, name)
         "--no-install-recommends", "-o APT::Install-Suggests=0", "-o APT::Get::AutomaticRemove=1", "-o Dpkg::Use-Pty=0",
         "-o Dpkg::Options::='--force-confdef'", "-o Dpkg::Options::='--force-confold'", unpack(a))
     end
+    fn.copy = function(src, dest)
+        fmt.print("COPY '%s' to '%s'\n", src, dest)
+        exe("copy", name, src, dest)
+    end
     return fn
 end
 
