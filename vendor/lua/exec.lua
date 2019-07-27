@@ -259,7 +259,7 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
   if ret == 0 or ignore then
     return pid, R
   elseif errexit then
-    return panic("exec.spawn: <errexit> '%s' :: %s (%s)\n", R.error, exe, table.concat(args, ", "))
+    return panic("exec.spawn: <errexit> '%s' :: %s %s\n", R.error, exe, table.concat(args, " "))
   else
     return nil, R
   end
