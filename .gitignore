@@ -1,3 +1,4 @@
+/bin/lua
 /lib/luajit/src/*.o
 /lib/luajit/src/*.a
 /lib/luajit/src/host/*.o
