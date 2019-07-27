@@ -22,12 +22,14 @@ local pargs = function(...)
     return args
 end
 
-local from = function(base, cwd)
-    local name = util.random_string(16)
-    local cwd = cwd or "."
+local from = function(base, cwd, name)
+    cwd = cwd or "."
     local exe = exec.ctx("/usr/bin/buildah")
     exe.errexit = true
-    exe("from", "--name", name, base)
+    if not name then
+        name = util.random_string(16)
+        exe("from", "--name", name, base)
+    end
     local fn = {}
     fn.run = function(...)
         local a = pargs(...)
