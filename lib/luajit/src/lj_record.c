@@ -1860,6 +1860,8 @@ static void rec_varg(jit_State *J, BCReg dst, ptrdiff_t nresults)
       lj_trace_err_info(J, LJ_TRERR_NYIBC);
     }
   }
+  if (J->baseslot + J->maxslot >= LJ_MAX_JSLOTS)
+    lj_trace_err(J, LJ_TRERR_STACKOV);
 }
 
 /* -- Record allocations -------------------------------------------------- */
@@ -2470,8 +2472,9 @@ void lj_record_ins(jit_State *J)
 #undef rbv
 #undef rcv
 
-  /* Limit the number of recorded IR instructions. */
-  if (J->cur.nins > REF_FIRST+(IRRef)J->param[JIT_P_maxrecord])
+  /* Limit the number of recorded IR instructions and constants. */
+  if (J->cur.nins > REF_FIRST+(IRRef)J->param[JIT_P_maxrecord] ||
+      J->cur.nk < REF_BIAS-(IRRef)J->param[JIT_P_maxirconst])
     lj_trace_err(J, LJ_TRERR_TRACEOV);
 }
 
