@@ -10,11 +10,12 @@ local from = function(base, cwd)
     local exe = exec.ctx("/usr/bin/buildah")
     exe.errexit = true
     exe("from", "--name", name, base)
-    local funcs = {} 
-    funcs.run = function(...)
-        exe("run", name, "--",...) 
+    local fn = {}
+    fn.run = function(...)
+        fmt.print("RUN %s\n", table.concat({...}, " "))
+        exe("run", name, "--", ...)
     end
-    return funcs
+    return fn
 end
 
 module.from = from
