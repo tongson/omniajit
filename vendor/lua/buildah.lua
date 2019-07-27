@@ -44,8 +44,14 @@ local from = function(base, cwd, name)
         "-o Dpkg::Options::='--force-confdef'", "-o Dpkg::Options::='--force-confold'", unpack(a))
     end
     fn.copy = function(src, dest)
+        dest = dest or '/'
         fmt.print("COPY '%s' to '%s'\n", src, dest)
         exe("copy", name, src, dest)
+    end
+    fn.clear = function(f)
+        fmt.print("CLEAR %s\n", f)
+        exe("run", name, "--", "/usr/bin/find", f, "-type", "f", "-o", "-type", "s", "-o", "-type", "p", "-ignore_readdir_race", "-delete")
+        exe("run", name, "--", "/usr/bin/find", f, "-mindepth", "1", "-type", "d", "-ignore_readdir_race", "-delete")
     end
     return fn
 end
