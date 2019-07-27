@@ -23,9 +23,9 @@ local pargs = function(...)
 end
 
 local from = function(base, cwd, name)
-    cwd = cwd or "."
     local exe = exec.ctx("/usr/bin/buildah")
     exe.errexit = true
+    exe.cwd = cwd or "."
     if not name then
         name = util.random_string(16)
         exe("from", "--name", name, base)
