@@ -267,6 +267,7 @@ end
 exec.context = function(exe)
   local args = {}
   return setmetatable(args, {__call = function(_, ...)
+    for a = 1, #args do args[a] = nil end
     local n = select("#", ...)
     if n == 1 then
       for k in string.gmatch(..., "%S+") do
