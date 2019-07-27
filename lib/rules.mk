@@ -48,7 +48,7 @@ development: $(LUA_T) $(COMPILED_FNL) $(VENDOR_LUA) $(VENDOR_TOP)
 	$(RMRF) $(SRC_DIRS)
 	for d in $(SRC_DIRS); do $(CPR) $(SRC_P)/$$d .; done
 	$(ECHOT) RUN luacheck
-	-bin/luacheck.lua src/lua/*.lua $(COMPILED_FNL) $(SRC_CHECK) --exclude-files 'vendor/lua/*'
+	-bin/luacheck.lua $(SRC_TOP) $(MAIN) $(COMPILED_FNL) $(SRC_CHECK) --exclude-files 'vendor/lua/*'
 	$(RM) $(RMFLAGS) luacov.stats.out
 
 clean: $(CLEAN)
