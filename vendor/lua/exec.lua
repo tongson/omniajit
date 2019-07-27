@@ -1,3 +1,11 @@
+local panic = function(str, ...)
+  local o = io.output()
+  io.output(io.stderr)
+  io.stdout:write(string.format(str, ...))
+  io.output(o)
+  io.stdout:flush()
+  os.exit(1)
+end
 local ffi = require "ffi"
 local ffiext = require "ffiext"
 local C = ffi.C
@@ -50,7 +58,7 @@ local redirect = function(io_or_filename, dest_fd)
   return true
 end
 
-exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stderr_redirect, ignore)
+exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stderr_redirect, ignore, errexit)
   --[[
     INPUT
       exe: program or executable (string)
@@ -61,6 +69,7 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
       stdout_redirect: file to redirect STDOUT stream to (string)
       stderr_redirect: file to redirect STDERR stream to (string)
       ignore: when not nil or false, ignores the return value of the program (string)
+      errexit: panic when error is encountered (boolean)
 
     OUTPUT
     { stdout = "STDOUT (string)",
@@ -249,6 +258,8 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
   end
   if ret == 0 or ignore then
     return pid, R
+  elseif errexit then
+    return panic("exec.spawn: errexit:: %s (%s)\n", exe, table.concat(args, ", "))
   else
     return nil, R
   end
@@ -266,7 +277,7 @@ exec.context = function(exe)
         args[#args+1] = k
       end
     end
-    return exec.spawn(exe, args, args.env, args.cwd, args.stdin, args.stdout, args.stderr, args.ignore)
+    return exec.spawn(exe, args, args.env, args.cwd, args.stdin, args.stdout, args.stderr, args.ignore, args.errexit)
   end})
 end
 exec.ctx = exec.context
@@ -282,7 +293,7 @@ exec.cmd = setmetatable({},
         else
           args = {...}
         end
-        return exec.spawn(exe, args, args.env, args.cwd, args.stdin, args.stdout, args.stderr, args.ignore)
+        return exec.spawn(exe, args, args.env, args.cwd, args.stdin, args.stdout, args.stderr, args.ignore, args.errexit)
       end
     end
   })
