@@ -2,6 +2,7 @@ local lib = require "lib"
 local fmt = lib.fmt
 local util = lib.util
 local exec = require "exec"
+local string = string
 local concat, unpack = table.concat, table.unpack
 local module = {}
 
@@ -56,6 +57,27 @@ local from = function(base, cwd, name)
     fn.mkdir = function(d)
         fmt.print("MKDIR %s\n", d)
         exe("run", name, "--", "mkdir", "-p", d)
+    end
+    fn.entrypoint = function(s)
+        fmt.print("ENTRYPOINT %s\n", s)
+        exe("config", "--entrypoint", s, name)
+        exe("config", "--cmd", "''", name)
+        exe("config", "--stop-signal", "TERM", name)
+    end
+    fn.push = function(cname, tag)
+        fmt.print("PUSH %s:%s\n", cname, tag)
+        local tmpname = string.format("%s.%s", cname, util.random_string(16))
+        exe("commit", "--format", "docker", "--squash", "--rm", name, "dir:"..tmpname)
+        local awscli = exec.ctx("/usr/bin/aws")
+        awscli.errexit = true
+        local _, r = awscli("ecr", "get-login")
+        local ecrpass = string.match(r.stdout[1], "^docker%slogin%s%-u%sAWS%s%-p%s(%w+)%s.*$")
+        local skopeo = exec.ctx("/usr/bin/skopeo")
+        skopeo.errexit = true
+        skopeo.cwd = cwd or "."
+        skopeo("copy", "--dcreds", "AWS:"..ecrpass, "dir:"..tmpname, "docker://872492578903.dkr.ecr.ap-southeast-1.amazonaws.com/"..cname..":"..tag)
+        skopeo("copy", "dir:"..tmpname, "containers-storage:"..cname..":"..tag)
+        os.execute("rm -r "..cwd.."/"..tmpname)
     end
     return fn
 end
