@@ -80,6 +80,28 @@ local assertf = function(v, str, ...)
   end
 end
 
+local minfo = function(str)
+  io.stdout:write(string.format("%s[%s] %sinfo  %s+ %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[34m", "\27[36m", "\27[0m", str))
+  return io.stdout:flush()
+end
+
+local mok = function(str)
+  io.stdout:write(string.format("%s[%s] %sok    %s* %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[32m", "\27[36m", "\27[0m", str))
+  return io.stdout:flush()
+end
+
+local mdebug = function(str)
+  io.stdout:write(string.format("%s[%s] %sdebug %s. %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[33m", "\27[36m", "\27[0m", str))
+  return io.stdout:flush()
+end
+
+local mfatal = function(str)
+  io.stdout:write(string.format("%s[%s] %sfatal %s! %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[31m", "\27[36m", "\27[0m", str))
+  return io.stdout:flush()
+end
+
+
+
 local append = function(str, a)
   return string.format("%s\n%s", str, a)
 end
@@ -644,6 +666,12 @@ return {
     panic = panicf,
     assertf = assertf,
     assert = assertf
+  },
+  msg = {
+    ok = mok,
+    debug = mdebug,
+    fatal = mfatal,
+    info = minfo
   },
   time = {
     hm = hm,
