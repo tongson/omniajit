@@ -200,7 +200,7 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
         return nil, R
       end
       ret = bit.rshift(bit.band(status[0], 0xff00), 8)
-      if ret == 1 then R.error = "exit code == 1, execvp(2) failed" end
+      if ret == 1 then R.error = "execvp(2) failed" end
       R.code = ret
     end
     local output = function(i, o)
