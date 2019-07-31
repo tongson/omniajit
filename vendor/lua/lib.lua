@@ -97,10 +97,13 @@ end
 
 local mfatal = function(str)
   io.stderr:write(string.format("%s[%s] %sfatal %s! %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[31m", "\27[36m", "\27[0m", str))
-  return io.stdout:flush()
+  return io.stderr:flush()
 end
 
-
+local mwarn = function(str)
+  io.stderr:write(string.format("%s[%s] %swarn  %s? %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[31m", "\27[36m", "\27[0m", str))
+  return io.stderr:flush()
+end
 
 local append = function(str, a)
   return string.format("%s\n%s", str, a)
@@ -671,6 +674,7 @@ return {
     ok = mok,
     debug = mdebug,
     fatal = mfatal,
+    warn = mwarn,
     info = minfo
   },
   time = {
