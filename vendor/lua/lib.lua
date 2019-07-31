@@ -96,7 +96,7 @@ local mdebug = function(str)
 end
 
 local mfatal = function(str)
-  io.stdout:write(string.format("%s[%s] %sfatal %s! %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[31m", "\27[36m", "\27[0m", str))
+  io.stderr:write(string.format("%s[%s] %sfatal %s! %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[31m", "\27[36m", "\27[0m", str))
   return io.stdout:flush()
 end
 
