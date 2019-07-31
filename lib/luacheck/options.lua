@@ -264,7 +264,7 @@ end
 local line_length_suboptions = {"max_code_line_length", "max_string_line_length", "max_comment_line_length"}
 
 local function get_max_line_opts(opts_stack)
-   local res = {max_line_length = 120}
+   local res = {max_line_length = 160}
 
    for _, opt_name in ipairs(line_length_suboptions) do
       res[opt_name] = res.max_line_length
