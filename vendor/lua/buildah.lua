@@ -64,6 +64,10 @@ local from = function(base, cwd, name)
         msg.info(sf("%s MKDIR %s\n", tm(), d))
         exe("run", name, "--", "mkdir", "-p", d)
     end
+    fn.rm = function(f)
+        msg.info(sf("%s RM %s\n", tm(), f))
+        exe("run", name, "--", "rm", "-r", f)
+    end
     fn.entrypoint = function(s)
         msg.info(sf("%s ENTRYPOINT %s\n", tm(), s))
         exe("config", "--entrypoint", s, name)
