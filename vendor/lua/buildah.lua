@@ -54,13 +54,9 @@ local from = function(base, cwd, name)
         msg.info(sf("COPY '%s' to '%s'", src, dest))
         exe("copy", name, src, dest)
     end
-    fn.clear = function(f)
-        msg.info(sf("CLEAR %s", f))
-        exe("run", name, "--", "/usr/bin/find", f, "-type", "l", "-o",
-                                                   "-type", "f", "-o",
-                                                   "-type", "s", "-o",
-                                                   "-type", "p", "-ignore_readdir_race", "-delete")
-        exe("run", name, "--", "/usr/bin/find", f, "-mindepth", "1", "-type", "d", "-ignore_readdir_race", "-delete")
+    fn.clear = function(d)
+        msg.info(sf("CLEAR %s", d))
+        exe("run", name, "--", "/usr/bin/find", d, "-mindepth", "1", "-ignore_readdir_race", "-delete")
     end
     fn.mkdir = function(d)
         msg.info(sf("MKDIR %s", d))
