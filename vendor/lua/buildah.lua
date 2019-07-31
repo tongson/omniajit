@@ -4,7 +4,6 @@ local msg = lib.msg
 local exec = require "exec"
 local string = string
 local sf = string.format
-local tm = function() return os.date("%T") end
 local concat, unpack = table.concat, table.unpack
 local module = {}
 
@@ -40,42 +39,42 @@ local from = function(base, cwd, name)
     local fn = {}
     fn.run = function(...)
         local a = pargs(...)
-        msg.info(sf("%s RUN %s\n", tm(), concat(a, " ")))
+        msg.info(sf("RUN %s\n", concat(a, " ")))
         exe("run", name, "--", unpack(a))
     end
     fn.apt_get = function(...)
         local a = pargs(...)
-        msg.info(sf("%s RUN apt-get %s\n", tm(), concat(a, " ")))
+        msg.info(sf("RUN apt-get %s\n", concat(a, " ")))
         exe("run", name, "--", "/usr/bin/env", "LC_ALL=C", "DEBIAN_FRONTEND=noninteractive", "apt-get", "-qq",
         "--no-install-recommends", "-o APT::Install-Suggests=0", "-o APT::Get::AutomaticRemove=1", "-o Dpkg::Use-Pty=0",
         "-o Dpkg::Options::='--force-confdef'", "-o Dpkg::Options::='--force-confold'", unpack(a))
     end
     fn.copy = function(src, dest)
         dest = dest or '/'
-        msg.info(sf("%s COPY '%s' to '%s'\n", tm(), src, dest))
+        msg.info(sf("COPY '%s' to '%s'\n", src, dest))
         exe("copy", name, src, dest)
     end
     fn.clear = function(f)
-        msg.info(sf("%s CLEAR %s\n", tm(), f))
+        msg.info(sf("CLEAR %s\n", f))
         exe("run", name, "--", "/usr/bin/find", f, "-type", "f", "-o", "-type", "s", "-o", "-type", "p", "-ignore_readdir_race", "-delete")
         exe("run", name, "--", "/usr/bin/find", f, "-mindepth", "1", "-type", "d", "-ignore_readdir_race", "-delete")
     end
     fn.mkdir = function(d)
-        msg.info(sf("%s MKDIR %s\n", tm(), d))
+        msg.info(sf("MKDIR %s\n", d))
         exe("run", name, "--", "mkdir", "-p", d)
     end
     fn.rm = function(f)
-        msg.info(sf("%s RM %s\n", tm(), f))
+        msg.info(sf("RM %s\n", f))
         exe("run", name, "--", "rm", "-r", f)
     end
     fn.entrypoint = function(s)
-        msg.info(sf("%s ENTRYPOINT %s\n", tm(), s))
+        msg.info(sf("ENTRYPOINT %s\n", s))
         exe("config", "--entrypoint", s, name)
         exe("config", "--cmd", "''", name)
         exe("config", "--stop-signal", "TERM", name)
     end
     fn.push = function(cname, tag)
-        msg.info(sf("%s PUSH %s:%s\n", tm(), cname, tag))
+        msg.info(sf("PUSH %s:%s\n", cname, tag))
         local tmpname = string.format("%s.%s", cname, util.random_string(16))
         exe("commit", "--format", "docker", "--squash", "--rm", name, "dir:"..tmpname)
         local awscli = exec.ctx("/usr/bin/aws")
