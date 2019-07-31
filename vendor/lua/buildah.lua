@@ -1,8 +1,9 @@
 local lib = require "lib"
-local fmt = lib.fmt
 local util = lib.util
+local msg = lib.msg
 local exec = require "exec"
 local string = string
+local sf = string.format
 local tm = function() return os.date("%T") end
 local concat, unpack = table.concat, table.unpack
 local module = {}
@@ -29,44 +30,48 @@ local from = function(base, cwd, name)
     exe.errexit = true
     exe.cwd = cwd or "."
     if not name then
+        msg.info(sf("Initializing base image %s...", base))
         name = util.random_string(16)
         exe("from", "--name", name, base)
+        msg.ok"Base image pulled."
+    else
+        msg.ok(sf("Reusing %s.", name))
     end
     local fn = {}
     fn.run = function(...)
         local a = pargs(...)
-        fmt.print("%s RUN %s\n", tm(), concat(a, " "))
+        msg.info(sf("%s RUN %s\n", tm(), concat(a, " ")))
         exe("run", name, "--", unpack(a))
     end
     fn.apt_get = function(...)
         local a = pargs(...)
-        fmt.print("%s RUN apt-get %s\n", tm(), concat(a, " "))
+        msg.info(sf("%s RUN apt-get %s\n", tm(), concat(a, " ")))
         exe("run", name, "--", "/usr/bin/env", "LC_ALL=C", "DEBIAN_FRONTEND=noninteractive", "apt-get", "-qq",
         "--no-install-recommends", "-o APT::Install-Suggests=0", "-o APT::Get::AutomaticRemove=1", "-o Dpkg::Use-Pty=0",
         "-o Dpkg::Options::='--force-confdef'", "-o Dpkg::Options::='--force-confold'", unpack(a))
     end
     fn.copy = function(src, dest)
         dest = dest or '/'
-        fmt.print("%s COPY '%s' to '%s'\n", tm(), src, dest)
+        msg.info(sf("%s COPY '%s' to '%s'\n", tm(), src, dest))
         exe("copy", name, src, dest)
     end
     fn.clear = function(f)
-        fmt.print("%s CLEAR %s\n", tm(), f)
+        msg.info(sf("%s CLEAR %s\n", tm(), f))
         exe("run", name, "--", "/usr/bin/find", f, "-type", "f", "-o", "-type", "s", "-o", "-type", "p", "-ignore_readdir_race", "-delete")
         exe("run", name, "--", "/usr/bin/find", f, "-mindepth", "1", "-type", "d", "-ignore_readdir_race", "-delete")
     end
     fn.mkdir = function(d)
-        fmt.print("%s MKDIR %s\n", tm(), d)
+        msg.info(sf("%s MKDIR %s\n", tm(), d))
         exe("run", name, "--", "mkdir", "-p", d)
     end
     fn.entrypoint = function(s)
-        fmt.print("%s ENTRYPOINT %s\n", tm(), s)
+        msg.info(sf("%s ENTRYPOINT %s\n", tm(), s))
         exe("config", "--entrypoint", s, name)
         exe("config", "--cmd", "''", name)
         exe("config", "--stop-signal", "TERM", name)
     end
     fn.push = function(cname, tag)
-        fmt.print("%s PUSH %s:%s\n", tm(), cname, tag)
+        msg.info(sf("%s PUSH %s:%s\n", tm(), cname, tag))
         local tmpname = string.format("%s.%s", cname, util.random_string(16))
         exe("commit", "--format", "docker", "--squash", "--rm", name, "dir:"..tmpname)
         local awscli = exec.ctx("/usr/bin/aws")
@@ -79,6 +84,7 @@ local from = function(base, cwd, name)
         skopeo("copy", "--dcreds", "AWS:"..ecrpass, "dir:"..tmpname, "docker://872492578903.dkr.ecr.ap-southeast-1.amazonaws.com/"..cname..":"..tag)
         skopeo("copy", "dir:"..tmpname, "containers-storage:"..cname..":"..tag)
         os.execute("rm -r "..cwd.."/"..tmpname)
+        msg.ok(sf("Pushed %s:%s", cname, tag))
     end
     return fn
 end
