@@ -56,7 +56,10 @@ local from = function(base, cwd, name)
     end
     fn.clear = function(f)
         msg.info(sf("CLEAR %s", f))
-        exe("run", name, "--", "/usr/bin/find", f, "-type", "f", "-o", "-type", "s", "-o", "-type", "p", "-ignore_readdir_race", "-delete")
+        exe("run", name, "--", "/usr/bin/find", f, "-type", "l", "-o",
+                                                   "-type", "f", "-o",
+                                                   "-type", "s", "-o",
+                                                   "-type", "p", "-ignore_readdir_race", "-delete")
         exe("run", name, "--", "/usr/bin/find", f, "-mindepth", "1", "-type", "d", "-ignore_readdir_race", "-delete")
     end
     fn.mkdir = function(d)
