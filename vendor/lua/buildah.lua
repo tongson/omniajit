@@ -79,7 +79,7 @@ local from = function(base, cwd, name)
         local awscli = exec.ctx("/usr/bin/aws")
         awscli.errexit = true
         local _, r = awscli("ecr", "get-login")
-        local ecrpass = string.match(r.stdout[1], "^docker%slogin%s%-u%sAWS%s%-p%s(%w+)%s.*$")
+        local ecrpass = string.match(r.stdout[1], "^docker%slogin%s%-u%sAWS%s%-p%s([A-Za-z0-9=]+)%s.*$")
         local skopeo = exec.ctx("/usr/bin/skopeo")
         skopeo.errexit = true
         skopeo.cwd = cwd or "."
