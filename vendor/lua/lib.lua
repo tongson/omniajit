@@ -316,7 +316,7 @@ local line = function(file, ln)
 end
 
 local template = function(s, v)
-  return string.gsub(s, "%${[%s]-([^}%G]+)[%s]-}", v)
+  return (string.gsub(s, "%${[%s]-([^}%G]+)[%s]-}", v))
 end
 
 local truthy = function(s)
