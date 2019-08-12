@@ -619,34 +619,35 @@ local hexdump = function(buf, first, last)
   end
 end
 
-table.find = t_find
-table.to_dict = t_to_dict
-table.to_hash = t_to_dict
-table.to_seq = t_to_seq
-table.to_array = t_to_seq
-table.filter = t_filter
-table.clone = clone
-table.insert_if = insert_if
-table.auto = autotable
-table.len = t_len
-table.count = t_count
-table.unique = t_unique
-table.uniq = t_unique
-string.append = append
-string.line_to_table = line_to_seq
-string.line_to_array = line_to_seq
-string.word_to_table = word_to_seq
-string.word_to_array = word_to_seq
-string.to_table = s_to_seq
-string.to_array = s_to_seq
-string.escape_pattern = escape_pattern
-string.template = template
-string.escape_quotes = escape_quotes
-string.hexdump = hexdump
-
 return {
-  table = table,
-  string = string,
+  tbl = {
+    find = t_find,
+    to_dict = t_to_dict,
+    to_hash = t_to_dict,
+    to_seq = t_to_seq,
+    to_array = t_to_seq,
+    filter = t_filter,
+    clone = clone,
+    insert_if = insert_if,
+    auto = autotable,
+    len = t_len,
+    count = t_count,
+    unique = t_unique,
+    uniq = t_unique,
+  },
+  str = {
+    append = append,
+    line_to_table = line_to_seq,
+    line_to_array = line_to_seq,
+    word_to_table = word_to_seq,
+    word_to_array = word_to_seq,
+    to_table = s_to_seq,
+    to_array = s_to_seq,
+    escape_pattern = escape_pattern,
+    template = template,
+    escape_quotes = escape_quotes,
+    hexdump = hexdump,
+  },
   func = {
     pcall_f = pcall_f,
     pcall = pcall_f,
@@ -697,9 +698,6 @@ return {
     read_all = read_all,
     head = head,
   },
-  path = {
-    split = split
-  },
   exec = {
     popen = popen,
     pwrite = pwrite,
@@ -718,5 +716,6 @@ return {
     echo = echo,
     print = uprint,
     random_string = random_string,
+    split = split
   }
 }
