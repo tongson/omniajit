@@ -3,7 +3,6 @@ local lib = require "lib"
 local ENV = {
          lib = lib,
     argparse = require "argparse",
-     inspect = require "inspect",
          lfs = require "lfs",
 }
 local test = lib.file.test
