@@ -86,23 +86,47 @@ local minfo = function(str)
   return io.stdout:flush()
 end
 
-local mok = function(str)
-  io.stdout:write(string.format("%s[%s] %s* %sok    %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[36m", "\27[32m", "\27[0m", str))
+local mok = function(...)
+  local str
+  if select("#", ...) == 1 then
+    str = (...)
+  else
+    str = F(...)
+  end
+  io.stdout:write(F("%s[%s] %s* %sok    %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[36m", "\27[32m", "\27[0m", str))
   return io.stdout:flush()
 end
 
-local mdebug = function(str)
-  io.stdout:write(string.format("%s[%s] %s. %sdebug %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[36m", "\27[33m", "\27[0m", str))
+local mdebug = function(...)
+  local str
+  if select("#", ...) == 1 then
+    str = (...)
+  else
+    str = F(...)
+  end
+  io.stdout:write(F("%s[%s] %s. %sdebug %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[36m", "\27[33m", "\27[0m", str))
   return io.stdout:flush()
 end
 
-local mfatal = function(str)
-  io.stderr:write(string.format("%s[%s] %s! %sfatal %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[36m", "\27[31m", "\27[0m", str))
+local mfatal = function(...)
+  local str
+  if select("#", ...) == 1 then
+    str = (...)
+  else
+    str = F(...)
+  end
+  io.stderr:write(F("%s[%s] %s! %sfatal %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[36m", "\27[31m", "\27[0m", str))
   return io.stderr:flush()
 end
 
-local mwarn = function(str)
-  io.stderr:write(string.format("%s[%s] %s? %swarn  %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[36m", "\27[31m", "\27[0m", str))
+local mwarn = function(...)
+  local str
+  if select("#", ...) == 1 then
+    str = (...)
+  else
+    str = F(...)
+  end
+  io.stderr:write(F("%s[%s] %s? %swarn  %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[36m", "\27[31m", "\27[0m", str))
   return io.stderr:flush()
 end
 
