@@ -1,5 +1,4 @@
 local lib = require "lib"
-local fmt = lib.fmt
 local util = lib.util
 local msg = lib.msg
 local string = string
@@ -110,7 +109,6 @@ local from = function(base, cwd, name)
         popen("buildah commit --format docker --squash --rm %s dir:%s", name, tmpname)
         local r = popen("/usr/bin/aws ecr get-login")
         local ecrpass = string.match(r.output[1], "^docker%slogin%s%-u%sAWS%s%-p%s([A-Za-z0-9=]+)%s.*$")
-        local repo = "docker://872492578903.dkr.ecr.ap-southeast-1.amazonaws.com"
         popen("/usr/bin/skopeo copy --dcreds AWS:%s dir:%s %s/%s:%s", ecrpass, tmpname, repo, cname, tag)
         popen("/usr/bin/skopeo copy dir:%s containers-storage:%s:%s", tmpname, cname, tag)
         os.execute("rm -r "..tmpname)
