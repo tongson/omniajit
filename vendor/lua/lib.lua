@@ -336,36 +336,6 @@ local falsy = function(s)
   end
 end
 
-local popen = function(str, cwd, ignore)
-  local header = [[  set -efuo pipefail
-  unset IFS
-  export LC_ALL=C
-  export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/opt/bin
-  exec 2>&1
-  ]]
-  if cwd then
-    str = string.format("%scd %s\n%s", header, cwd, str)
-  else
-    str = string.format("%s%s", header, str)
-  end
-  local R = {}
-  local pipe = io.popen(str, "r")
-  io.flush(pipe)
-  R.output = {}
-  for ln in pipe:lines() do
-    R.output[#R.output + 1] = ln
-  end
-  local _, status, code = io.close(pipe)
-  R.exe = "io.popen"
-  R.code = code
-  R.status = status
-  if code == 0 or ignore then
-    return code, R
-  else
-    return nil, R
-  end
-end
-
 local pwrite = function(str, data, cwd, ignore)
   local header = [[  set -ef
   unset IFS
@@ -390,31 +360,6 @@ local pwrite = function(str, data, cwd, ignore)
   end
 end
 
-local system = function(str, cwd, ignore)
-  local set = [[  set -ef
-  unset IFS
-  export LC_ALL=C
-  export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/opt/bin
-  exec 0>&- 2>&- 1>/dev/null
-  ]]
-  local redir = [[ 0>&- 2>&- 1>/dev/null ]]
-  if cwd then
-    str = string.format("%scd %s\nexec %s %s", set, cwd, str, redir)
-  else
-    str = string.format("%sexec %s %s", set, str, redir)
-  end
-  local R = {}
-  local _, status, code = os.execute(str)
-  R.exe = "os.execute"
-  R.code = code
-  R.status = status
-  if code == 0 or ignore then
-    return code, R
-  else
-    return nil, R
-  end
-end
-
 local script = function(str, ignore)
   local R = {}
   local pipe = io.popen(f_read(str), "r")
@@ -431,22 +376,6 @@ local script = function(str, ignore)
     return code, R
   else
     return nil, R
-  end
-end
-
-local pipe_args = function(...)
-  local pipe = {}
-  local cmds = {...}
-  for n = 2, #cmds do
-    pipe[#pipe + 1] = cmds[n]
-    if n ~= #cmds then pipe[#pipe + 1] = " | " end
-  end
-  if cmds[1] == "popen" then
-    return popen(table.concat(pipe))
-  elseif cmds[1] == "system" then
-    return system(table.concat(pipe))
-  else
-    return nil, "exec.pipe_args: First argument should be 'popen' or 'system'."
   end
 end
 
@@ -759,11 +688,8 @@ return {
     head = head,
   },
   exec = {
-    popen = popen,
     pwrite = pwrite,
-    system = system,
     script = script,
-    pipe_args = pipe_args,
     ctx = pctx
   },
   log = {
