@@ -12,7 +12,7 @@ local from = function(base, cwd, name)
     local popen = exec.ctx()
     popen.cwd = cwd
     if not name then
-        msg.info"Initializing base image %s...", base)
+        msg.info("Initializing base image %s...", base)
         name = util.random_string(16)
         popen("buildah from --name %s %s", name, base)
         msg.ok"Base image pulled."
