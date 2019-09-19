@@ -1,5 +1,6 @@
 local tonumber, rawget, type, pcall, load, setmetatable, ipairs, next, pairs, error, getmetatable =
       tonumber, rawget, type, pcall, load, setmetatable, ipairs, next, pairs, error, getmetatable
+local F = string.format
 
 local fix_return_values = function(ok, ...)
   if ok then
@@ -449,6 +450,65 @@ local pipe_args = function(...)
   end
 end
 
+local pctx = function()
+  local set = {}
+  return setmetatable(set, {__call = function(_, ...)
+    local line
+    local str
+    if select("#", ...) == 1 then
+      line = (...)
+    else
+      line = F(...)
+    end
+    str = line
+    local hdr_ifs  = [[unset IFS]]
+    local hdr_lc   = [[export LC_ALL=C]]
+    local hdr_path = [[export PATH=/bin:/sbin:/usr/bin:/usr/sbin]]
+    local hdr_out  = [[exec 2>&1]]
+    local hdr = F("%s\n%s\n%s\n%s\n", hdr_ifs, hdr_lc, hdr_path, hdr_out)
+    local hdr_set  = [[set -efu]]
+    if not set.ignore then
+      hdr = F("%s\n%s", hdr_set, hdr)
+    end
+    if set.cwd then
+      hdr = F("%scd %s\n", hdr, set.cwd)
+    end
+    if set.input then
+      hdr = F("%sprintf '%s' |\n", hdr, set.input)
+    end
+    str = string.format(str, ...)
+    str = F("%s%s", hdr, str)
+    if set.dump then
+      print(F(">>>> SCRIPT DUMP START <<<<\n%s\n>>>> SCRIPT DUMP END   <<<<", str))
+      os.exit(0)
+    end
+    local R = {}
+    local pipe = io.popen(str, "r")
+    io.flush(pipe)
+    R.output = {}
+    for ln in pipe:lines() do
+      R.output[#R.output + 1] = ln
+    end
+    local _, status, code = io.close(pipe)
+    if next(R.output) then
+      print(table.concat(R.output, "\n"))
+    end
+    if code ~= 0 and not ignore then
+      return panicf("<%s:%s> %s\n  -- OUTPUT --\n%s\n", status, code, line, table.concat(R.output, "\n"))
+    end
+    return R
+  end})
+end
+--[=[
+    local cmd = exec.ctx()
+    cmd.ignore = true
+    cmd.cwd = "/tmp"
+    cmd.input = "test"
+    cmd.dump = true
+    cmd("ls %s", var)
+
+]=]
+
 local time = function(f, ...)
   local t1 = os.time()
   local fn = {f(...)}
@@ -703,7 +763,8 @@ return {
     pwrite = pwrite,
     system = system,
     script = script,
-    pipe_args = pipe_args
+    pipe_args = pipe_args,
+    ctx = pctx
   },
   log = {
     file = l_file
