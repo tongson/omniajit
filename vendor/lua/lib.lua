@@ -332,7 +332,7 @@ local f_write = function(path, str, mode)
   return nil, "io.open: File not found or no permissions to write file."
 end
 
-local line = function(file, ln)
+local f_line = function(file, ln)
   local i = 0
   for l in io.lines(file) do
     i = i + 1
@@ -706,7 +706,7 @@ return {
     read = f_read,
     write_all = f_write,
     write = f_write,
-    line = line,
+    line = f_line,
     truncate = truncate,
     read_all = read_all,
     head = head,
