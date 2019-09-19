@@ -12,8 +12,8 @@ local reterr = function(tbl, err)
     local ln = string.match(err, "^.+:([%d]):.*")
     if not ln then
         fmt.warn("bug: Unhandled condition.\n")
-        fmt.warn("%s\n", err)
-        return fmt.panic("Exiting.")
+        fmt.warn("error:\n  %s\n", err)
+        return fmt.panic("Exiting.\n")
     end
     local sp = string.rep(" ", string.len(ln))
     err = string.match(err, "^.+:[%d]:(.*)")
