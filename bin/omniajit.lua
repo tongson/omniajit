@@ -2,7 +2,6 @@ local script = arg[1]
 local lib = require "lib"
 local ENV = {
          lib = lib,
-    argparse = require "argparse",
          lfs = require "lfs",
 }
 local test = lib.file.test
