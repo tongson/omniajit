@@ -1,7 +1,16 @@
 local script = arg[1]
 local lib = require "lib"
+local argv = {}
+argv[0] = arg[1]
+if #arg > 1 then
+    for i = 2, #arg do
+        argv[i-1] = arg[i]
+    end
+end
+rawset(_G, "arg", argv)
 local ENV = {
          lib = lib,
+         argparse = require "argparse",
          lfs = require "lfs",
 }
 local test = lib.file.test
