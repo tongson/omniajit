@@ -12,6 +12,7 @@ setmetatable(ENV, {__index = _G})
 local fmt, util = lib.fmt, lib.util
 local reterr = function(tbl, err)
     local ln = string.match(err, "^.+:([%d]):.*")
+    if not ln then return fmt.panic("bug: Unhandled condition.\n") end
     local sp = string.rep(" ", string.len(ln))
     err = string.match(err, "^.+:[%d]:(.*)")
     return fmt.panic("error: %s\n %s |\n %s | %s\n %s |\n", err, sp, ln, tbl[tonumber(ln)], sp)
