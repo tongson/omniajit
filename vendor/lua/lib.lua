@@ -1,5 +1,5 @@
-local tonumber, rawget, type, pcall, load, setmetatable, ipairs, next, pairs, error, getmetatable =
-      tonumber, rawget, type, pcall, load, setmetatable, ipairs, next, pairs, error, getmetatable
+local rawget, type, pcall, load, setmetatable, ipairs, next, pairs, error, getmetatable =
+      rawget, type, pcall, load, setmetatable, ipairs, next, pairs, error, getmetatable
 local F = string.format
 
 local fix_return_values = function(ok, ...)
