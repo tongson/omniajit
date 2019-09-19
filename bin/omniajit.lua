@@ -9,9 +9,9 @@ if #arg > 1 then
 end
 rawset(_G, "arg", argv)
 local ENV = {
-         lib = lib,
-         argparse = require "argparse",
-         lfs = require "lfs",
+    lib = lib,
+    argparse = require "argparse",
+    lfs = require "lfs",
 }
 local test = lib.file.test
 local string = string
