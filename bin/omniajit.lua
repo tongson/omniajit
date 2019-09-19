@@ -17,7 +17,8 @@ local reterr = function(tbl, err)
     err = string.match(err, "^.+:[%d]:(.*)")
     return fmt.panic("error: %s\n %s |\n %s | %s\n %s |\n", err, sp, ln, tbl[tonumber(ln)], sp)
 end
-package.path = util.split(script)
+local spath = util.split(script)
+package.path = string.format("%s/?.lua;%s/?/init.lua;./?.lua;./?/init.lua", spath, spath)
 if not test(script) then
     return fmt.panic("error: problem reading script '%s'.\n", script )
 end
