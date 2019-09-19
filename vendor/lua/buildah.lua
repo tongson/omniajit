@@ -10,6 +10,7 @@ local M = {}
 local from = function(base, cwd, name)
     cwd = cwd or "."
     local popen = exec.ctx()
+    popen.cwd = cwd
     if not name then
         msg.info(F("Initializing base image %s...", base))
         name = util.random_string(16)
@@ -25,7 +26,6 @@ local from = function(base, cwd, name)
     end
     fn.script = function(a)
         msg.debug(F("SCRIPT %s", a))
-        popen.cwd = cwd
         popen("buildah copy %s %s /%s", name, a, a)
         popen("buildah run %s -- sh /%s", name, a)
         popen("buildah run %s -- rm -f /%s", name, a)
