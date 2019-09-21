@@ -217,17 +217,6 @@ local s_to_seq = function(str)
   return t
 end
 
-local escape_pattern = function(str, mode)
-  local format_ci_pat = function(c)
-    return string.format('[%s%s]', c:lower(), c:upper())
-  end
-  str = str:gsub('%%','%%%%'):gsub('%z','%%z'):gsub('([%^%$%(%)%.%[%]%*%+%-%?])', '%%%1')
-  if mode == '*i' then
-    str = str:gsub('[%a]', format_ci_pat)
-  end
-  return str
-end
-
 local t_filter = function(tbl, patt, plain)
   plain = plain or nil
   local s, c = #tbl, 0
@@ -653,7 +642,6 @@ return {
     word_to_array = word_to_seq,
     to_table = s_to_seq,
     to_array = s_to_seq,
-    escape_pattern = escape_pattern,
     template = template,
     escape_quotes = escape_quotes,
     hexdump = hexdump,
