@@ -18,32 +18,29 @@ local test = lib.file.test
 local string = string
 setmetatable(ENV, {__index = _G})
 local fmt, util = lib.fmt, lib.util
-local reterr = function(tbl, err)
-    local ln = string.match(err, "^.+:([%d]):.*")
-    if not ln then
-        fmt.warn("bug: Unhandled condition or error string.\n")
-        fmt.warn("error:\n  %s\n", err)
-        return fmt.panic("Exiting.\n")
-    end
-    local sp = string.rep(" ", string.len(ln))
-    err = string.match(err, "^.+:[%d]:(.*)")
-    return fmt.panic("error: %s\n %s |\n %s | %s\n %s |\n", err, sp, ln, tbl[tonumber(ln)], sp)
-end
 local spath = util.split(script)
 package.path = string.format("%s/?.lua;%s/?/init.lua;./?.lua;./?/init.lua", spath, spath)
 local try = func.try(fmt.panic)
 try(test(script), "error: problem reading script '%s'.\n", script)
-local tbl = {}
-for ln in io.lines(script) do
-    tbl[#tbl + 1] = ln
-end
-local chunk, err = loadstring(table.concat(tbl, "\n"), script)
-if chunk then
+do
+    local tbl = {}
+    for ln in io.lines(script) do
+        tbl[#tbl + 1] = ln
+    end
+    local chunk, err = loadstring(table.concat(tbl, "\n"), script)
+    local run = func.try(function(tbl, err)
+        local ln = string.match(err, "^.+:([%d]):.*")
+        if not ln then
+            fmt.warn("bug: Unhandled condition or error string.\n")
+            fmt.warn("error:\n  %s\n", err)
+            return fmt.panic("Exiting.\n")
+        end
+        local sp = string.rep(" ", string.len(ln))
+        err = string.match(err, "^.+:[%d]:(.*)")
+        return fmt.panic("error: %s\n %s |\n %s | %s\n %s |\n", err, sp, ln, tbl[tonumber(ln)], sp)
+    end)
+    run(chunk, tbl, err)
     setfenv(chunk, ENV)
     local pr, pe = pcall(chunk)
-    if not pr then
-        return reterr(tbl, pe)
-    end
-else
-    return reterr(tbl, err)
+    run(pr, tbl, pe)
 end
