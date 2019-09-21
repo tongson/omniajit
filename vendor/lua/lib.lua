@@ -443,9 +443,6 @@ local pctx = function()
       R.output[#R.output + 1] = ln
     end
     local _, status, code = io.close(pipe)
-    if next(R.output) then
-      print(table.concat(R.output, "\n"))
-    end
     if code ~= 0 and not set.ignore then
       return panicf("<%s:%s> %s\n  -- OUTPUT --\n%s\n", status, code, line, table.concat(R.output, "\n"))
     end
