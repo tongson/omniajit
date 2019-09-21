@@ -32,7 +32,7 @@ end
 local spath = util.split(script)
 package.path = string.format("%s/?.lua;%s/?/init.lua;./?.lua;./?/init.lua", spath, spath)
 local try = func.try(fmt.panic)
-try(test(script), "error: problem reading script '%s'.\n", script )
+try(test(script), "error: problem reading script '%s'.\n", script)
 local tbl = {}
 for ln in io.lines(script) do
     tbl[#tbl + 1] = ln
