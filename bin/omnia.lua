@@ -14,14 +14,12 @@ local ENV = {
     argparse = require "argparse",
     lfs = require "lfs",
 }
-local test = lib.file.test
 local string = string
 setmetatable(ENV, {__index = _G})
 local fmt, util = lib.fmt, lib.util
 local spath = util.split(script)
 package.path = string.format("%s/?.lua;%s/?/init.lua;./?.lua;./?/init.lua", spath, spath)
-local try = func.try(fmt.panic)
-try(test(script), "error: problem reading script '%s'.\n", script)
+func.try(fmt.panic)(lib.file.test(script), "error: problem reading script '%s'.\n", script)
 do
     local tbl = {}
     for ln in io.lines(script) do
