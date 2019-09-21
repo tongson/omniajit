@@ -377,13 +377,16 @@ local pctx = function()
   set.pipefail = false
   set.ignore = false
   set.clear = true
+  set.template = nil
   return setmetatable(set, {__call = function(_, ...)
     local line
     local str
-    if select("#", ...) == 1 then
-      line = (...)
-    else
+    if select("#", ...) > 1 then
       line = F(...)
+    elseif next(set.template) then
+      line = template(..., set.template)
+    else
+      line = (...)
     end
     str = line
     local hdr_errexit = set.errexit and [[set -e]] or "#set -e"
