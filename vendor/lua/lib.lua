@@ -383,7 +383,7 @@ local pctx = function()
     local str
     if select("#", ...) > 1 then
       line = F(...)
-    elseif next(set.template) then
+    elseif set.template and next(set.template) then
       line = template(..., set.template)
     else
       line = (...)
