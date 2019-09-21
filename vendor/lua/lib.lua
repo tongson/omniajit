@@ -16,7 +16,7 @@ local pcall_f = function(fn)
   end
 end
 
-local try_f = function(fn)
+local assert_f = function(fn)
   return function(ok, ...)
     if ok then
       return ok, ...
@@ -27,7 +27,7 @@ local try_f = function(fn)
   end
 end
 
-local catch_f = function(fn)
+local try_f = function(fn)
   return function(ok, ...)
     if ok then
       return ok, ...
@@ -634,10 +634,10 @@ return {
   func = {
     pcall_f = pcall_f,
     pcall = pcall_f,
+    assert_f = assert_f,
+    assert = assert_f,
     try_f = try_f,
     try = try_f,
-    catch_f = catch_f,
-    catch = catch_f,
     time = time
   },
   fmt = {
