@@ -371,6 +371,10 @@ end
 
 local pctx = function()
   local set = {}
+  set.errexit = true
+  set.unset = true
+  set.noglob = true
+  set.ignore = false
   return setmetatable(set, {__call = function(_, ...)
     local line
     local str
@@ -380,15 +384,14 @@ local pctx = function()
       line = F(...)
     end
     str = line
+    local hdr_errexit = set.errexit and [[set -e]] or "#set -e"
+    local hdr_unset = set.unset and [[set -u]] or "#set -u"
+    local hdr_noglob = set.noglob and [[set -f]] or "#set -f"
     local hdr_ifs  = [[unset IFS]]
     local hdr_lc   = [[export LC_ALL=C]]
     local hdr_path = [[export PATH=/bin:/sbin:/usr/bin:/usr/sbin]]
     local hdr_out  = [[exec 2>&1]]
-    local hdr = F("%s\n%s\n%s\n%s\n", hdr_ifs, hdr_lc, hdr_path, hdr_out)
-    local hdr_set  = [[set -efu]]
-    if not set.ignore then
-      hdr = F("%s\n%s", hdr_set, hdr)
-    end
+    local hdr = F("%s\n%s\n%s\n%s\n%s\n%s\n%s\n", hdr_errexit, hdr_unset, hdr_noglob, hdr_ifs, hdr_lc, hdr_path, hdr_out)
     if set.cwd then
       hdr = F("%scd %s\n", hdr, set.cwd)
     end
