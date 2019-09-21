@@ -350,30 +350,6 @@ local falsy = function(s)
   end
 end
 
-local pwrite = function(str, data, cwd, ignore)
-  local header = [[  set -ef
-  unset IFS
-  export LC_ALL=C
-  ]]
-  if cwd then
-    str = F("%scd %s\nexec %s", header, cwd, str)
-  else
-    str = F("%sexec %s", header, str)
-  end
-  local pipe = io.popen(str, "w")
-  io.flush(pipe)
-  pipe:write(data)
-  local R = {}
-  local _, status, code = io.close(pipe)
-  R.exe = "io.popen"
-  R.status = status
-  if code == 0 or ignore then
-    return code, R
-  else
-    return nil, R
-  end
-end
-
 local script = function(str, ignore)
   local R = {}
   local pipe = io.popen(f_read(str), "r")
@@ -698,7 +674,6 @@ return {
     head = head,
   },
   exec = {
-    pwrite = pwrite,
     script = script,
     ctx = pctx
   },
