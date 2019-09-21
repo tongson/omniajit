@@ -20,7 +20,7 @@ local fmt, util = lib.fmt, lib.util
 local reterr = function(tbl, err)
     local ln = string.match(err, "^.+:([%d]):.*")
     if not ln then
-        fmt.warn("bug: Unhandled condition.\n")
+        fmt.warn("bug: Unhandled condition or error string.\n")
         fmt.warn("error:\n  %s\n", err)
         return fmt.panic("Exiting.\n")
     end
