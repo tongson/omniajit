@@ -446,7 +446,7 @@ local pctx = function()
     if code ~= 0 and not set.ignore then
       return panicf("<%s:%s> %s\n  -- OUTPUT --\n%s\n", status, code, line, table.concat(R.output, "\n"))
     end
-    return R
+    return code, R
   end})
 end
 --[=[
