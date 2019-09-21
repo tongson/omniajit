@@ -26,16 +26,16 @@ do
         tbl[#tbl + 1] = ln
     end
     local chunk, err = loadstring(table.concat(tbl, "\n"), script)
-    local run = func.try(function(tbl, err)
-        local ln = string.match(err, "^.+:([%d]):.*")
+    local run = func.try(function(rt, re)
+        local ln = string.match(re, "^.+:([%d]):.*")
         if not ln then
             fmt.warn("bug: Unhandled condition or error string.\n")
-            fmt.warn("error:\n  %s\n", err)
+            fmt.warn("error:\n  %s\n", re)
             return fmt.panic("Exiting.\n")
         end
         local sp = string.rep(" ", string.len(ln))
-        err = string.match(err, "^.+:[%d]:(.*)")
-        return fmt.panic("error: %s\n %s |\n %s | %s\n %s |\n", err, sp, ln, tbl[tonumber(ln)], sp)
+        re = string.match(re, "^.+:[%d]:(.*)")
+        return fmt.panic("error: %s\n %s |\n %s | %s\n %s |\n", re, sp, ln, rt[tonumber(ln)], sp)
     end)
     run(chunk, tbl, err)
     setfenv(chunk, ENV)
