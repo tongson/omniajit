@@ -1,5 +1,6 @@
 local script = arg[1]
 local lib = require "lib"
+local func = lib.func
 local argv = {}
 argv[0] = arg[1]
 if #arg > 1 then
@@ -30,9 +31,8 @@ local reterr = function(tbl, err)
 end
 local spath = util.split(script)
 package.path = string.format("%s/?.lua;%s/?/init.lua;./?.lua;./?/init.lua", spath, spath)
-if not test(script) then
-    return fmt.panic("error: problem reading script '%s'.\n", script )
-end
+local try = func.try(fmt.panic)
+try(test(script), "error: problem reading script '%s'.\n", script )
 local tbl = {}
 for ln in io.lines(script) do
     tbl[#tbl + 1] = ln
