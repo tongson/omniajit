@@ -81,7 +81,13 @@ local assertf = function(v, str, ...)
   end
 end
 
-local minfo = function(str)
+local minfo = function(...)
+  local str
+  if select("#", ...) == 1 then
+    str = (...)
+  else
+    str = F(...)
+  end
   io.stdout:write(string.format("%s[%s] %s+ %sinfo  %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[36m", "\27[34m", "\27[0m", str))
   return io.stdout:flush()
 end
