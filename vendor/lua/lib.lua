@@ -38,12 +38,12 @@ local catch_f = function(fn)
 end
 
 local printf = function(str, ...)
-  io.stdout:write(string.format(str, ...))
+  io.stdout:write(F(str, ...))
   return io.stdout:flush()
 end
 
 local echo = function(str)
-  io.stdout:write(string.format("%s\n", str))
+  io.stdout:write(F("%s\n", str))
   return io.stdout:flush()
 end
 
@@ -70,7 +70,7 @@ local panicf = function(str, ...)
 end
 
 local errorf = function(str, ...)
-  return nil, string.format(str, ...)
+  return nil, F(str, ...)
 end
 
 local assertf = function(v, str, ...)
@@ -88,7 +88,7 @@ local minfo = function(...)
   else
     str = F(...)
   end
-  io.stdout:write(string.format("%s[%s] %s+ %sinfo  %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[36m", "\27[34m", "\27[0m", str))
+  io.stdout:write(F("%s[%s] %s+ %sinfo  %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[36m", "\27[34m", "\27[0m", str))
   return io.stdout:flush()
 end
 
@@ -137,7 +137,7 @@ local mwarn = function(...)
 end
 
 local append = function(str, a)
-  return string.format("%s\n%s", str, a)
+  return F("%s\n%s", str, a)
 end
 
 local hm = function()
@@ -306,7 +306,7 @@ local f_read = function(file)
   end
   local str = ""
   for s in io.lines(file, 2^12) do
-    str = string.format("%s%s", str, s)
+    str = F("%s%s", str, s)
   end
   return str
 end
@@ -361,9 +361,9 @@ local pwrite = function(str, data, cwd, ignore)
   export LC_ALL=C
   ]]
   if cwd then
-    str = string.format("%scd %s\nexec %s", header, cwd, str)
+    str = F("%scd %s\nexec %s", header, cwd, str)
   else
-    str = string.format("%sexec %s", header, str)
+    str = F("%sexec %s", header, str)
   end
   local pipe = io.popen(str, "w")
   io.flush(pipe)
@@ -424,7 +424,7 @@ local pctx = function()
     if set.input then
       hdr = F("%sprintf '%s' |\n", hdr, set.input)
     end
-    str = string.format(str, ...)
+    str = F(str, ...)
     str = F("%s%s", hdr, str)
     if set.dump then
       print(F(">>>> SCRIPT DUMP START <<<<\n%s\n>>>> SCRIPT DUMP END   <<<<", str))
@@ -617,8 +617,8 @@ end
 local hexdump = function(buf, first, last)
   local function align(n) return math.ceil(n/16) * 16 end
   for i=(align((first or 1)-16)+1),align(math.min(last or #buf,#buf)) do
-    if (i-1) % 16 == 0 then io.write(string.format('%08X  ', i-1)) end
-    io.write( i > #buf and '   ' or string.format('%02X ', buf:byte(i)) )
+    if (i-1) % 16 == 0 then io.write(F('%08X  ', i-1)) end
+    io.write( i > #buf and '   ' or F('%02X ', buf:byte(i)) )
     if i %  8 == 0 then io.write(' ') end
     if i % 16 == 0 then io.write( buf:sub(i-16+1, i):gsub('%c','.'), '\n' ) end
   end
