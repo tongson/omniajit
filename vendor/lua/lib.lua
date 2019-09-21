@@ -374,6 +374,7 @@ local pctx = function()
   set.errexit = true
   set.unset = true
   set.noglob = true
+  set.pipefail = false
   set.ignore = false
   return setmetatable(set, {__call = function(_, ...)
     local line
@@ -387,11 +388,12 @@ local pctx = function()
     local hdr_errexit = set.errexit and [[set -e]] or "#set -e"
     local hdr_unset = set.unset and [[set -u]] or "#set -u"
     local hdr_noglob = set.noglob and [[set -f]] or "#set -f"
+    local hdr_pipefail = set.pipefail and [[set -o pipefail]] or "#set -o pipefail"
     local hdr_ifs  = [[unset IFS]]
     local hdr_lc   = [[export LC_ALL=C]]
     local hdr_path = [[export PATH=/bin:/sbin:/usr/bin:/usr/sbin]]
     local hdr_out  = [[exec 2>&1]]
-    local hdr = F("%s\n%s\n%s\n%s\n%s\n%s\n%s\n", hdr_errexit, hdr_unset, hdr_noglob, hdr_ifs, hdr_lc, hdr_path, hdr_out)
+    local hdr = F("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n", hdr_errexit, hdr_unset, hdr_noglob, hdr_pipefail, hdr_ifs, hdr_lc, hdr_path, hdr_out)
     if set.cwd then
       hdr = F("%scd %s\n", hdr, set.cwd)
     end
