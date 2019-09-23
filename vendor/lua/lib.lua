@@ -1,6 +1,7 @@
 local type, pcall, setmetatable, ipairs, next, pairs, error, getmetatable =
       type, pcall, setmetatable, ipairs, next, pairs, error, getmetatable
 local F = string.format
+local ring = require "ring"
 
 local fix_return_values = function(ok, ...)
   if ok then
@@ -378,6 +379,7 @@ local pctx = function()
   set.ignore = false
   set.clear = true
   set.template = nil
+  set.size = 25
   return setmetatable(set, {__call = function(_, ...)
     local line
     local str
@@ -415,14 +417,15 @@ local pctx = function()
     local R = {}
     local pipe = io.popen(str, "r")
     io.flush(pipe)
-    R.output = {}
+    local buffer = ring.new(set.size)
     for ln in pipe:lines() do
-      R.output[#R.output + 1] = ln
+      buffer:push(ln)
     end
     local _, status, code = io.close(pipe)
     if code ~= 0 and not set.ignore then
-      return panicf("<%s:%s> %s\n  -- OUTPUT --\n%s\n", status, code, line, table.concat(R.output, "\n"))
+      return panicf("<%s:%s> %s\n  -- OUTPUT --\n%s\n", status, code, line, buffer:concat("\n"))
     end
+    R.output = buffer:table()
     return code, R
   end})
 end
