@@ -107,11 +107,11 @@ local from = function(base, cwd, name)
         msg.debug("PUSH %s:%s", cname, tag)
         local tmpname = F("%s.%s", cname, util.random_string(16))
         popen("buildah commit --format docker --squash --rm %s dir:%s", name, tmpname)
-        local r = popen("/usr/bin/aws ecr get-login")
+        local _, r = popen("/usr/bin/aws ecr get-login")
         local ecrpass = string.match(r.output[1], "^docker%slogin%s%-u%sAWS%s%-p%s([A-Za-z0-9=]+)%s.*$")
         popen("/usr/bin/skopeo copy --dcreds AWS:%s dir:%s %s/%s:%s", ecrpass, tmpname, repo, cname, tag)
         popen("/usr/bin/skopeo copy dir:%s containers-storage:%s:%s", tmpname, cname, tag)
-        os.execute("rm -r "..tmpname)
+        os.execute(F("rm -r %s/%s", cwd, tmpname))
         msg.ok("Pushed %s:%s", cname, tag)
     end
     return fn
