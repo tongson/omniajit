@@ -391,6 +391,14 @@ local pctx = function()
       line = (...)
     end
     str = line
+    local hdr_env = "#export ENV"
+    if set.env and next(set.env) then
+      local e = {}
+      for k,v in pairs(set.env) do
+        e[#e+1] = F("export %s=%s", k,v )
+      end
+      hdr_env = table.concat(e, "\n")
+    end
     local hdr_errexit = set.errexit and [[set -e]] or "#set -e"
     local hdr_unset = set.unset and [[set -u]] or "#set -u"
     local hdr_noglob = set.noglob and [[set -f]] or "#set -f"
@@ -400,8 +408,8 @@ local pctx = function()
     local hdr_lc   = [[export LC_ALL=C]]
     local hdr_path = [[export PATH=/bin:/sbin:/usr/bin:/usr/sbin]]
     local hdr_out  = [[exec 2>&1]]
-    local hdr = F("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
-      hdr_errexit, hdr_unset, hdr_noglob, hdr_pipefail, hdr_clear, hdr_ifs, hdr_lc, hdr_path, hdr_out)
+    local hdr = F("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
+      hdr_errexit, hdr_unset, hdr_noglob, hdr_pipefail, hdr_clear, hdr_ifs, hdr_lc, hdr_path, hdr_env, hdr_out)
     if set.cwd then
       hdr = F("%scd %s\n", hdr, set.cwd)
     end
