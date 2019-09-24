@@ -26,7 +26,7 @@ do
         tbl[#tbl + 1] = ln
     end
     local chunk, err = loadstring(table.concat(tbl, "\n"), script)
-    local run = func.try(function(rt, re)
+    local run = func.try(function(re, rt)
         local ln = string.match(re, "^.+:([%d]):.*")
         if not ln then
             fmt.warn("bug: Unhandled condition or error string.\n")
@@ -37,8 +37,8 @@ do
         re = string.match(re, "^.+:[%d]:(.*)")
         return fmt.panic("error: %s\n %s |\n %s | %s\n %s |\n", re, sp, ln, rt[tonumber(ln)], sp)
     end)
-    run(chunk, tbl, err)
+    run(chunk, err, tbl)
     setfenv(chunk, ENV)
     local pr, pe = pcall(chunk)
-    run(pr, tbl, pe)
+    run(pr, pe, tbl)
 end
