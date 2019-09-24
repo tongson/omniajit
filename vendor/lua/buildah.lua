@@ -74,8 +74,8 @@ local from = function(base, cwd, name)
     end
     fn.dropbear = function(p)
         msg.debug("DROPBEAR localhost:%s", p)
-	local s = F('["/usr/sbin/dropbear", "-b", "/etc/banner", "-FEm", "-p", "127.0.0.1:%s"]', p)
-	popen("buildah config --entrypoint '%s' %s", s, name)
+        local s = F('["/usr/sbin/dropbear", "-R", "-F", "-E", "-B", "-j", "-k", "-p", "127.0.0.1:%s", "-b", "/etc/banner"]', p)
+        popen("buildah config --entrypoint '%s' %s", s, name)
         popen("buildah config --cmd '' %s", name)
         popen("buildah config --stop-signal TERM %s", name)
     end
