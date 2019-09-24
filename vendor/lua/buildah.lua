@@ -19,6 +19,9 @@ local from = function(base, cwd, name)
         msg.ok(F("Reusing %s.", name))
     end
     local fn = {}
+    setmetatable(fn, {__index = function(_, value)
+        return fn[string.lower(value)]
+    end})
     fn.run = function(a)
         msg.debug("RUN %s", a)
         popen("buildah run %s -- %s", name, a)
