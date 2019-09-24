@@ -1,5 +1,5 @@
-local type, pcall, setmetatable, ipairs, next, pairs, error, getmetatable =
-      type, pcall, setmetatable, ipairs, next, pairs, error, getmetatable
+local type, pcall, setmetatable, ipairs, next, pairs, error, getmetatable, select =
+      type, pcall, setmetatable, ipairs, next, pairs, error, getmetatable, select
 local F = string.format
 local ring = require "ring"
 
