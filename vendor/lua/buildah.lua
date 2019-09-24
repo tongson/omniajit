@@ -96,8 +96,8 @@ local from = function(base, cwd, name)
         popen("buildah commit --rm --squash %s containers-storage:%s", name, tmpname)
         msg.ok("Committed %s", cname)
     end
-    fn.oci = function(cname)
-        msg.debug("OCI oci:%s", cname)
+    fn.archive = function(cname)
+        msg.debug("ARCHIVE oci:%s", cname)
         popen("buildah commit --rm --squash %s oci-archive:%s", name, cname)
         msg.ok("OCI image %s", cname)
     end
