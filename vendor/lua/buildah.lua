@@ -10,6 +10,7 @@ local from = function(base, cwd, name)
     cwd = cwd or "."
     local popen = exec.ctx()
     popen.cwd = cwd
+    popen("buildah rm -a")
     if not name then
         msg.info("Initializing base image %s...", base)
         name = util.random_string(16)
