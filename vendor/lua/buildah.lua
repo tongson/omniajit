@@ -6,10 +6,14 @@ local exec = lib.exec
 local F = string.format
 local M = {}
 
+local USER = os.getenv "USER"
+local HOME = os.getenv "HOME"
+
 local from = function(base, cwd, name)
     cwd = cwd or "."
     local popen = exec.ctx()
     popen.cwd = cwd
+    popen.env = { USER = USER, HOME = HOME }
     popen("buildah rm -a")
     if not name then
         msg.info("Initializing base image %s...", base)
