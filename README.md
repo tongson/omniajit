@@ -54,9 +54,8 @@ Lua does not have facilities to traverse directories and I'd like to avoid shell
 
 Project                                                     | Version             | License
 ------------------------------------------------------------|---------------------|---------
-[LuaJIT](http://www.luajit.org)                             | v2.1-20180420       | MIT
+[LuaJIT](https://github.com/openresty/luajit2)              | v2.1-20190507       | MIT
 [luastatic](https://github.com/ers35/luastatic)             | 0.0.4               | CC0
-[Fennel](https://github.com/bakpakin/Fennel/)               | 0.1.1               | MIT
 
 #### Available modules (Feel free to open a Github issue if you want help with adding a new Lua module.)
 
@@ -67,6 +66,8 @@ Module                                                          | Version       
 [luafun](https://github.com/luafun/luafun)                      | 04c99f9         | MIT
 [argparse](https://github.com/mpeterv/argparse)                 | 0.6.0           | MIT
 [ftcsv](https://github.com/FourierTransformer/ftcsv)            | 665f789 / 1.1.6 | MIT
+[Fennel](https://github.com/bakpakin/Fennel/)                   | 0.1.1           | MIT
+[moonscript](https://moonscript.org)                            | dba4b10         | MIT
 
 [1] Renamed to lpeg. `require"lpeg"` to require it.<br/>
 [2] lfs moved to `vendor/lua` so `require"lfs"` works.<br/>
