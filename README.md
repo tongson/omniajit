@@ -68,6 +68,7 @@ Module                                                          | Version       
 [ftcsv](https://github.com/FourierTransformer/ftcsv)            | 665f789 / 1.1.6 | MIT
 [Fennel](https://github.com/bakpakin/Fennel/)                   | 0.1.1           | MIT
 [moonscript](https://moonscript.org)                            | dba4b10         | MIT
+[cliargs](https://github.com/amireh/lua_cliargs)                | 820e2d2         | MIT
 
 [1] Renamed to lpeg. `require"lpeg"` to require it.<br/>
 [2] lfs moved to `vendor/lua` so `require"lfs"` works.<br/>
