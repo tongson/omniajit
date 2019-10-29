@@ -49,8 +49,6 @@ run = function()
     os.exit()
   end
   local script_fname = opts.script
-  local lib = require"lib"
-  local spath = lib.util.split(script_fname)
   args = {
     unpack(arg, base + 1)
   }
@@ -58,6 +56,8 @@ run = function()
   args[0] = opts.script
   local ENV = {
   }
+  local lib = require"lib"
+  local spath = lib.util.split(script_fname)
   package.path = string.format("%s/?.lua;%s/?/init.lua;./?.lua;./?/init.lua", spath, spath)
   rawset(_G, "arg", args)
   setmetatable(ENV, {__index = _G})
