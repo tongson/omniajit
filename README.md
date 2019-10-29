@@ -59,16 +59,17 @@ Project                                                     | Version           
 
 #### Available modules (Feel free to open a Github issue if you want help with adding a new Lua module.)
 
-Module                                                          | Version         | License
-----------------------------------------------------------------|-----------------|---------
-[LPegLJ](https://github.com/sacek/LPegLJ)[1]                    | 1.0.0           | MIT
-[u-test](https://github.com/IUdalov/u-test)                     | a785dda         | MIT
-[luafun](https://github.com/luafun/luafun)                      | 04c99f9         | MIT
-[argparse](https://github.com/mpeterv/argparse)                 | 0.7.0           | MIT
-[ftcsv](https://github.com/FourierTransformer/ftcsv)            | 665f789 / 1.1.6 | MIT
-[Fennel](https://github.com/bakpakin/Fennel/)                   | 0.1.1           | MIT
-[moonscript](https://moonscript.org)                            | dba4b10         | MIT
-[cliargs](https://github.com/amireh/lua_cliargs)                | 820e2d2         | MIT
+Module                                                            | Version         | License
+------------------------------------------------------------------|-----------------|---------
+[LPegLJ](https://github.com/sacek/LPegLJ)[1]                      | 1.0.0           | MIT
+[u-test](https://github.com/IUdalov/u-test)                       | a785dda         | MIT
+[luafun](https://github.com/luafun/luafun)                        | 04c99f9         | MIT
+[argparse](https://github.com/mpeterv/argparse)                   | 0.7.0           | MIT
+[ftcsv](https://github.com/FourierTransformer/ftcsv)              | 665f789 / 1.1.6 | MIT
+[Fennel](https://github.com/bakpakin/Fennel/)                     | 0.1.1           | MIT
+[moonscript](https://moonscript.org)                              | dba4b10         | MIT
+[cliargs](https://github.com/amireh/lua_cliargs)                  | 820e2d2         | MIT
+[tsv](https://github.com/cloudflarearchive/lua-resty-kyototycoon) | f51c0e0         | BSD
 
 [1] Renamed to lpeg. `require"lpeg"` to require it.<br/>
 [2] lfs moved to `vendor/lua` so `require"lfs"` works.<br/>
