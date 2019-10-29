@@ -25,7 +25,7 @@ local from = function(base, cwd, name)
     end
     local fn = {}
     setmetatable(fn, {__index = function(_, value)
-        return rawget(fn, string.lower(value))
+        return rawget(fn, string.lower(value)) or rawget(_G, string.lower(value))
     end})
     fn.run = function(a)
         msg.debug("RUN %s", a)
