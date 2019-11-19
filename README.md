@@ -71,6 +71,8 @@ Module                                                            | Version     
 [cliargs](https://github.com/amireh/lua_cliargs)                  | 820e2d2         | MIT
 [tsv](https://github.com/cloudflarearchive/lua-resty-kyototycoon) | f51c0e0         | BSD
 [dkjson](http://dkolf.de/src/dkjson-lua.fsl/home)                 | c23a5792f3      | MIT
+[CBOR](https://framagit.org/fperrad/lua-ConciseSerialization)     | 0.2.2           | MIT
+[salt](https://github.com/VaiN474/salt)                           | fa0d48f         | MIT
 
 [1] Renamed to lpeg. `require"lpeg"` to require it.<br/>
 [2] lfs moved to `vendor/lua` so `require"lfs"` works.<br/>
