@@ -2,7 +2,7 @@
 EXE:= moonc
 SRC:= 
 SRC_DIR:=
-VENDOR:= lib ring argparse lfs lpcap lpcode lpeg lpprint lpvm
+VENDOR:= argparse lfs lpcap lpcode lpeg lpprint lpvm
 VENDOR_DIR:= moonscript moonscript/parse moonscript/compile moonscript/transform moonscript/cmd
 MAKEFLAGS= --silent
 HOST_CC= cc
