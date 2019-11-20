@@ -128,6 +128,15 @@ local from = function(base, cwd, name)
         os.execute(F("rm -r %s/%s", cwd, tmpname))
         msg.ok("Pushed %s:%s", cname, tag)
     end
+    fn.cache = function(ssh, cname, tag)
+        msg.debug("CACHE %s:%s", cname, tag)
+        local tmpname = F("%s.%s", cname, util.random_string(16))
+        popen("mkdir -p %s/%s", tmpname, cname)
+        popen("/usr/bin/skopeo copy containers-storage:%s:%s oci-archive:%s/%s/%s", cname, tag, tmpname, cname, tag)
+        popen("/usr/bin/sha256sum %s/%s/%s > %s/%s/%s.sha256", tmpname, cname, tag, tmpname, cname, tag)
+        popen("XZ_OPT=-T0 /usr/bin/tar -C %s -cJf IMAGE.tar.xz %s", tmpname, cname)
+        popen("/usr/bin/scp IMAGE.tar.xz %s/%s/%s", ssh, cname, tag)
+    end
     return fn
 end
 
