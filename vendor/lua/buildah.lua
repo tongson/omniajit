@@ -116,6 +116,7 @@ local from = function(base, cwd, name)
         popen("buildah commit --rm --squash %s containers-storage:%s", name, cname)
         msg.ok("Committed image %s", cname)
     end
+    fn.storage = fn.containers_storage
     fn.push = function(repo, cname, tag)
         msg.debug("PUSH %s:%s", cname, tag)
         local tmpname = F("%s.%s", cname, util.random_string(16))
