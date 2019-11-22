@@ -130,7 +130,7 @@ local from = function(base, cwd, name)
     end
     fn.cache = function(ssh, cname, stag, dtag)
         dtag = dtag or stag
-        msg.debug("CACHE %s:%s", cname, tag)
+        msg.debug("CACHE %s:%s -> %s:%s", cname, stag, cname, dtag)
         local tmpname = F("%s.%s", cname, util.random_string(16))
         popen("mkdir -p %s/%s", tmpname, cname)
         popen("/usr/bin/skopeo copy containers-storage:%s:%s oci-archive:%s/%s/%s", cname, stag, tmpname, cname, dtag)
