@@ -62,7 +62,7 @@ Project                                                     | Version           
 Module                                                            | Version         | License
 ------------------------------------------------------------------|-----------------|---------
 [LPegLJ](https://github.com/sacek/LPegLJ)[1]                      | 1.0.0           | MIT
-[u-test](https://github.com/IUdalov/u-test)                       | a785dda         | MIT
+[u-test](https://github.com/IUdalov/u-test)                       | 113259f         | MIT
 [luafun](https://github.com/luafun/luafun)                        | 04c99f9         | MIT
 [argparse](https://github.com/mpeterv/argparse)                   | 0.7.0           | MIT
 [ftcsv](https://github.com/FourierTransformer/ftcsv)              | 665f789 / 1.1.6 | MIT
