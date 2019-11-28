@@ -74,6 +74,11 @@ Module                                                            | Version     
 [CBOR](https://framagit.org/fperrad/lua-ConciseSerialization)     | 0.2.2           | MIT
 [salt](https://github.com/VaiN474/salt)                           | fa0d48f         | MIT
 [funk](https://github.com/Wiladams/funk/)                         | 3aa9560         | MIT
+[base64](https://github.com/iskolbin/lbase64/)                    | 6001688         | MIT
+[LJSQLite3](https://github.com/stepelu/lua-ljsqlite3)             | d742002         | MIT
+[xsys](https://github.com/stepelu/lua-xsys/)                      | 87df92c         | MIT
+[templet](https://peter.colberg.org/lua-templet)                  | 38107395f8      | MIT
+[inspect](https://github.com/kikito/inspect.lua)                  | b611db6         | MIT
 
 [1] Renamed to lpeg. `require"lpeg"` to require it.<br/>
 [2] lfs moved to `vendor/lua` so `require"lfs"` works.<br/>
