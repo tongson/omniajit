@@ -57,7 +57,6 @@ run = function()
   local lib = require"lib"
   local spath = lib.util.split(script_fname)
   package.path = string.format("%s/?.lua;%s/?/init.lua;./?.lua;./?/init.lua", spath, spath)
-  rawset(_G, "arg", args)
   local moonscript_chunk, lua_parse_error
   local passed, err = pcall(function()
     moonscript_chunk, lua_parse_error = moonscript.loadfile(script_fname, {
@@ -76,7 +75,6 @@ run = function()
     end
     os.exit(1)
   end
-  setfenv(moonscript_chunk, _G)
   util.getfenv(moonscript_chunk).arg = args
   local run_chunk
   run_chunk = function()
