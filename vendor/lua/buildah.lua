@@ -146,6 +146,7 @@ local from = function(base, cwd, name)
         os.execute(F("rm -r %s/%s", cwd, tmpname))
         msg.ok("Pushed %s:%s", cname, tag)
     end
+    fn.push = fn.local_push
     fn.cache = function(ssh, cname, stag, dtag)
         dtag = dtag or stag
         msg.debug("CACHE %s:%s -> %s:%s", cname, stag, cname, dtag)
