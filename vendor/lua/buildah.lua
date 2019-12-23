@@ -71,8 +71,17 @@ local from = function(base, cwd, name)
         popen("buildah config --stop-signal TERM %s", name)
     end
     fn.sshd = function(p)
-        msg.debug("SSHD localhost:%s", p)
-	local s = F('["/usr/sbin/sshd", "-eD", "-oCiphers=aes128-ctr", "-oUseDNS=no", "-oPermitRootLogin=yes", "-oListenAddress=127.0.0.1:%s"]', p)
+        local s
+        if type(p) == "string" then
+            msg.debug("SSHD file:%s", p)
+            popen("buildah copy %s %s %s", name, p, "/etc/ssh/sshd_config")
+            popen("buildah run %s -- %s", name, "chmod 0640 /etc/ssh/sshd_config")
+            s = '["/usr/sbin/sshd", "-eD"]'
+        elseif type(p) == "number" then
+            p = tostring(p)
+            msg.debug("SSHD localhost:%p", p)
+	    s = F('["/usr/sbin/sshd", "-eD", "-oCiphers=aes128-ctr", "-oUseDNS=no", "-oPermitRootLogin=yes", "-oListenAddress=127.0.0.1:%s"]', p)
+        end
 	popen("buildah config --entrypoint '%s' %s", s, name)
         popen("buildah config --cmd '' %s", name)
         popen("buildah config --stop-signal TERM %s", name)
