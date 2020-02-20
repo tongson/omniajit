@@ -121,6 +121,7 @@ local from = function(base, fn, cwd, name)
         msg.ok("OCI image %s", cname)
     end
     env.containers_storage = function(cname, tag)
+        tag = tag or "latest"
         msg.debug("CONTAINERS-STORAGE %s:%s", cname, tag)
         popen("buildah commit --rm --squash %s containers-storage:%s:%s", name, cname, tag)
         msg.ok("Committed image %s", cname)
