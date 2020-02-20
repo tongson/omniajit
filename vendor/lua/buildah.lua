@@ -9,7 +9,7 @@ local M = {}
 local USER = os.getenv "USER"
 local HOME = os.getenv "HOME"
 
-local from = function(base, cwd, name)
+local from = function(base, fn, cwd, name)
     cwd = cwd or "."
     local popen = exec.ctx()
     popen.cwd = cwd
@@ -23,54 +23,54 @@ local from = function(base, cwd, name)
     else
         msg.ok(F("Reusing %s.", name))
     end
-    local fn = {}
-    setmetatable(fn, {__index = function(_, value)
-        return rawget(fn, string.lower(value)) or rawget(_G, string.lower(value))
+    local env = {}
+    setmetatable(env, {__index = function(_, value)
+        return rawget(env, string.lower(value)) or rawget(_G, string.lower(value))
     end})
-    fn.run = function(a)
+    env.run = function(a)
         msg.debug("RUN %s", a)
         popen("buildah run %s -- %s", name, a)
     end
-    fn.script = function(a)
+    env.script = function(a)
         msg.debug("SCRIPT %s", a)
         popen("buildah copy %s %s /%s", name, a, a)
         popen("buildah run %s -- sh /%s", name, a)
         popen("buildah run %s -- rm -f /%s", name, a)
     end
-    fn.apt_get = function(a)
+    env.apt_get = function(a)
         local apt = [[/usr/bin/env LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get -qq --no-install-recommends -o APT::Install-Suggests=0 -o APT::Get::AutomaticRemove=1 -o Dpkg::Use-Pty=0 -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold']]
         msg.debug("RUN apt-get %s", a)
         popen("buildah run %s -- %s %s", name, apt, a)
     end
-    fn.zypper = function(a)
+    env.zypper = function(a)
 	local z = [[/usr/bin/zypper --non-interactive --quiet]]
 	msg.debug("RUN zypper %s", a)
 	popen("buildah run %s -- %s %s", name, z, a)
     end
-    fn.copy = function(src, dest)
+    env.copy = function(src, dest)
         dest = dest or '/'
         msg.debug("COPY '%s' to '%s'", src, dest)
         popen("buildah copy %s %s %s", name, src, dest)
     end
-    fn.clear = function(d)
+    env.clear = function(d)
         msg.debug("CLEAR %s", d)
         popen("buildah run %s -- /usr/bin/find %s -mindepth 1 -ignore_readdir_race -delete", name, d)
     end
-    fn.mkdir = function(d)
+    env.mkdir = function(d)
         msg.debug("MKDIR %s", d)
         popen("buildah run %s -- mkdir -p %s", name, d)
     end
-    fn.rm = function(f)
+    env.rm = function(f)
         msg.debug("RM %s", f)
         popen("buildah run %s -- rm -r %s", name, f)
     end
-    fn.entrypoint = function(s)
+    env.entrypoint = function(s)
         msg.debug("ENTRYPOINT %s", s)
         popen("buildah config --entrypoint '%s' %s", s, name)
         popen("buildah config --cmd '' %s", name)
         popen("buildah config --stop-signal TERM %s", name)
     end
-    fn.sshd = function(p)
+    env.sshd = function(p)
         local s
         if type(p) == "string" then
             msg.debug("SSHD file:%s", p)
@@ -86,7 +86,7 @@ local from = function(base, cwd, name)
         popen("buildah config --cmd '' %s", name)
         popen("buildah config --stop-signal TERM %s", name)
     end
-    fn.dropbear = function(p, old)
+    env.dropbear = function(p, old)
         msg.debug("DROPBEAR localhost:%s", p)
         local s
         if old then
@@ -98,7 +98,7 @@ local from = function(base, cwd, name)
         popen("buildah config --cmd '' %s", name)
         popen("buildah config --stop-signal TERM %s", name)
     end
-    fn.write = function(cname)
+    env.write = function(cname)
         msg.debug("WRITE containers-storage:%s", cname)
         local tmpname = F("%s.%s", cname, util.random_string(16))
         popen("buildah commit --rm --squash %s dir:%s", name, tmpname)
@@ -109,24 +109,24 @@ local from = function(base, cwd, name)
         os.execute(F("rm -rf %s", cname))
         msg.ok("Wrote dir:%s", cname)
     end
-    fn.commit = function(cname)
+    env.commit = function(cname)
         msg.debug("COMMIT containers-storage:%s", cname)
         local tmpname = F("%s.%s", cname, util.random_string(16))
         popen("buildah commit --rm --squash %s containers-storage:%s", name, tmpname)
         msg.ok("Committed %s", cname)
     end
-    fn.archive = function(cname)
+    env.archive = function(cname)
         msg.debug("ARCHIVE oci:%s", cname)
         popen("buildah commit --rm --squash %s oci-archive:%s", name, cname)
         msg.ok("OCI image %s", cname)
     end
-    fn.containers_storage = function(cname, tag)
+    env.containers_storage = function(cname, tag)
         msg.debug("CONTAINERS-STORAGE %s:%s", cname, tag)
         popen("buildah commit --rm --squash %s containers-storage:%s:%s", name, cname, tag)
         msg.ok("Committed image %s", cname)
     end
-    fn.storage = fn.containers_storage
-    fn.ecr_push = function(repo, cname, tag)
+    env.storage = env.containers_storage
+    env.ecr_push = function(repo, cname, tag)
         msg.debug("PUSH %s:%s", cname, tag)
         local tmpname = F("%s.%s", cname, util.random_string(16))
         popen("buildah commit --format docker --squash --rm %s dir:%s", name, tmpname)
@@ -137,7 +137,7 @@ local from = function(base, cwd, name)
         os.execute(F("rm -r %s/%s", cwd, tmpname))
         msg.ok("Pushed %s:%s", cname, tag)
     end
-    fn.local_push = function(repo, creds, cname, tag)
+    env.local_push = function(repo, creds, cname, tag)
         msg.debug("PUSH %s:%s", cname, tag)
         local tmpname = F("%s.%s", cname, util.random_string(16))
         popen("buildah commit --format docker --squash --rm %s dir:%s", name, tmpname)
@@ -146,8 +146,8 @@ local from = function(base, cwd, name)
         os.execute(F("rm -r %s/%s", cwd, tmpname))
         msg.ok("Pushed %s:%s", cname, tag)
     end
-    fn.push = fn.local_push
-    fn.cache = function(ssh, cname, stag, dtag)
+    env.push = env.local_push
+    env.cache = function(ssh, cname, stag, dtag)
         dtag = dtag or stag
         msg.debug("CACHE %s:%s -> %s:%s", cname, stag, cname, dtag)
         local tmpname = F("%s.%s", cname, util.random_string(16))
@@ -159,7 +159,10 @@ local from = function(base, cwd, name)
         popen("rm IMAGE.tar.xz")
         os.execute(F("rm -r %s/%s", cwd, tmpname))
     end
-    return fn
+    return function(...)
+        setfenv(fn, env)
+        return fn(...)
+    end
 end
 
 M.from = from
