@@ -53,16 +53,30 @@ local from = function(base, fn, cwd, name)
         popen("buildah copy %s %s %s", name, src, dest)
     end
     env.clear = function(d)
-        msg.debug("CLEAR %s", d)
-        popen("buildah run %s -- /usr/bin/find %s -mindepth 1 -ignore_readdir_race -delete", name, d)
+        if type(d) == "table" and next(d) then
+            msg.debug("CLEAR (table)")
+            for _, r in ipairs(d) do
+                popen("buildah run %s -- /usr/bin/find %s -mindepth 1 -ignore_readdir_race -delete", name, r)
+            end
+        else
+            msg.debug("CLEAR %s", d)
+            popen("buildah run %s -- /usr/bin/find %s -mindepth 1 -ignore_readdir_race -delete", name, d)
+        end
     end
     env.mkdir = function(d)
         msg.debug("MKDIR %s", d)
         popen("buildah run %s -- mkdir -p %s", name, d)
     end
     env.rm = function(f)
-        msg.debug("RM %s", f)
-        popen("buildah run %s -- rm -r %s", name, f)
+        if type(f) == "table" and next(f) then
+            msg.debug("RM (table)")
+            for _, r in ipairs(f) do
+                popen("buildah run %s -- rm -rf %s", name, r)
+            end
+        else
+            msg.debug("RM %s", f)
+            popen("buildah run %s -- rm -rf %s", name, f)
+        end
     end
     env.entrypoint = function(s)
         msg.debug("ENTRYPOINT %s", s)
