@@ -22,7 +22,6 @@
 #include "lj_ircall.h"
 #include "lj_iropt.h"
 #include "lj_mcode.h"
-#include "lj_iropt.h"
 #include "lj_trace.h"
 #include "lj_snap.h"
 #include "lj_asm.h"
@@ -1601,6 +1600,8 @@ static void asm_loop(ASMState *as)
 #include "lj_asm_ppc.h"
 #elif LJ_TARGET_MIPS
 #include "lj_asm_mips.h"
+#elif LJ_TARGET_S390X
+#include "lj_asm_s390x.h"
 #else
 #error "Missing assembler for target CPU"
 #endif
@@ -2130,8 +2131,8 @@ static void asm_setup_regsp(ASMState *as)
 #if LJ_SOFTFP
     case IR_MIN: case IR_MAX:
       if ((ir+1)->o != IR_HIOP) break;
-      /* fallthrough */
 #endif
+    /* fallthrough */
     /* C calls evict all scratch regs and return results in RID_RET. */
     case IR_SNEW: case IR_XSNEW: case IR_NEWREF: case IR_BUFPUT:
       if (REGARG_NUMGPR < 3 && as->evenspill < 3)

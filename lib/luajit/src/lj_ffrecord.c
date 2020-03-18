@@ -950,7 +950,8 @@ static void LJ_FASTCALL recff_string_find(jit_State *J, RecordFFData *rd)
 		    str->len-(MSize)start, pat->len)) {
       TRef pos;
       emitir(IRTG(IR_NE, IRT_PGC), tr, trp0);
-      pos = emitir(IRTI(IR_SUB), tr, emitir(IRT(IR_STRREF, IRT_PGC), trstr, tr0));
+      /* Recompute offset. trsptr may not point into trstr after folding. */
+      pos = emitir(IRTI(IR_ADD), emitir(IRTI(IR_SUB), tr, trsptr), trstart);
       J->base[0] = emitir(IRTI(IR_ADD), pos, lj_ir_kint(J, 1));
       J->base[1] = emitir(IRTI(IR_ADD), pos, trplen);
       rd->nres = 2;
@@ -1149,6 +1150,7 @@ static void LJ_FASTCALL recff_table_isempty(jit_State *J, RecordFFData *rd)
 
 /* -- thread library fast functions ------------------------------------------ */
 
+#if LJ_HASFFI
 void LJ_FASTCALL recff_thread_exdata(jit_State *J, RecordFFData *rd)
 {
   TRef tr = J->base[0];
@@ -1161,6 +1163,7 @@ void LJ_FASTCALL recff_thread_exdata(jit_State *J, RecordFFData *rd)
   }
   recff_nyiu(J, rd);  /* this case is too rare to be interesting */
 }
+#endif
 
 /* -- I/O library fast functions ------------------------------------------ */
 

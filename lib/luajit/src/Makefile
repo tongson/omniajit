@@ -110,8 +110,8 @@ XCFLAGS=
 #XCFLAGS+= -DLUAJIT_NUMMODE=1
 #XCFLAGS+= -DLUAJIT_NUMMODE=2
 #
-# Enable GC64 mode for x64.
-#XCFLAGS+= -DLUAJIT_ENABLE_GC64
+# Disable LJ_GC64 mode for x64.
+#XCFLAGS+= -DLUAJIT_DISABLE_GC64
 #
 ##############################################################################
 
@@ -158,7 +158,6 @@ XCFLAGS=
 
 ifeq (Windows,$(findstring Windows,$(OS))$(MSYSTEM)$(TERM))
   HOST_SYS= Windows
-  HOST_RM= del
 else
   HOST_SYS:= $(shell uname -s)
   ifneq (,$(findstring MINGW,$(HOST_SYS)))
@@ -221,6 +220,7 @@ TARGET_SONAME= libluajit-$(ABIVER).so.$(MAJVER)
 TARGET_DYLIBNAME= libluajit-$(ABIVER).$(MAJVER).dylib
 TARGET_DYLIBPATH= $(TARGET_LIBPATH)/$(TARGET_DYLIBNAME)
 TARGET_DLLNAME= lua$(NODOTABIVER).dll
+TARGET_DLLDOTANAME= libluajit-$(ABIVER).dll.a
 TARGET_XSHLDFLAGS= -shared -fPIC -Wl,-soname,$(TARGET_SONAME)
 TARGET_DYNXLDOPTS=
 
@@ -244,6 +244,9 @@ ifneq (,$(findstring LJ_TARGET_X86 ,$(TARGET_TESTARCH)))
 else
 ifneq (,$(findstring LJ_TARGET_ARM ,$(TARGET_TESTARCH)))
   TARGET_LJARCH= arm
+else
+ifneq (,$(findstring LJ_TARGET_S390X ,$(TARGET_TESTARCH)))
+  TARGET_LJARCH= s390x
 else
 ifneq (,$(findstring LJ_TARGET_ARM64 ,$(TARGET_TESTARCH)))
   ifneq (,$(findstring __AARCH64EB__ ,$(TARGET_TESTARCH)))
@@ -270,6 +273,7 @@ ifneq (,$(findstring LJ_TARGET_MIPS ,$(TARGET_TESTARCH)))
   endif
 else
   $(error Unsupported target architecture)
+endif
 endif
 endif
 endif
@@ -309,8 +313,9 @@ endif
 TARGET_SYS?= $(HOST_SYS)
 ifeq (Windows,$(TARGET_SYS))
   TARGET_STRIP+= --strip-unneeded
-  TARGET_XSHLDFLAGS= -shared
+  TARGET_XSHLDFLAGS= -shared -Wl,--out-implib,$(TARGET_DLLDOTANAME)
   TARGET_DYNXLDOPTS=
+  HOST_RM= del
 else
   TARGET_AR+= 2>/dev/null
 ifeq (,$(shell $(TARGET_CC) -o /dev/null -c -x c /dev/null -fno-stack-protector 2>/dev/null || echo 1))
@@ -318,7 +323,7 @@ ifeq (,$(shell $(TARGET_CC) -o /dev/null -c -x c /dev/null -fno-stack-protector 
 endif
 ifeq (Darwin,$(TARGET_SYS))
   ifeq (,$(MACOSX_DEPLOYMENT_TARGET))
-    export MACOSX_DEPLOYMENT_TARGET=10.4
+    $(error missing: export MACOSX_DEPLOYMENT_TARGET=XX.YY)
   endif
   TARGET_STRIP+= -x
   TARGET_XSHLDFLAGS= -dynamiclib -single_module -undefined dynamic_lookup -fPIC

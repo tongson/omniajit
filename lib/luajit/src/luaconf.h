@@ -21,9 +21,9 @@
 #define LUA_LDIR	"!\\lua\\"
 #define LUA_CDIR	"!\\"
 #define LUA_PATH_DEFAULT \
-  ".\\?.lua;" "!\\lualib\\?.lua;" LUA_LDIR"?.lua;" LUA_LDIR"?\\init.lua;"
+  ".\\?.lua;" LUA_LDIR"?.lua;" LUA_LDIR"?\\init.lua;"
 #define LUA_CPATH_DEFAULT \
-  ".\\?.dll;" "!\\lualib\\?.so;" LUA_CDIR"?.dll;" LUA_CDIR"loadall.dll"
+  ".\\?.dll;" LUA_CDIR"?.dll;" LUA_CDIR"loadall.dll"
 #else
 /*
 ** Note to distribution maintainers: do NOT patch the following lines!
