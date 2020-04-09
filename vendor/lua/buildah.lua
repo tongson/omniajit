@@ -56,7 +56,7 @@ local from = function(base, fn, cwd, name)
     --++ Usually used installing packages (.e.g. `APT_GET install build-essential`)
     --++  
     env.apt_get = function(a)
-        local apt = [[/usr/bin/env LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get -qq --no-install-recommends -o APT::Install-Suggests=0 -o APT::Get::AutomaticRemove=1 -o Dpkg::Use-Pty=0 -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold']]
+        local apt = [[/usr/bin/env LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get -qq --no-install-recommends -o APT::Install-Suggests=0 -o APT::Get::AutomaticRemove=1 -o Dpkg::Use-Pty=0 -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' -o DPkg::options::='--force-unsafe-io']]
         msg.debug("RUN apt-get %s", a)
         popen("buildah run %s -- %s %s", name, apt, a)
     end
