@@ -1,12 +1,12 @@
 $(LIBLUAJIT_A):
 	$(MAKE) -C lib/luajit/src \
-                TARGET_CFLAGS="$(TARGET_CFLAGS) -DLUAJIT_ENABLE_LUA52COMPAT" \
-                TARGET_LD="$(TARGET_LD)" \
-                TARGET_LDFLAGS="$(TARGET_LDFLAGS)" \
-                TARGET_STCC="$(TARGET_STCC)" \
-                TARGET_DYNCC="$(TARGET_DYNCC)" \
-                TARGET_CC="$(TARGET_DYNCC)" \
-                TARGET_AR="$(TARGET_AR) rcs" \
+                TARGET_CFLAGS="$(CFLAGS) -DLUAJIT_ENABLE_LUA52COMPAT" \
+                TARGET_LD="$(LD)" \
+                TARGET_LDFLAGS="$(LDFLAGS)" \
+                TARGET_STCC="$(CC)" \
+                TARGET_DYNCC="$(CC)" \
+                TARGET_CC="$(CC)" \
+                TARGET_AR="$(AR) rcs" \
                 libluajit.a "LJCORE_O=ljamalg.o"
 $(LUA_T): $(LIBLUAJIT_A)
 	$(ECHOT) CC $@
@@ -14,7 +14,7 @@ $(LUA_T): $(LIBLUAJIT_A)
 		BUILDMODE="static" \
                 TARGET_FLAGS="-O2 -mtune=generic -mmmx -msse -msse2 -fomit-frame-pointer -pipe" \
 		TARGET_LDFLAGS="-Wl,--strip-all" \
-                TARGET_LD="$(HOST_CC)" \
+                TARGET_LD="$(CC)" \
 	        luajit
 	$(ECHOT) MV $@
 	mv lib/luajit/src/luajit bin/lua
@@ -35,11 +35,11 @@ $(VENDOR_LUA):
 	$(ECHOT) CP VENDOR_DIR
 	for d in $(VENDOR_DIRS); do [ -d $$d ] || $(CPR) $(VENDOR_P)/$$d .; done
 
-$(EXE_T): $(BUILD_DEPS) $(LIBLUAJIT_A) $(LUA_T) $(COMPILED_FNL) $(VENDOR_TOP) $(SRC_TOP) $(SRC_LUA) $(VENDOR_LUA)
+$(EXE_T): $(LIBLUAJIT_A) $(LUA_T) $(COMPILED_FNL) $(VENDOR_TOP) $(SRC_TOP) $(SRC_LUA) $(VENDOR_LUA)
 	$(ECHOT) LN $(EXE_T)
-	CC=$(TARGET_STCC) NM=$(TARGET_NM) $(LUA_T) $(LUASTATIC) $(MAIN) \
+	CC=$(CC) NM=$(NM) $(LUA_T) $(LUASTATIC) $(MAIN) \
 	   $(SRC_LUA) $(VENDOR_LUA) $(VENDOR_TOP) $(SRC_TOP) $(LIBLUAJIT_A) \
-	   $(TARGET_FLAGS) $(PIE) $(TARGET_LDFLAGS) 2>&1 >/dev/null
+	   $(FLAGS) $(PIE) $(LDFLAGS) 2>&1 >/dev/null
 	$(RM) $(RMFLAGS) $(MAIN).c $(VENDOR_TOP) $(SRC_TOP)
 	$(RMRF) $(VENDOR_DIRS) $(SRC_DIRS)
 

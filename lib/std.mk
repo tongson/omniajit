@@ -8,6 +8,11 @@ ECHON:= @printf '%s'
 ECHOT:= @printf '%s\t  %s\n'
 INSTALL:= @install
 PREFIX?= /usr/local
+LD= ld
+NM= nm
+AR= ar
+RANLIB= ranlib
+STRIP= strip
 CP:= cp
 CPR:= cp -R
 STRIPFLAGS:= --strip-all
@@ -32,7 +37,6 @@ SRC_FNL+= $(wildcard vendor/lua/*.fnl)
 SRC_FNL+= $(foreach m, $(SRC_DIR), $(wildcard src/lua/$m/*.fnl))
 SRC_FNL+= $(foreach m, $(VENDOR_DIR), $(wildcard vendor/lua/$m/*.fnl))
 COMPILED_FNL:= $(foreach m, $(SRC_FNL), $(addsuffix .lua, $(basename $m)))
-BUILD_DEPS= has-$(TARGET_STCC) has-$(TARGET_RANLIB) has-$(TARGET_NM) has-$(TARGET_AR) has-$(TARGET_STRIP)
 
 release: $(EXE_T)
 
@@ -48,10 +52,4 @@ vprint-%:
 	@echo ' flavor = $(flavor $*)'
 	@echo ' value = $(value $*)'
 
-has-%:
-	@command -v "${*}" >/dev/null 2>&1 || { \
-		echo "Missing build-time dependency: ${*}"; \
-		exit -1; \
-	}
-
-.PHONY: development release new clean install print-% vprint-% has-%
+.PHONY: development release new clean install print-% vprint-%
