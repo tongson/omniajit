@@ -9,9 +9,9 @@ local argparser = argparse()({
 })
 argparser:argument("script")
 argparser:argument("args"):args("*")
-argparser:option("-c --coverage", "Collect and print code coverage")
-argparser:option("-d", "Disable stack trace rewriting")
-argparser:option("-v --version", "Print version information")
+argparser:flag("-c --coverage", "Collect and print code coverage")
+argparser:flag("-d", "Disable stack trace rewriting")
+argparser:flag("-v --version", "Print version information")
 local base = 0
 local _list_0 = arg
 for _index_0 = 1, #_list_0 do
