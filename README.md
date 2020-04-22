@@ -62,6 +62,7 @@ Project                                                     | Version           
 Module                                                            | Version         | License
 ------------------------------------------------------------------|-----------------|---------
 [LPegLJ](https://github.com/sacek/LPegLJ)[1]                      | 1.0.0           | MIT
+[luafilesystem](https://github.com/spacewander/luafilesystem)     | 0.3             | MIT
 [u-test](https://github.com/IUdalov/u-test)                       | 113259f         | MIT
 [luafun](https://github.com/luafun/luafun)                        | 04c99f9         | MIT
 [argparse](https://github.com/luarocks/argparse)                  | 20c1445         | MIT
