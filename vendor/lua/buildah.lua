@@ -17,7 +17,7 @@ local HOME = os.getenv "HOME"
 --++ *cwd* is an optional string that sets the current working directory for the subsequent `buildah` commands.
 --++
 --++ # DSL
-local from = function(base, fn, cwd, name)
+local from = function(base, cwd, name)
     cwd = cwd or "."
     local popen = exec.ctx()
     popen.cwd = cwd
