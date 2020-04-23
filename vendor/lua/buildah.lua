@@ -33,19 +33,19 @@ local from = function(base, fn, cwd, name)
     end
     local env = {}
     setmetatable(env, {__index = function(_, value)
-        return rawget(env, string.lower(value)) or rawget(_G, string.lower(value))
+        return rawget(env, value) or rawget(_G, value)
     end})
     --++ ### RUN(command)
     --++ Runs the *command* within the container.
     --++
-    env.run = function(a)
+    env.RUN = function(a)
         msg.debug("RUN %s", a)
         popen("buildah run %s -- %s", name, a)
     end
     --++ ### SCRIPT(file)
     --++ Runs the *file* within the container as a shell script.
     --++
-    env.script = function(a)
+    env.SCRIPT = function(a)
         msg.debug("SCRIPT %s", a)
         popen("buildah copy %s %s /%s", name, a, a)
         popen("buildah run %s -- sh /%s", name, a)
@@ -55,7 +55,7 @@ local from = function(base, fn, cwd, name)
     --++ Wraps the /Debian/ `apt-get` command.
     --++ Usually used installing packages (.e.g. `APT_GET install build-essential`)
     --++
-    env.apt_get = function(a)
+    env.APT_GET = function(a)
         local apt = [[/usr/bin/env LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get -qq --no-install-recommends -o APT::Install-Suggests=0 -o APT::Get::AutomaticRemove=1 -o Dpkg::Use-Pty=0 -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' -o DPkg::options::='--force-unsafe-io']]
         msg.debug("RUN apt-get %s", a)
         popen("buildah run %s -- %s %s", name, apt, a)
@@ -63,7 +63,7 @@ local from = function(base, fn, cwd, name)
     --++ ### ZYPPER(arguments)
     --++ Wraps the /openSUSE/ `zypper` command.
     --++
-    env.zypper = function(a)
+    env.ZYPPER = function(a)
 	local z = [[/usr/bin/zypper --non-interactive --quiet]]
 	msg.debug("RUN zypper %s", a)
 	popen("buildah run %s -- %s %s", name, z, a)
@@ -72,7 +72,7 @@ local from = function(base, fn, cwd, name)
     --++ Copies the *source* file from the current directory to the the optional argument *destination*.
     --++ Writes to the root('/') directory if *destination* is not given.
     --++
-    env.copy = function(src, dest)
+    env.COPY = function(src, dest)
         dest = dest or '/'
         msg.debug("COPY '%s' to '%s'", src, dest)
         popen("buildah copy %s %s %s", name, src, dest)
@@ -81,7 +81,7 @@ local from = function(base, fn, cwd, name)
     --++ Deletes all files and directories one level down from the string *directory*.
     --++ If a list(table) is given, then each directory(string) is cleared.
     --++
-    env.clear = function(d)
+    env.CLEAR = function(d)
         if type(d) == "table" and next(d) then
             msg.debug("CLEAR (table)")
             for _, r in ipairs(d) do
@@ -95,7 +95,7 @@ local from = function(base, fn, cwd, name)
     --++ ### MKDIR(directory)
     --++ Create directory within container.
     --++
-    env.mkdir = function(d)
+    env.MKDIR = function(d)
         msg.debug("MKDIR %s", d)
         popen("buildah run %s -- mkdir -p %s", name, d)
     end
@@ -103,7 +103,7 @@ local from = function(base, fn, cwd, name)
     --++ Deletes the string *file*.
     --++ If a list(table) is given, then each file(string) is deleted.
     --++
-    env.rm = function(f)
+    env.RM = function(f)
         if type(f) == "table" and next(f) then
             msg.debug("RM (table)")
             for _, r in ipairs(f) do
@@ -118,7 +118,7 @@ local from = function(base, fn, cwd, name)
     --++ Sets the container entrypoint.
     --++ NOTE: Only accepts a single entrypoint item, usually the executable.
     --++
-    env.entrypoint = function(s)
+    env.ENTRYPOINT = function(s)
         msg.debug("ENTRYPOINT %s", s)
         popen("buildah config --entrypoint '[\"%s\"]' %s", s, name)
         popen("buildah config --cmd '' %s", name)
@@ -129,7 +129,7 @@ local from = function(base, fn, cwd, name)
     --++ If *argument* is a string, it will be used as the `sshd_config` by `sshd`.
     --++ If *argument* is a number, then it is considered the localhost(127.0.0.1) port number `sshd` listens to.
     --++
-    env.sshd = function(p)
+    env.SSHD = function(p)
         local s
         if type(p) == "string" then
             msg.debug("SSHD file:%s", p)
@@ -149,7 +149,7 @@ local from = function(base, fn, cwd, name)
     --++ Sets the container entrypoint to `dropbear`.
     --++ The argument *port* is the localhost(127.0.0.1) port number `dropbear` listens to.
     --++
-    env.dropbear = function(p, old)
+    env.DROPBEAR = function(p, old)
         p = tostring(p)
         msg.debug("DROPBEAR localhost:%s", p)
         local s
@@ -166,7 +166,7 @@ local from = function(base, fn, cwd, name)
     --++ Writes the container image to *directory*.
     --++ > NOTE: This finalizes the `buildah` run.
     --++
-    env.write = function(cname)
+    env.WRITE = function(cname)
         msg.debug("WRITE containers-storage:%s", cname)
         local tmpname = F("%s.%s", cname, util.random_string(16))
         popen("buildah commit --rm --squash %s dir:%s", name, tmpname)
@@ -181,7 +181,7 @@ local from = function(base, fn, cwd, name)
     --++ Saves the container as an `oci-archive` with filename *name*.
     --++ > NOTE: This finalizes the `buildah` run.
     --++
-    env.archive = function(cname)
+    env.ARCHIVE = function(cname)
         msg.debug("ARCHIVE oci:%s", cname)
         popen("buildah commit --rm --squash %s oci-archive:%s", name, cname)
         msg.ok("OCI image %s", cname)
@@ -191,20 +191,20 @@ local from = function(base, fn, cwd, name)
     --++ Aliases: STORAGE, COMMIT
     --++ > NOTE: This finalizes the `buildah` run.
     --++
-    env.containers_storage = function(cname, tag)
+    env.CONTAINERS_STORAGE = function(cname, tag)
         tag = tag or "latest"
         msg.debug("CONTAINERS-STORAGE %s:%s", cname, tag)
         popen("buildah commit --rm --squash %s containers-storage:%s:%s", name, cname, tag)
         msg.ok("Committed image %s", cname)
     end
-    env.storage = env.containers_storage
-    env.commit = env.containers_storage
+    env.STORAGE = env.CONTAINERS_STORAGE
+    env.COMMIT = env.CONTAINERS_STORAGE
     --++ ### ECR_PUSH(repository, name, tag)
     --++ Push container to AWS ECR under *name:tag*.
     --++ Requires `aws-cli` and AWS ECR credentials.
     --++ > NOTE: This finalizes the `buildah` run.
     --++
-    env.ecr_push = function(repo, cname, tag)
+    env.ECR_PUSH = function(repo, cname, tag)
         msg.debug("PUSH %s:%s", cname, tag)
         local tmpname = F("%s.%s", cname, util.random_string(16))
         popen("buildah commit --format docker --squash --rm %s dir:%s", name, tmpname)
@@ -221,7 +221,7 @@ local from = function(base, fn, cwd, name)
     --++ Alias: PUSH
     --++ > NOTE: This finalizes the `buildah` run.
     --++
-    env.local_push = function(repo, creds, cname, tag)
+    env.LOCAL_PUSH = function(repo, creds, cname, tag)
         msg.debug("PUSH %s:%s", cname, tag)
         local tmpname = F("%s.%s", cname, util.random_string(16))
         popen("buildah commit --format docker --squash --rm %s dir:%s", name, tmpname)
@@ -230,14 +230,14 @@ local from = function(base, fn, cwd, name)
         os.execute(F("rm -r %s/%s", cwd, tmpname))
         msg.ok("Pushed %s:%s", cname, tag)
     end
-    env.push = env.local_push
+    env.PUSH = env.LOCAL_PUSH
     --++ ### XPUSH(repository, credentials, name, tag)
     --++ Push container to specified docker repository under *name:tag*
     --++ Only supports docker repository basic authentication.
     --++ Alias: PUSH
     --++ > NOTE: This finalizes the `buildah` run.
     --++
-    env.xpush = function(repo, creds, cname, tag, ...)
+    env.XPUSH = function(repo, creds, cname, tag, ...)
         msg.debug("PUSH %s:%s", cname, tag)
         local tmpname = F("%s.%s", cname, util.random_string(16))
         popen("buildah commit --format docker --squash --rm %s dir:%s", name, tmpname)
@@ -251,7 +251,7 @@ local from = function(base, fn, cwd, name)
     -- ### CACHE(host, name, src, dest)
     -- Copy container image from `containers-storate` as `oci-archive` via `scp` to *host*.
     -- *src* and *dest* are optional image tags. *src* defaults to "latest" and *dest* defaults to *src*.
-    env.cache = function(ssh, cname, stag, dtag)
+    env.CACHE = function(ssh, cname, stag, dtag)
         stag = stag or "latest"
         dtag = dtag or stag
         msg.debug("CACHE %s:%s -> %s:%s", cname, stag, cname, dtag)
