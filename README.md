@@ -54,7 +54,7 @@ Lua does not have facilities to traverse directories and I'd like to avoid shell
 
 Project                                                     | Version             | License
 ------------------------------------------------------------|---------------------|---------
-[LuaJIT](https://github.com/openresty/luajit2)              | v2.1-20190507       | MIT
+[LuaJIT](https://github.com/openresty/luajit2)              | v2.1-20200102       | MIT
 [luastatic](https://github.com/ers35/luastatic)             | 0.0.4               | CC0
 
 #### Available modules (Feel free to open a Github issue if you want help with adding a new Lua module.)
