@@ -66,16 +66,15 @@ Module                                                            | Version     
 [u-test](https://github.com/IUdalov/u-test)                       | 113259f         | MIT
 [luafun](https://github.com/luafun/luafun)                        | 04c99f9         | MIT
 [argparse](https://github.com/luarocks/argparse)                  | 20c1445         | MIT
-[ftcsv](https://github.com/FourierTransformer/ftcsv)              | 665f789 / 1.1.6 | MIT
+[ftcsv](https://github.com/FourierTransformer/ftcsv)              | 8668631 / 1.2.0 | MIT
 [Fennel](https://github.com/bakpakin/Fennel/)                     | 0.1.1           | MIT
 [moonscript](https://moonscript.org)                              | dba4b10         | MIT
 [cliargs](https://github.com/amireh/lua_cliargs)                  | 820e2d2         | MIT
-[tsv](https://github.com/cloudflarearchive/lua-resty-kyototycoon) | f51c0e0         | BSD
 [dkjson](http://dkolf.de/src/dkjson-lua.fsl/home)                 | c23a5792f3      | MIT
 [CBOR](https://framagit.org/fperrad/lua-ConciseSerialization)     | 0.2.2           | MIT
 [salt](https://github.com/VaiN474/salt)                           | fa0d48f         | MIT
 [funk](https://github.com/Wiladams/funk/)                         | 3aa9560         | MIT
-[base64](https://github.com/iskolbin/lbase64/)                    | 6001688         | MIT
+[base64](https://github.com/iskolbin/lbase64/)                    | dbcd758         | MIT
 [LJSQLite3](https://github.com/stepelu/lua-ljsqlite3)             | d742002         | MIT
 [xsys](https://github.com/stepelu/lua-xsys/)                      | 87df92c         | MIT
 [templet](https://peter.colberg.org/lua-templet)                  | 38107395f8      | MIT
