@@ -12,7 +12,7 @@ $(LUA_T): $(LIBLUAJIT_A)
 	$(ECHOT) CC $@
 	$(MAKE) -C lib/luajit/src \
 		BUILDMODE="static" \
-                TARGET_FLAGS="-O2 -mtune=generic -mmmx -msse -msse2 -fomit-frame-pointer -pipe" \
+                TARGET_FLAGS="-O2 -march=nocona -mtune=haswell -msse4.2 -fomit-frame-pointer -pipe -DNDEBUG" \
 		TARGET_LDFLAGS="-Wl,--strip-all" \
                 TARGET_LD="$(CC)" \
 	        luajit
