@@ -30,7 +30,7 @@ local function shellout(command)
 end
 
 --[[
-Use execute() when stdout isn't needed instead of shellout() because io.popen() does
+Use execute() when stdout isn't needed instead of shellout() because io.popen() does 
 not return the status code in Lua 5.1.
 --]]
 local function execute(cmd)
@@ -69,11 +69,11 @@ local function is_source_file(extension)
 end
 
 local function is_binary_library(extension)
-	return
+	return 
 		-- Object file.
-		extension == "o" or
+		extension == "o" or 
 		-- Static library.
-		extension == "a" or
+		extension == "a" or 
 		-- Shared library.
 		extension == "so" or
 		-- Mach-O dynamic library.
@@ -94,14 +94,14 @@ local UNAME = (shellout("uname -s") or "Unknown"):match("%a+") or "Unknown"
 local link_with_libdl = ""
 
 --[[
-Parse command line arguments. main.lua must be the first argument. Static libraries are
-passed to the compiler in the order they appear and may be interspersed with arguments to
-the compiler. Arguments to the compiler are passed to the compiler in the order they
+Parse command line arguments. main.lua must be the first argument. Static libraries are 
+passed to the compiler in the order they appear and may be interspersed with arguments to 
+the compiler. Arguments to the compiler are passed to the compiler in the order they 
 appear.
 --]]
-for _, name in ipairs(arg) do
+for i, name in ipairs(arg) do
 	local extension = name:match("%.(%a+)$")
-	if is_source_file(extension) or is_binary_library(extension) then
+	if i == 1 or (is_source_file(extension) or is_binary_library(extension)) then
 		if not file_exists(name) then
 			io.stderr:write("file does not exist: " .. name .. "\n")
 			os.exit(1)
@@ -110,17 +110,17 @@ for _, name in ipairs(arg) do
 		local info = {}
 		info.path = name
 		info.basename = basename(info.path)
-		info.basename_noextension = info.basename:match("(.+)%.")
+		info.basename_noextension = info.basename:match("(.+)%.") or info.basename
 		--[[
 		Handle the common case of "./path/to/file.lua".
 		This won't work in all cases.
 		--]]
 		info.dotpath = info.path:gsub("^%.%/", "")
 		info.dotpath = info.dotpath:gsub("[\\/]", ".")
-		info.dotpath_noextension = info.dotpath:match("(.+)%.")
+		info.dotpath_noextension = info.dotpath:match("(.+)%.") or info.dotpath
 		info.dotpath_underscore = info.dotpath_noextension:gsub("[.-]", "_")
 
-		if is_source_file(extension) then
+		if i == 1 or is_source_file(extension) then
 			table.insert(lua_source_files, info)
 		elseif is_binary_library(extension) then
 			-- The library is either a Lua module or a library dependency.
@@ -134,7 +134,7 @@ for _, name in ipairs(arg) do
 				if nmout:find("U _?dlopen") then
 					if UNAME == "Linux" or UNAME == "SunOS" or UNAME == "Darwin" then
 						--[[
-						Link with libdl because liblua was built with support loading
+						Link with libdl because liblua was built with support loading 
 						shared objects and the operating system depends on it.
 						--]]
 						link_with_libdl = "-ldl"
@@ -164,7 +164,7 @@ for _, name in ipairs(arg) do
 end
 
 if #lua_source_files == 0 then
-	local version = "0.0.10"
+	local version = "0.0.12"
 	print("luastatic " .. version)
 	print([[
 usage: luastatic main.lua[1] require.lua[2] liblua.a[3] library.a[4] -I/include/lua[5] [6]
@@ -180,10 +180,11 @@ end
 -- The entry point to the Lua program.
 local mainlua = lua_source_files[1]
 --[[
-Generate a C program containing the Lua source files that uses the Lua C API to
+Generate a C program containing the Lua source files that uses the Lua C API to 
 initialize any Lua libraries and run the program.
 --]]
-local outfile = io.open(mainlua.path .. ".c", "w+")
+local outfilename = mainlua.basename_noextension .. ".luastatic.c"
+local outfile = io.open(outfilename, "w+")
 local function out(...)
 	outfile:write(...)
 end
@@ -323,6 +324,8 @@ local function load_string(str, name)
 end
 
 local function lua_loader(name)
+	local separator = package.config:sub(1, 1)
+	name = name:gsub(separator, ".")
 	local mod = lua_bundle[name] or lua_bundle[name .. ".init"]
 	if mod then
 		if type(mod) == "string" then
@@ -364,7 +367,7 @@ out(([[
 	/*printf("%%.*s", (int)sizeof(lua_loader_program), lua_loader_program);*/
 	if
 	(
-		luaL_loadbuffer(L, (const char*)lua_loader_program, sizeof(lua_loader_program), "%s")
+		luaL_loadbuffer(L, (const char*)lua_loader_program, sizeof(lua_loader_program), "%s") 
 		!= LUA_OK
 	)
 	{
@@ -372,7 +375,7 @@ out(([[
 		lua_close(L);
 		return 1;
 	}
-
+	
 	/* lua_bundle */
 	lua_newtable(L);
 ]]):format(mainlua.basename_noextension));
@@ -432,7 +435,7 @@ end
 local compile_command = table.concat({
 	CC,
 	"-Os",
-	mainlua.path .. ".c",
+	outfilename,
 	-- Link with Lua modules first to avoid linking errors.
 	table.concat(module_link_libraries, " "),
 	table.concat(dep_library_files, " "),
