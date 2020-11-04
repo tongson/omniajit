@@ -40,7 +40,7 @@ $(EXE_T): $(LIBLUAJIT_A) $(LUA_T) $(COMPILED_FNL) $(VENDOR_TOP) $(SRC_TOP) $(SRC
 	CC=$(CC) NM=$(NM) $(LUA_T) $(LUASTATIC) $(MAIN) \
 	   $(SRC_LUA) $(VENDOR_LUA) $(VENDOR_TOP) $(SRC_TOP) $(LIBLUAJIT_A) \
 	   $(FLAGS) $(PIE) $(LDFLAGS) 2>&1 >/dev/null
-	$(RM) $(RMFLAGS) $(MAIN).c $(VENDOR_TOP) $(SRC_TOP)
+	$(RM) $(RMFLAGS) $(MAIN).luastatic.c $(VENDOR_TOP) $(SRC_TOP)
 	$(RMRF) $(VENDOR_DIRS) $(SRC_DIRS)
 
 development: $(LUA_T) $(COMPILED_FNL) $(VENDOR_LUA) $(VENDOR_TOP)
@@ -53,7 +53,7 @@ development: $(LUA_T) $(COMPILED_FNL) $(VENDOR_LUA) $(VENDOR_TOP)
 
 clean: $(CLEAN)
 	$(ECHO) "Cleaning up..."
-	$(RM) $(RMFLAGS) $(MAIN).c $(LUA_T) $(EXE_T) \
+	$(RM) $(RMFLAGS) $(MAIN).luastatic.c $(LUA_T) $(EXE_T) \
 	   $(LIBLUAJIT_A) $(COMPILED_FNL) $(VENDOR_TOP) $(SRC_TOP)
 	$(RMRF) $(SRC_DIRS) $(VENDOR_DIRS)
 	$(RMRF) *.a bin/*.dSYM luacheck luacov luacov.report.out luacov.stats.out
