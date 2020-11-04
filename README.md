@@ -79,6 +79,8 @@ Module                                                            | Version     
 [xsys](https://github.com/stepelu/lua-xsys/)                      | 87df92c         | MIT
 [templet](https://peter.colberg.org/lua-templet)                  | 38107395f8      | MIT
 [inspect](https://github.com/kikito/inspect.lua)                  | b611db6         | MIT
+[lpeg_patterns](https://github.com/daurnimator/lpeg_patterns)     | 0da7cad         | MIT
+[lua-http/util](https://github.com/daurnimator/lua-http)          | 8582db9         | MIT
 
 [1] Renamed to lpeg. `require"lpeg"` to require it.<br/>
 [2] lfs moved to `vendor/lua` so `require"lfs"` works.<br/>
