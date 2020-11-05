@@ -20,9 +20,24 @@
 
 local ffi  = require "ffi"
 local bit  = require "bit"
-local xsys = require "xsys"
+---- From: https://github.com/SinisterRectus/lit-sqlite3 -----------------------
+---- xsys replacement ----------------------------------------------------------
+local insert = table.insert
+local match, gmatch = string.match, string.gmatch
 
-local split, trim = xsys.string.split, xsys.string.trim
+local function split(str, delim)
+  local words = {}
+    for word in gmatch(str .. delim, '(.-)' .. delim) do
+      insert(words, word)
+    end
+  return words
+end
+
+local function trim(str)
+  return match(str, '^%s*(.-)%s*$')
+end
+
+--------------------------------------------------------------------------------
 
 local function err(code, msg)
   error("ljsqlite3["..code.."] "..msg)
@@ -575,6 +590,20 @@ function stmt_mt:resultset(get, maxrecords) T_open(self)
     for i=1,#h do out[h[i]] = o[i] end
   end
   return out, n
+end
+
+-- From: https://github.com/stepelu/lua-ljsqlite3/pull/6
+-- iterator over rows
+function stmt_mt:rows()
+  return function() T_open(self)
+    local row = self:step()
+    if row then
+      return row
+    else
+      self:clearbind():reset()
+      return nil
+    end
+  end
 end
 
 -- Statement bind --------------------------------------------------------------
