@@ -64,23 +64,20 @@ Module                                                            | Version     
 [LPegLJ](https://github.com/sacek/LPegLJ)[1]                      | 1.0.0           | MIT
 [luafilesystem](https://github.com/spacewander/luafilesystem)     | 0.3             | MIT
 [u-test](https://github.com/IUdalov/u-test)                       | 113259f         | MIT
-[luafun](https://github.com/luafun/luafun)                        | 04c99f9         | MIT
 [argparse](https://github.com/luarocks/argparse)                  | 20c1445         | MIT
 [ftcsv](https://github.com/FourierTransformer/ftcsv)              | 8668631 / 1.2.0 | MIT
-[Fennel](https://github.com/bakpakin/Fennel/)                     | 0.1.1           | MIT
 [moonscript](https://moonscript.org)                              | dba4b10         | MIT
-[cliargs](https://github.com/amireh/lua_cliargs)                  | 820e2d2         | MIT
 [dkjson](http://dkolf.de/src/dkjson-lua.fsl/home)                 | c23a5792f3      | MIT
 [CBOR](https://framagit.org/fperrad/lua-ConciseSerialization)     | 0.2.2           | MIT
 [salt](https://github.com/VaiN474/salt)                           | fa0d48f         | MIT
-[funk](https://github.com/Wiladams/funk/)                         | 3aa9560         | MIT
 [base64](https://github.com/iskolbin/lbase64/)                    | dbcd758         | MIT
-[LJSQLite3](https://github.com/stepelu/lua-ljsqlite3)             | d742002         | MIT
-[xsys](https://github.com/stepelu/lua-xsys/)                      | 87df92c         | MIT
-[templet](https://peter.colberg.org/lua-templet)                  | 38107395f8      | MIT
+[LJSQLite3](https://github.com/stepelu/lua-ljsqlite3)[3]          | d742002         | MIT
 [inspect](https://github.com/kikito/inspect.lua)                  | b611db6         | MIT
 [lpeg_patterns](https://github.com/daurnimator/lpeg_patterns)     | 0da7cad         | MIT
-[lua-http/util](https://github.com/daurnimator/lua-http)          | 8582db9         | MIT
+[lua-http](https://github.com/daurnimator/lua-http)[2]            | 8582db9         | MIT
+[luassert](https://github.com/Olivine-Labs/luassert)[2]           | 36fc3af         | MIT
+[cgilua](https://github.com/keplerproject/cgilua)[2]              | 6.0.2           | MIT
 
 [1] Renamed to lpeg. `require"lpeg"` to require it.<br/>
-[2] lfs moved to `vendor/lua` so `require"lfs"` works.<br/>
+[2] Incomplete import. Some files, utility type code only.<br/>
+[3] Patched.<br/>
