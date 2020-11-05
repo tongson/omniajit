@@ -617,6 +617,16 @@ local hexdump = function(buf, first, last)
   end
 end
 
+local escape_sql = function(v)
+  local vt = type(v)
+  if "string" == vt then
+    local s = "'" .. (v:gsub("'", "''")) .. "'"
+    return (s:gsub(string.char(0,9,10,11,12,13,14), ""))
+  elseif "boolean" == vt then
+    return v and "TRUE" or "FALSE"
+  end
+end
+
 return {
   tbl = {
     find = t_find,
@@ -709,7 +719,8 @@ return {
     return_if_not = return_if_not,
     echo = echo,
     random_string = random_string,
-    split = split
+    split = split,
+    escape_sql = escape_sql,
   }
 }
 
