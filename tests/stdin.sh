@@ -1,3 +1,3 @@
 #!/bin/sh
-echo -n 'test' | ./Tstdin.moon
+echo -n 'stdin test: OK' | ./Tstdin.moon
 
