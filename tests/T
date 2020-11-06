@@ -1,0 +1,40 @@
+clear
+
+./Tbase64.moon
+read -n1 -p "Press any key..."
+clear
+
+./Tcsv.moon
+read -n1 -p "Press any key..."
+clear
+
+./Tescape_sql.moon
+read -n1 -p "Press any key..."
+clear
+
+./Tjson.moon
+read -n1 -p "Press any key..."
+clear
+
+./Tlhutil.moon
+read -n1 -p "Press any key..."
+clear
+
+./Tsqlite3.moon
+read -n1 -p "Press any key..."
+clear
+
+./stdin.sh
+read -n1 -p "Press any key..."
+clear
+
+./Tuuid.moon
+read -n1 -p "Press any key..."
+clear
+
+moon moonscript/* && { echo "Ok."; }
+read -n1 -p "Press any key..."
+clear
+
+./Tmoon_module.moon
+
