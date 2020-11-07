@@ -1,5 +1,6 @@
 EXE_T:= bin/$(EXE)
 MAIN:= $(EXE_T).lua
+BUNDLE:= $(EXE).luastatic.c
 LUASTATIC:= bin/luastatic.lua
 LUA_T:= bin/lua
 LIBLUAJIT_A:= lib/luajit/src/libluajit.a
