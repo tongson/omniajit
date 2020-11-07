@@ -1,4 +1,5 @@
 /bin/lua
+/bin/moon
 /lib/luajit/src/*.o
 /lib/luajit/src/*.a
 /lib/luajit/src/host/*.o
