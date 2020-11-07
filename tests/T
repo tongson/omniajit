@@ -1,40 +1,54 @@
+#!/bin/sh
+set -eu
 clear
 
 ./Tbase64.moon
-read -n1 -p "Press any key..."
+echo " base64 module tested."
+read -n1 -p " Press any key to continue..."
 clear
 
 ./Tcsv.moon
-read -n1 -p "Press any key..."
+echo " ftcsv module tested."
+read -n1 -p " Press any key to continue..."
 clear
 
 ./Tescape_sql.moon
-read -n1 -p "Press any key..."
+echo " lib.exec.escape_sql function tested."
+read -n1 -p " Press any key to continue..."
 clear
 
 ./Tjson.moon
-read -n1 -p "Press any key..."
+echo " lunajson module tested."
+read -n1 -p " Press any key to continue..."
 clear
 
 ./Tlhutil.moon
-read -n1 -p "Press any key..."
+echo " lua-http/util tested."
+read -n1 -p " Press any key to continue..."
 clear
 
 ./Tsqlite3.moon
-read -n1 -p "Press any key..."
+echo " LJSQLite3 module tested."
+read -n1 -p " Press any key to continue..."
 clear
 
 ./stdin.sh
-read -n1 -p "Press any key..."
+echo " STDIN to script tested."
+read -n1 -p " Press any key to continue..."
 clear
 
 ./Tuuid.moon
-read -n1 -p "Press any key..."
+echo " uuid module tested."
+read -n1 -p " Press any key to continue..."
 clear
 
 moon moonscript/* && { echo "Ok."; }
-read -n1 -p "Press any key..."
+echo " Partial MoonScript language tests done."
+read -n1 -p " Press any key to continue..."
 clear
 
 ./Tmoon_module.moon
+echo " MoonScript module tested."
+
+
 
