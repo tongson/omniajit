@@ -31,18 +31,8 @@ _lget= $(firstword src/c/$(1))/Makefile $(if $(_rest),$(call _lget,$(_rest)),)
 _vget= $(firstword vendor/c/$(1))/Makefile $(if $(_rest),$(call _vget,$(_rest)),)
 VENDOR_TOP+= $(foreach m, $(VENDOR), $m.lua)
 SRC_TOP+= $(foreach m, $(SRC), $m.lua)
-SRC_FNL:= $(wildcard bin/*.fnl)
-SRC_FNL+= $(wildcard src/lua/*.fnl)
-SRC_FNL+= $(wildcard vendor/lua/*.fnl)
-SRC_FNL+= $(foreach m, $(SRC_DIR), $(wildcard src/lua/$m/*.fnl))
-SRC_FNL+= $(foreach m, $(VENDOR_DIR), $(wildcard vendor/lua/$m/*.fnl))
-COMPILED_FNL:= $(foreach m, $(SRC_FNL), $(addsuffix .lua, $(basename $m)))
 
 release: $(EXE_T)
-
-ifneq ($(COMPILED_FNL),)
-  include lib/fennel.mk
-endif
 
 print-%: ; @echo $*=$($*)
 
