@@ -591,6 +591,7 @@ local head = function(file)
   return str
 end
 
+-- NOTE: Use the uuid module if you need a random string for a security context.
 local random_string
 random_string = function(length)
   local charset = {}
