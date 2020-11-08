@@ -1,4 +1,5 @@
 #!/bin/sh
+PATH=../bin:/bin:/usr/bin
 set -eu
 clear
 
