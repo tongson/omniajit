@@ -1,6 +1,6 @@
 /*
 ** Configuration header.
-** Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2020 Mike Pall. See Copyright Notice in luajit.h
 */
 
 #ifndef luaconf_h
@@ -21,9 +21,9 @@
 #define LUA_LDIR	"!\\lua\\"
 #define LUA_CDIR	"!\\"
 #define LUA_PATH_DEFAULT \
-  ".\\?.lua;" LUA_LDIR"?.lua;" LUA_LDIR"?\\init.lua;"
+  ".\\?.lua;" "!\\lualib\\?.lua;" LUA_LDIR"?.lua;" LUA_LDIR"?\\init.lua;"
 #define LUA_CPATH_DEFAULT \
-  ".\\?.dll;" LUA_CDIR"?.dll;" LUA_CDIR"loadall.dll"
+  ".\\?.dll;" "!\\lualib\\?.so;" LUA_CDIR"?.dll;" LUA_CDIR"loadall.dll"
 #else
 /*
 ** Note to distribution maintainers: do NOT patch the following lines!
@@ -136,7 +136,7 @@
 
 #define LUALIB_API	LUA_API
 
-/* Support for internal assertions. */
+/* Compatibility support for assertions. */
 #if defined(LUA_USE_ASSERT) || defined(LUA_USE_APICHECK)
 #include <assert.h>
 #endif

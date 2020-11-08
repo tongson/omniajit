@@ -37,7 +37,8 @@ static const uint32_t* cast_uint32p(const char* str)
 }
 
 /* hash string with len in [1, 4) */
-static LJ_AINLINE uint32_t lj_str_hash_1_4(const char* str, uint32_t len)
+static LJ_AINLINE uint32_t hash_sparse_1_4(uint64_t seed, const char* str,
+					   uint32_t len)
 {
 #if 0
   /* TODO: The if-1 part (i.e the original algorithm) is working better when
@@ -50,7 +51,7 @@ static LJ_AINLINE uint32_t lj_str_hash_1_4(const char* str, uint32_t len)
   v = (v << 8) | len;
   return _mm_crc32_u32(0, v);
 #else
-  uint32_t a, b, h = len;
+  uint32_t a, b, h = len ^ seed;
 
   a = *(const uint8_t *)str;
   h ^= *(const uint8_t *)(str+len-1);
@@ -66,7 +67,8 @@ static LJ_AINLINE uint32_t lj_str_hash_1_4(const char* str, uint32_t len)
 }
 
 /* hash string with len in [4, 16) */
-static LJ_AINLINE uint32_t lj_str_hash_4_16(const char* str, uint32_t len)
+static LJ_AINLINE uint32_t hash_sparse_4_16(uint64_t seed, const char* str,
+					    uint32_t len)
 {
   uint64_t v1, v2, h;
 
@@ -78,19 +80,20 @@ static LJ_AINLINE uint32_t lj_str_hash_4_16(const char* str, uint32_t len)
     v2 = *cast_uint32p(str + len - 4);
   }
 
-  h = _mm_crc32_u32(0, len);
+  h = _mm_crc32_u32(0, len ^ seed);
   h = _mm_crc32_u64(h, v1);
   h = _mm_crc32_u64(h, v2);
   return h;
 }
 
 /* hash string with length in [16, 128) */
-static uint32_t lj_str_hash_16_128(const char* str, uint32_t len)
+static uint32_t hash_16_128(uint64_t seed, const char* str,
+				   uint32_t len)
 {
   uint64_t h1, h2;
   uint32_t i;
 
-  h1 = _mm_crc32_u32(0, len);
+  h1 = _mm_crc32_u32(0, len ^ seed);
   h2 = 0;
 
   for (i = 0; i < len - 16; i += 16) {
@@ -202,8 +205,8 @@ static LJ_AINLINE uint32_t get_random_pos_unsafe(uint32_t chunk_sz_order,
   return pos;
 }
 
-static LJ_NOINLINE uint32_t lj_str_hash_128_above(const char* str,
-    uint32_t len)
+static LJ_NOINLINE uint32_t hash_128_above(uint64_t seed, const char* str,
+					   uint32_t len)
 {
   uint32_t chunk_num, chunk_sz, chunk_sz_log2, i, pos1, pos2;
   uint64_t h1, h2, v;
@@ -216,7 +219,7 @@ static LJ_NOINLINE uint32_t lj_str_hash_128_above(const char* str,
   pos1 = get_random_pos_unsafe(chunk_sz_log2, 0);
   pos2 = get_random_pos_unsafe(chunk_sz_log2, 1);
 
-  h1 = _mm_crc32_u32(0, len);
+  h1 = _mm_crc32_u32(0, len ^ seed);
   h2 = 0;
 
   /* loop over 14 chunks, 2 chunks at a time */
@@ -246,26 +249,39 @@ static LJ_NOINLINE uint32_t lj_str_hash_128_above(const char* str,
 }
 
 /* NOTE: the "len" should not be zero */
-static LJ_AINLINE uint32_t lj_str_hash(const char* str, size_t len)
+static uint32_t hash_sparse(uint64_t seed, const char* str, size_t len)
 {
-  if (len < 128) {
-    if (len >= 16) { /* [16, 128) */
-      return lj_str_hash_16_128(str, len);
-    }
+  if (len < 4 || len >= 128)
+    return hash_sparse_1_4(seed, str, len);
 
-    if (len >= 4) { /* [4, 16) */
-      return lj_str_hash_4_16(str, len);
-    }
+  if (len >= 16) /* [16, 128) */
+    return hash_16_128(seed, str, len);
 
-    /* [0, 4) */
-    return lj_str_hash_1_4(str, len);
-  }
-  /* [128, inf) */
-  return lj_str_hash_128_above(str, len);
+  /* [4, 16) */
+  return hash_sparse_4_16(seed, str, len);
 }
+#define ARCH_HASH_SPARSE hash_sparse
 
-#define LJ_ARCH_STR_HASH lj_str_hash
+#if LUAJIT_SECURITY_STRHASH
+static uint32_t hash_dense(uint64_t seed, uint32_t h, const char* str,
+			   size_t len)
+{
+  uint32_t b = lj_bswap(lj_rol(h ^ (uint32_t)(seed >> 32), 4));
+
+  if (len <= 16)
+    return b;
+
+  if (len < 128) /* [16, 128), try with a different seed. */
+    return hash_16_128(b, str, len);
+
+  /* Otherwise, do the slow crc32 randomization for long strings. */
+  return hash_128_above(b, str, len);
+}
+#define ARCH_HASH_DENSE hash_dense
+#endif
+
 #else
-#undef LJ_ARCH_STR_HASH
+#undef ARCH_HASH_SPARSE
+#undef ARCH_HASH_DENSE
 #endif
 #endif /*_LJ_STR_HASH_X64_H_*/
