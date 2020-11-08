@@ -77,6 +77,7 @@ Module                                                            | Version     
 [lua-http](https://github.com/daurnimator/lua-http)[2]            | 8582db9         | MIT
 [luassert](https://github.com/Olivine-Labs/luassert)[2]           | 36fc3af         | MIT
 [cgilua](https://github.com/keplerproject/cgilua)[2]              | 6.0.2           | MIT
+[etlua](https://github.com/leafo/etlua)                           | 8dda2e5a        | MIT
 
 [1] Renamed to lpeg. `require"lpeg"` to require it.<br/>
 [2] Incomplete import. Some files, utility type code only.<br/>
