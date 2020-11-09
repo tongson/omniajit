@@ -1,7 +1,7 @@
 $(LIBLUAJIT_A):
 	$(MAKE) -C lib/luajit/src \
-                TARGET_CFLAGS="$(CFLAGS) -DLUAJIT_ENABLE_LUA52COMPAT" \
-                TARGET_LD="$(LD)" \
+                TARGET_CFLAGS="$(CFLAGS) $(CCOPT) -DLUAJIT_ENABLE_LUA52COMPAT" \
+                TARGET_LD="$(CC)" \
                 TARGET_LDFLAGS="$(LDFLAGS)" \
                 TARGET_STCC="$(CC)" \
                 TARGET_DYNCC="$(CC)" \
@@ -12,8 +12,9 @@ $(LUA_T): $(LIBLUAJIT_A)
 	$(ECHOT) CC $@
 	$(MAKE) -C lib/luajit/src \
 		BUILDMODE="static" \
-                TARGET_FLAGS="-O3 -march=nocona -mtune=haswell -msse4.2 -fomit-frame-pointer -pipe" \
-		TARGET_LDFLAGS="-Wl,--strip-all" \
+                TARGET_FLAGS="$(CFLAGS) $(CCOPT)" \
+                TARGET_LDFLAGS="$(LDFLAGS)" \
+                TARGET_AR="$(AR) rcus 2>/dev/null" \
                 TARGET_LD="$(CC)" \
 	        luajit
 	$(ECHOT) MV $@
