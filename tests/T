@@ -48,6 +48,11 @@ echo " curler module tested."
 read -n1 -p " Press any key to continue..."
 clear
 
+./Tetlua.moon
+echo " etlua module tested."
+read -n1 -p " Press any key to continue..."
+clear
+
 moon moonscript/* && { echo "Ok."; }
 echo " Partial MoonScript language tests done."
 read -n1 -p " Press any key to continue..."
