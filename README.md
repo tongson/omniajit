@@ -3,7 +3,7 @@ OmniaJIT
 
 Fork of [Omnia](https://github.com/tongson/omnia), LuaJIT instead of PUC-Rio Lua.
 
-Compile LuaJIT and Fennel source code into standalone executables. This makes it easy to use them for general purpose scripting.
+Compile Lua 5.1, LuaJIT, and MoonScript source code into standalone executables. This makes it easy to use them for general purpose scripting.
 
 Requires: GNU Make, a compiler and binutils (or equivalent). Installing development tools e.g. the package build-essential should have everything you need. Does not require autotools.<br/>
 Note: Linux and OS X only. xBSD soon.
