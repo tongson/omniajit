@@ -59,6 +59,11 @@ echo " ffi_list module tested."
 sleep 2
 clear
 
+./Tlpeg.moon
+echo " lpeg module tested."
+sleep 2
+clear
+
 moon moonscript/* && { echo "Ok."; }
 echo " Partial MoonScript language tests done."
 sleep 2
