@@ -4,9 +4,9 @@ const char *clean(const char *h);
 const char *clean_text(const char *h);
 ]]
 
-mod = ffi.load("libammonia_c.so")
+M = ffi.load("libammonia_c.so")
 
 return {
-    clean = function (s) return ffi.string(mod.clean(s)) end,
-    clean_text = function (s) return ffi.string(mod.clean_text(s)) end,
+    clean = function (s) return ffi.string(M.clean(s)) end,
+    clean_text = function (s) return ffi.string(M.clean_text(s)) end,
 }
