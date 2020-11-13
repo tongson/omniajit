@@ -4,7 +4,12 @@ const char *clean(const char *h);
 const char *clean_text(const char *h);
 ]]
 
-M = ffi.load("libammonia_c.so")
+local p = package.cpath
+if package.cpath == "/" then
+    p = "./"
+end   
+
+M = ffi.load(p.."libammonia_c.so")
 
 return {
     clean = function (s) return ffi.string(M.clean(s)) end,
