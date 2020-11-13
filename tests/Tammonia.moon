@@ -1,6 +1,6 @@
 T = require "u-test"
 ammonia = require "ffi_ammonia"
-print (ammonia.clean("XSS<script>attack</script>"))
-print (ammonia.clean_text("<a href='test'>Test</a>"))
+T.equal("XSS", ammonia.clean("XSS<script>attack</script>"))
+T.equal("", ammonia.clean_text("<a href='test'>Test</a>"))
 
 
