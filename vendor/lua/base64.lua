@@ -1,201 +1,99 @@
---[[
+--[[lit-meta
+  name = "creationix/base64"
+  description = "A pure lua implemention of base64 using bitop"
+  tags = {"crypto", "base64", "bitop"}
+  version = "2.0.0"
+  license = "MIT"
+  author = { name = "Tim Caswell" }
+]]
 
- base64 -- v1.5.2 public domain Lua base64 encoder/decoder
- no warranty implied; use at your own risk
+local bit = require 'bit'
+local rshift = bit.rshift
+local lshift = bit.lshift
+local bor = bit.bor
+local band = bit.band
+local char = string.char
+local byte = string.byte
+local concat = table.concat
+local codes = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='
 
- Needs bit32.extract function. If not present it's implemented using BitOp
- or Lua 5.3 native bit operators. For Lua 5.1 fallbacks to pure Lua
- implementation inspired by Rici Lake's post:
-   http://ricilake.blogspot.co.uk/2007/10/iterating-bits-in-lua.html
+-- Loop over input 3 bytes at a time
+-- a,b,c are 3 x 8-bit numbers
+-- they are encoded into groups of 4 x 6-bit numbers
+-- aaaaaa aabbbb bbbbcc cccccc
+-- if there is no c, then pad the 4th with =
+-- if there is also no b then pad the 3rd with =
+local function base64Encode(str)
+  local parts = {}
+  local j = 1
+  for i = 1, #str, 3 do
+    local a, b, c = byte(str, i, i + 2)
+    parts[j] = char(
+      -- Higher 6 bits of a
+      byte(codes, rshift(a, 2) + 1),
+      -- Lower 2 bits of a + high 4 bits of b
+      byte(codes, bor(
+        lshift(band(a, 3), 4),
+        b and rshift(b, 4) or 0
+      ) + 1),
+      -- Low 4 bits of b + High 2 bits of c
+      b and byte(codes, bor(
+        lshift(band(b, 15), 2),
+        c and rshift(c, 6) or 0
+      ) + 1) or 61, -- 61 is '='
+      -- Lower 6 bits of c
+      c and byte(codes, band(c, 63) + 1) or 61 -- 61 is '='
+    )
+    j = j + 1
+  end
+  return concat(parts)
+end
 
- author: Ilya Kolbin (iskolbin@gmail.com)
- url: github.com/iskolbin/lbase64
+-- Reverse map from character code to 6-bit integer
+local map = {}
+for i = 1, #codes do
+  map[byte(codes, i)] = i - 1
+end
 
- COMPATIBILITY
+-- loop over input 4 characters at a time
+-- The characters are mapped to 4 x 6-bit integers a,b,c,d
+-- They need to be reassalbled into 3 x 8-bit bytes
+-- aaaaaabb bbbbcccc ccdddddd
+-- if d is padding then there is no 3rd byte
+-- if c is padding then there is no 2nd byte
+local function base64Decode(data)
+  local bytes = {}
+  local j = 1
+  for i = 1, #data, 4 do
+    local a = map[byte(data, i)]
+    local b = map[byte(data, i + 1)]
+    local c = map[byte(data, i + 2)]
+    local d = map[byte(data, i + 3)]
 
- Lua 5.1, 5.2, 5.3, LuaJIT
+    -- higher 6 bits are the first char
+    -- lower 2 bits are upper 2 bits of second char
+    bytes[j] = char(bor(lshift(a, 2), rshift(b, 4)))
 
- LICENSE
+    -- if the third char is not padding, we have a second byte
+    if c < 64 then
+      -- high 4 bits come from lower 4 bits in b
+      -- low 4 bits come from high 4 bits in c
+      bytes[j + 1] = char(bor(lshift(band(b, 0xf), 4), rshift(c, 2)))
 
- See end of file for license information.
-
---]]
-
-
-local base64 = {}
-
-local extract = _G.bit32 and _G.bit32.extract
-if not extract then
-	if _G.bit then
-		local shl, shr, band = _G.bit.lshift, _G.bit.rshift, _G.bit.band
-		extract = function( v, from, width )
-			return band( shr( v, from ), shl( 1, width ) - 1 )
-		end
-	elseif _G._VERSION >= "Lua 5.3" then
-		extract = load[[return function( v, from, width )
-			return ( v >> from ) & ((1 << width) - 1)
-		end]]()
-	else
-		extract = function( v, from, width )
-			local w = 0
-			local flag = 2^from
-			for i = 0, width-1 do
-				local flag2 = flag + flag
-				if v % flag2 >= flag then
-					w = w + 2^i
-				end
-				flag = flag2
-			end
-			return w
-		end
-	end
+      -- if the fourth char is not padding, we have a third byte
+      if d < 64 then
+        -- Upper 2 bits come from Lower 2 bits of c
+        -- Lower 6 bits come from d
+        bytes[j + 2] = char(bor(lshift(band(c, 3), 6), d))
+      end
+    end
+    j = j + 3
+  end
+  return concat(bytes)
 end
 
 
-function base64.makeencoder( s62, s63, spad )
-	local encoder = {}
-	for b64code, char in pairs{[0]='A','B','C','D','E','F','G','H','I','J',
-		'K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y',
-		'Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n',
-		'o','p','q','r','s','t','u','v','w','x','y','z','0','1','2',
-		'3','4','5','6','7','8','9',s62 or '+',s63 or'/',spad or'='} do
-		encoder[b64code] = char:byte()
-	end
-	return encoder
-end
-
-function base64.makedecoder( s62, s63, spad )
-	local decoder = {}
-	for b64code, charcode in pairs( base64.makeencoder( s62, s63, spad )) do
-		decoder[charcode] = b64code
-	end
-	return decoder
-end
-
-local DEFAULT_ENCODER = base64.makeencoder()
-local DEFAULT_DECODER = base64.makedecoder()
-
-local char, concat = string.char, table.concat
-
-function base64.encode( str, encoder, usecaching )
-	encoder = encoder or DEFAULT_ENCODER
-	local t, k, n = {}, 1, #str
-	local lastn = n % 3
-	local cache = {}
-	for i = 1, n-lastn, 3 do
-		local a, b, c = str:byte( i, i+2 )
-		local v = a*0x10000 + b*0x100 + c
-		local s
-		if usecaching then
-			s = cache[v]
-			if not s then
-				s = char(encoder[extract(v,18,6)], encoder[extract(v,12,6)], encoder[extract(v,6,6)], encoder[extract(v,0,6)])
-				cache[v] = s
-			end
-		else
-			s = char(encoder[extract(v,18,6)], encoder[extract(v,12,6)], encoder[extract(v,6,6)], encoder[extract(v,0,6)])
-		end
-		t[k] = s
-		k = k + 1
-	end
-	if lastn == 2 then
-		local a, b = str:byte( n-1, n )
-		local v = a*0x10000 + b*0x100
-		t[k] = char(encoder[extract(v,18,6)], encoder[extract(v,12,6)], encoder[extract(v,6,6)], encoder[64])
-	elseif lastn == 1 then
-		local v = str:byte( n )*0x10000
-		t[k] = char(encoder[extract(v,18,6)], encoder[extract(v,12,6)], encoder[64], encoder[64])
-	end
-	return concat( t )
-end
-
-function base64.decode( b64, decoder, usecaching )
-	decoder = decoder or DEFAULT_DECODER
-	local pattern = '[^%w%+%/%=]'
-	if decoder then
-		local s62, s63
-		for charcode, b64code in pairs( decoder ) do
-			if b64code == 62 then s62 = charcode
-			elseif b64code == 63 then s63 = charcode
-			end
-		end
-		pattern = ('[^%%w%%%s%%%s%%=]'):format( char(s62), char(s63) )
-	end
-	b64 = b64:gsub( pattern, '' )
-	local cache = usecaching and {}
-	local t, k = {}, 1
-	local n = #b64
-	local padding = b64:sub(-2) == '==' and 2 or b64:sub(-1) == '=' and 1 or 0
-	for i = 1, padding > 0 and n-4 or n, 4 do
-		local a, b, c, d = b64:byte( i, i+3 )
-		local s
-		if usecaching then
-			local v0 = a*0x1000000 + b*0x10000 + c*0x100 + d
-			s = cache[v0]
-			if not s then
-				local v = decoder[a]*0x40000 + decoder[b]*0x1000 + decoder[c]*0x40 + decoder[d]
-				s = char( extract(v,16,8), extract(v,8,8), extract(v,0,8))
-				cache[v0] = s
-			end
-		else
-			local v = decoder[a]*0x40000 + decoder[b]*0x1000 + decoder[c]*0x40 + decoder[d]
-			s = char( extract(v,16,8), extract(v,8,8), extract(v,0,8))
-		end
-		t[k] = s
-		k = k + 1
-	end
-	if padding == 1 then
-		local a, b, c = b64:byte( n-3, n-1 )
-		local v = decoder[a]*0x40000 + decoder[b]*0x1000 + decoder[c]*0x40
-		t[k] = char( extract(v,16,8), extract(v,8,8))
-	elseif padding == 2 then
-		local a, b = b64:byte( n-3, n-2 )
-		local v = decoder[a]*0x40000 + decoder[b]*0x1000
-		t[k] = char( extract(v,16,8))
-	end
-	return concat( t )
-end
-
-return base64
-
---[[
-------------------------------------------------------------------------------
-This software is available under 2 licenses -- choose whichever you prefer.
-------------------------------------------------------------------------------
-ALTERNATIVE A - MIT License
-Copyright (c) 2018 Ilya Kolbin
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-of the Software, and to permit persons to whom the Software is furnished to do
-so, subject to the following conditions:
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-------------------------------------------------------------------------------
-ALTERNATIVE B - Public Domain (www.unlicense.org)
-This is free and unencumbered software released into the public domain.
-Anyone is free to copy, modify, publish, use, compile, sell, or distribute this
-software, either in source code form or as a compiled binary, for any purpose,
-commercial or non-commercial, and by any means.
-In jurisdictions that recognize copyright laws, the author or authors of this
-software dedicate any and all copyright interest in the software to the public
-domain. We make this dedication for the benefit of the public at large and to
-the detriment of our heirs and successors. We intend this dedication to be an
-overt act of relinquishment in perpetuity of all present and future rights to
-this software under copyright law.
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
-ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-------------------------------------------------------------------------------
---]]
+return {
+  encode = base64Encode,
+  decode = base64Decode,
+}
