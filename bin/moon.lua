@@ -57,7 +57,7 @@ run = function()
   local lib = require"lib"
   local spath = lib.util.split(script_fname)
   package.path = string.format("%s/?.lua;%s/?/init.lua;./?.lua;./?/init.lua", spath, spath)
-  package.cpath = string.format("%s", spath)
+  package.cpath = string.format("%s/", spath)
   local moonscript_chunk, lua_parse_error
   local passed, err = pcall(function()
     moonscript_chunk, lua_parse_error = moonscript.loadfile(script_fname, {
