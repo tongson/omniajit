@@ -64,6 +64,11 @@ echo " lpeg module tested."
 sleep 2
 clear
 
+./Tffi_ammonia.moon
+echo " ffi_ammonia module tested."
+sleep 2
+clear
+
 moon moonscript/* && { echo "Ok."; }
 echo " Partial MoonScript language tests done."
 sleep 2
