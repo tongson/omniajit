@@ -4,8 +4,8 @@ const char *clean(const char *h);
 const char *clean_text(const char *h);
 ]]
 
-local p = package.cpath
-if package.cpath == "/" then
+local p = package.ffipath
+if package.ffipath == "/" then
     p = "./"
 end   
 
