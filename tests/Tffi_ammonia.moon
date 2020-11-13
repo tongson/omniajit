@@ -1,3 +1,4 @@
+#!/usr/bin/env moon
 T = require "u-test"
 ammonia = require "ffi_ammonia"
 T["ffi_ammonia.clean"] = ->
