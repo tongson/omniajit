@@ -70,8 +70,8 @@ Module                                                            | Version     
 [lunajson](https://github.com/grafi-tt/lunajson)                  | 1dcf3fa         | MIT
 [CBOR](https://framagit.org/fperrad/lua-ConciseSerialization)     | 0.2.2           | MIT
 [salt](https://github.com/VaiN474/salt)                           | fa0d48f         | MIT
-[base64](https://github.com/iskolbin/lbase64/)                    | dbcd758         | MIT
-[sqlite3](https://github.com/stepelu/lua-ljsqlite3)[3]          | d742002         | MIT
+[base64](https://github.com/luvit/lit)                            | a64e8f9 / 2.0.0 | MIT
+[sqlite3](https://github.com/stepelu/lua-ljsqlite3)[3]            | d742002         | MIT
 [inspect](https://github.com/kikito/inspect.lua)                  | b611db6         | MIT
 [lpeg_patterns](https://github.com/daurnimator/lpeg_patterns)     | 0da7cad         | MIT
 [lua-http](https://github.com/daurnimator/lua-http)[2]            | 8582db9         | MIT
