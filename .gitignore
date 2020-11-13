@@ -4,4 +4,5 @@
 /lib/luajit/src/*.a
 /lib/luajit/src/host/*.o
 /*.lua
+/tests/*.so
 /Makefile
