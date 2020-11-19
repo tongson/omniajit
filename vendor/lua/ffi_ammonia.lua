@@ -12,6 +12,16 @@ end
 M = ffi.load(p.."libammonia_c.so")
 
 return {
-    clean = function (s) return ffi.string(M.clean(s)) end,
-    clean_text = function (s) return ffi.string(M.clean_text(s)) end,
+    clean = function (s)
+        if not s then
+            return nil, "Missing argument."
+        end
+        return ffi.string(M.clean(s))
+    end,
+    clean_text = function (s) 
+        if not s then
+            return nil, "Missing argument."
+        end
+        return ffi.string(M.clean_text(s))
+    end,
 }
