@@ -6,3 +6,4 @@
 /*.lua
 /tests/*.so
 /Makefile
+/.envrc
