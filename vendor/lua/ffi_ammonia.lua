@@ -18,7 +18,7 @@ return {
         end
         return ffi.string(M.clean(s))
     end,
-    clean_text = function (s) 
+    clean_text = function (s)
         if not s then
             return nil, "Missing argument."
         end
