@@ -4,7 +4,7 @@ export TERM=xterm-256color
 set -eu
 clear
 
-./Tbase64.moon
+./Tffi_base64.moon
 echo " base64 module tested."
 sleep 2
 clear
@@ -68,6 +68,13 @@ clear
 echo " ffi_ammonia module tested."
 sleep 2
 clear
+
+
+./Tffi_blake3.moon
+echo " ffi_blake3 module tested."
+sleep 2
+clear
+
 
 moon moonscript/* && { echo "Ok."; }
 echo " Partial MoonScript language tests done."
