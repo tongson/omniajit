@@ -7,7 +7,7 @@ const char *hash(const char *h);
 local p = package.ffipath
 if package.ffipath == "/" then
     p = "./"
-end   
+end
 
 M = ffi.load(p.."libblake3_c.so")
 
