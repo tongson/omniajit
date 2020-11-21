@@ -1,5 +1,5 @@
 #!/usr/bin/env moon
-lst = require("ffi_list").new()
+lst = require("list").new()
 T = require("u-test")
 
 lst\pushl("b") -- push last 'b'
