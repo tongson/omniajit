@@ -4,7 +4,7 @@ export TERM=xterm-256color
 set -eu
 clear
 
-./Tffi_base64.moon
+./Tbase64.moon
 echo " base64 module tested."
 sleep 2
 clear

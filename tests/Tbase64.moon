@@ -1,5 +1,5 @@
 #!/usr/bin/env moon
-b64 = require"ffi_base64"
+b64 = require"base64"
 fast = require"base64_fast".fast
 T = require "u-test"
 
