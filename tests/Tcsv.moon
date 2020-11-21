@@ -1,5 +1,5 @@
 #!/usr/bin/env moon
-csv = require "ftcsv"
+csv = require "csv"
 la = require "lautil"
 same = la.deepcompare
 T = require "u-test"
