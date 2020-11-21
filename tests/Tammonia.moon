@@ -1,6 +1,6 @@
 #!/usr/bin/env moon
 T = require "u-test"
-ammonia = require "ffi_ammonia"
+ammonia = require "ammonia"
 T["ffi_ammonia.clean"] = ->
     T.equal("XSS", ammonia.clean("XSS<script>attack</script>"))
 T["ffi_ammonia.clean_text"] = ->
