@@ -1,5 +1,5 @@
 #!/usr/bin/env moon
-lj = require 'lunajson'
+lj = require 'json'
 
 test = (round) ->
     saxtbl = {}
