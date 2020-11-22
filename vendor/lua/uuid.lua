@@ -32,6 +32,7 @@
 --
 
 local M = {}
+local ffi_ext = require('ffi_ext')
 local math = require('math')
 local os = require('os')
 local io = require('io')
@@ -141,9 +142,10 @@ end
 -- uuid.seed()
 -- print("here's a new uuid: ",uuid())
 function M.seed()
-  local urandom = assert(io.open('/dev/urandom','rb'))
-  local a, b, c, d = urandom:read(4):byte(1,4)
-  urandom:close()
+  local a = string.byte(ffi_ext.getrandom(1))
+  local b = string.byte(ffi_ext.getrandom(1))
+  local c = string.byte(ffi_ext.getrandom(1))
+  local d = string.byte(ffi_ext.getrandom(1))
   local seed = a*0x1000000 + b*0x10000 + c *0x100 + d
   return M.randomseed(seed)
 end
