@@ -53,6 +53,6 @@ ffiext.getrandom = function(s)
   if r ~= s then
     return nil, "Not enough returned bytes."
   end
-  return ffi.string(buf)
+  return ffi.string(buf, s)
 end
 return ffiext
