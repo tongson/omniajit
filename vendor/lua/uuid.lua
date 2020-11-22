@@ -142,10 +142,11 @@ end
 -- uuid.seed()
 -- print("here's a new uuid: ",uuid())
 function M.seed()
-  local a = string.byte(ffi_ext.getrandom(1))
-  local b = string.byte(ffi_ext.getrandom(1))
-  local c = string.byte(ffi_ext.getrandom(1))
-  local d = string.byte(ffi_ext.getrandom(1))
+  local r = ffi_ext.getrandom(4)
+  local a = string.byte(r)
+  local b = string.byte(r, 2)
+  local c = string.byte(r, 3)
+  local d = string.byte(r, 4)
   local seed = a*0x1000000 + b*0x10000 + c *0x100 + d
   return M.randomseed(seed)
 end
