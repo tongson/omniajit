@@ -4,8 +4,10 @@ local ffiext = {}
 ffi.cdef[[
 static const int EINTR = 4; /* Linux: Interrupted system call */
 static const int EAGAIN = 11; /* Linux: Try again */
+static const int GRND_NONBLOCK = 1;
 char *strerror(int);
 int dprintf(int, const char *, ...);
+ssize_t getrandom(void *, size_t, unsigned int);
 ]]
 ffiext.dprintf = function(fd, s, ...)
   s = string.format(s, ...)
@@ -22,7 +24,7 @@ ffiext.retry = function(fn)
   return function(...)
     local r, e
     repeat
-      r = fn(...)
+      r = tonumber(fn(...))
       e = ffi.errno()
       if (r ~= -1) or ((r == -1) and (e ~= C.EINTR) and (e ~= C.EAGAIN)) then
         break
@@ -43,5 +45,14 @@ ffiext.open = function(filename)
   else
     return -1, e
   end
+end
+ffiext.getrandom = function(s)
+  s = s or 512
+  local buf = ffi.new(ffi.typeof("char[?]"), s)
+  local r, e = ffiext.retry(C.getrandom)(buf, s, bit.bor(C.GRND_NONBLOCK))
+  if r ~= s then
+    return nil, "Not enough returned bytes."
+  end
+  return ffi.string(buf)
 end
 return ffiext
