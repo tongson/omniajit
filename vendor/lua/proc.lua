@@ -206,9 +206,9 @@ function M.exec(cmd, args, env, dir, stdin, stdout, stderr, autokill)
       C._exit(0)
     end
 
-    if stdin  then C.dup2(stdin .fd, 0) end
-    if stdout then C.dup2(stdout.fd, 1) end
-    if stderr then C.dup2(stderr.fd, 2) end
+    if stdin  then ext.retry(C.dup2)(stdin .fd, 0) end
+    if stdout then ext.retry(C.dup2)(stdout.fd, 1) end
+    if stderr then ext.retry(C.dup2)(stderr.fd, 2) end
 
     C.execve(cmd, arg_ptr, env_ptr)
 
