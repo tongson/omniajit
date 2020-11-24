@@ -202,7 +202,7 @@ function M.exec(cmd, args, env, dir, stdin, stdout, stderr, autokill)
     if dir and C.chdir(dir) ~= 0 then
       --chdir failed: put errno on the pipe and exit.
       local err = int(1, ffi.errno())
-      C.write(pipefds[1], err, ffi.sizeof(err))
+      ext.retry(C.write)(pipefds[1], err, ffi.sizeof(err))
       C._exit(0)
     end
 
@@ -214,7 +214,7 @@ function M.exec(cmd, args, env, dir, stdin, stdout, stderr, autokill)
 
     --exec failed: put errno on the pipe and exit.
     local err = int(1, ffi.errno())
-    C.write(pipefds[1], err, ffi.sizeof(err))
+    ext.retry(C.write)(pipefds[1], err, ffi.sizeof(err))
     C._exit(0)
 
   else --in parent process
