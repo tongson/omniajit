@@ -115,6 +115,16 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
      return nil, R
   end
 
+  local F_GETFD = 1
+  local F_SETFD = 2
+  local FD_CLOEXEC = 1
+  local flags = fcntl(pipe[1], F_GETFD)
+  local flags = bit.bor(flags, FD_CLOEXEC)
+  if fcntl(pipe[1], F_SETFD, ffi.cast('int', flags)) ~= 0 then
+    R.error = strerror(errno(), "fcntl(2) for errno pipe failed")
+    return nil, R
+  end
+
   local pid = fork()
   if pid < 0 then
     R.error = strerror(errno(), "fork(2) failed")
