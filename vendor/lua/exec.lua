@@ -80,11 +80,12 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
       errexit: panic when error is encountered (boolean)
 
     OUTPUT
-    { stdout = "STDOUT (string)",
-      stderr = "STDERR (string)",
-      code = "return code (number)",
-      error = "error (string)"
-    }
+      {
+        stdout: "STDOUT (string)",
+        stderr: "STDERR (string)",
+        code: "return code (number)",
+        error: "error (string)"
+      }
   ]]
   args = args or {}
   local R = {
