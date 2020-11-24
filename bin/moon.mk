@@ -2,7 +2,7 @@
 EXE:= moon
 SRC:=
 SRC_DIR:=
-VENDOR:= lib ring
+VENDOR:= lib ring exec ffi_ext
 VENDOR+= uuid salt inspect lhutil lautil u-test sqlite3 csv json curler etlua
 VENDOR+= list ammonia base64 blake3
 VENDOR+= argparse lfs lpcap lpcode lpeg lpprint lpvm re
