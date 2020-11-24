@@ -247,6 +247,7 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
         return nil, strerror(errno(), "fcntl(2) failed")
       end
       local n, s, c
+      -- Do not wrap C.read
       while true do
         n = C.read(i, buf, 1)
         if n == 0 then
