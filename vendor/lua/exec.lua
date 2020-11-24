@@ -219,7 +219,7 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
     end
     do
       local status = ffi.new("int[?]", 1)
-      local r, e = ffiext.retry(C.waitpid)(pid, status, 0)
+      local r, e = waitpid(pid, status, 0)
       if r == -1 then
         R.error = strerror(e, "waitpid(2) failed")
         return nil, R
