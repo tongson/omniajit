@@ -210,7 +210,7 @@ function M.exec(cmd, args, env, dir, stdin, stdout, stderr, autokill)
     if stdout then ext.retry(C.dup2)(stdout.fd, 1) end
     if stderr then ext.retry(C.dup2)(stderr.fd, 2) end
 
-    C.execve(cmd, arg_ptr, env_ptr)
+    ext.retry(C.execve)(cmd, arg_ptr, env_ptr)
 
     --exec failed: put errno on the pipe and exit.
     local err = int(1, ffi.errno())
