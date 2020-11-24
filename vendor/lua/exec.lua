@@ -82,8 +82,8 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
 
     OUTPUT
       {
-        p_stdout: "STDOUT (string)",
-        p_stderr: "STDERR (string)",
+        stdout: "STDOUT (string)",
+        stderr: "STDERR (string)",
         code: "return code (number)",
         error: "error (string)"
       }
