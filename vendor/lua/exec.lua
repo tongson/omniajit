@@ -38,6 +38,7 @@ local execvp = ffiext.retry(C.execvp)
 local fcntl = ffiext.retry(C.fcntl)
 local fork = ffiext.retry(C.fork)
 local waitpid = ffiext.retry(C.waitpid)
+local read = ffiext.retry(C.read)
 local strerror = ffiext.strerror
 local open = ffiext.open
 local errno = ffi.errno
@@ -66,23 +67,23 @@ local redirect = function(io_or_filename, dest_fd)
   return true
 end
 
-exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stderr_redirect, ignore, errexit)
+exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errexit)
   --[[
     INPUT
       exe: program or executable (string)
       args: arguments to program (table)
       env: environment variables when running program (table)
       cwd: current working directory before running program (string)
-      stdin_string: STDIN input to program (string)
-      stdout_redirect: file to redirect STDOUT stream to (string)
-      stderr_redirect: file to redirect STDERR stream to (string)
+      stdin: STDIN input to program (string)
+      stdout: file to redirect STDOUT stream to (string)
+      stderr: file to redirect STDERR stream to (string)
       ignore: when not nil or false, ignores the return value of the program (string)
       errexit: panic when error is encountered (boolean)
 
     OUTPUT
       {
-        stdout: "STDOUT (string)",
-        stderr: "STDERR (string)",
+        p_stdout: "STDOUT (string)",
+        p_stderr: "STDERR (string)",
         code: "return code (number)",
         error: "error (string)"
       }
@@ -93,19 +94,19 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
     stderr = {}
   }
   local ret
-  local stdin = ffi.new("int[2]")
-  local stdout = ffi.new("int[2]")
-  local stderr = ffi.new("int[2]")
+  local p_stdin = ffi.new("int[2]")
+  local p_stdout = ffi.new("int[2]")
+  local p_stderr = ffi.new("int[2]")
   local pipe = ffi.new("int[2]")
-  if C.pipe(stdin) == -1 then
+  if C.pipe(p_stdin) == -1 then
      R.error = strerror(errno(), "pipe(2) for STDIN failed")
      return nil, R
   end
-  if C.pipe(stdout) == -1 then
+  if C.pipe(p_stdout) == -1 then
      R.error = strerror(errno(), "pipe(2) for STDOUT failed")
      return nil, R
   end
-  if C.pipe(stderr) == -1 then
+  if C.pipe(p_stderr) == -1 then
      R.error = strerror(errno(), "pipe(2) for STDERR failed")
      return nil, R
   end
@@ -114,56 +115,56 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
      return nil, R
   end
 
-  local pid = C.fork()
+  local pid = fork()
   if pid < 0 then
     R.error = strerror(errno(), "fork(2) failed")
     return nil, R
   elseif pid == 0 then -- child process
-    C.close(stdin[1])
-    C.close(stdout[0])
-    C.close(stderr[0])
+    C.close(p_stdin[1])
+    C.close(p_stdout[0])
+    C.close(p_stderr[0])
     C.close(pipe[0])
-    if stdin_string then
-      local r, e = dup2(stdin[0], STDIN)
+    if stdin then
+      local r, e = dup2(p_stdin[0], STDIN)
       if r == -1 then
         local err = int(1, ffi.errno())
         write(pipe[1], err, ffi.sizeof(err))
         C._exit(0)
       end
     end
-    if stdout_redirect then
-      local r, es = redirect(stdout_redirect, STDOUT)
+    if stdout then
+      local r, es = redirect(stdout, STDOUT)
       if r == nil then
         local err = int(1, ffi.errno())
         write(pipe[1], err, ffi.sizeof(err))
         C._exit(0)
       end
     else
-      local r, e = dup2(stdout[1], STDOUT)
+      local r, e = dup2(p_stdout[1], STDOUT)
       if r == -1 then
         local err = int(1, ffi.errno())
         write(pipe[1], err, ffi.sizeof(err))
         C._exit(0)
       end
     end
-    if stderr_redirect then
-      local r, es = redirect(stderr_redirect, STDERR)
+    if stderr then
+      local r, es = redirect(stderr, STDERR)
       if r == nil then
         local err = int(1, ffi.errno())
         write(pipe[1], err, ffi.sizeof(err))
         C._exit(0)
       end
     else
-      local r, e = dup2(stderr[1], STDERR)
+      local r, e = dup2(p_stderr[1], STDERR)
       if r == -1 then
         local err = int(1, ffi.errno())
         write(pipe[1], err, ffi.sizeof(err))
         C._exit(0)
       end
     end
-    C.close(stdin[0])
-    C.close(stdout[1])
-    C.close(stderr[1])
+    C.close(p_stdin[0])
+    C.close(p_stdout[1])
+    C.close(p_stderr[1])
     local string_array_t = ffi.typeof('const char *[?]')
     -- local char_p_k_p_t   = ffi.typeof('char *const*')
     -- args is 1-based Lua table, argv is 0-based C array
@@ -198,31 +199,33 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
     execvp(exe, ffi.cast("char *const*", argv))
     assert(nil, "assertion failed: exec.spawn (should be unreachable!)")
   else
+
+    if stdin then
+      local len = string.len(stdin)
+      local str = ffi.new("char[?]", len + 1)
+      ffi.copy(str, stdin, len)
+      local r, e = write(p_stdin[1], str, len)
+      if r == -1 then
+        R.error = strerror(e, "write(2) failed")
+        return nil, R
+      end
+      C.close(p_stdin[1])
+    else
+      C.close(p_stdin[1])
+    end
+
     C.close(pipe[1])
     local err = int(1)
-    local n = C.read(pipe[0], err, ffi.sizeof(err))
+    local n = read(pipe[0], err, ffi.sizeof(err))
     C.close(pipe[0])
     if n > 0 then
       R.error = strerror(errno(), "exec failed")
       return nil, R
     end
 
-    if stdin_string then
-      local len = string.len(stdin_string)
-      local str = ffi.new("char[?]", len + 1)
-      ffi.copy(str, stdin_string, len)
-      local r, e = write(stdin[1], str, len)
-      if r == -1 then
-        R.error = strerror(e, "write(2) failed")
-        return nil, R
-      end
-      C.close(stdin[1])
-    else
-      C.close(stdin[1])
-    end
     do
       local status = ffi.new("int[?]", 1)
-      local r, e = waitpid(pid, status, 0)
+      local r, e = C.waitpid(pid, status, 0)
       if r == -1 then
         R.error = strerror(e, "waitpid(2) failed")
         return nil, R
@@ -240,7 +243,7 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
       local flags = C.fcntl(i, F_GETFL, 0)
       flags = bit.bor(flags, O_NONBLOCK)
       flags = bit.bor(flags, FD_CLOEXEC)
-      if C.fcntl(i, F_SETFL, ffi.new("int", flags)) == -1 then
+      if fcntl(i, F_SETFL, ffi.new("int", flags)) == -1 then
         return nil, strerror(errno(), "fcntl(2) failed")
       end
       local n, s, c
@@ -269,22 +272,22 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
       return true
     end
     local sr, se
-    sr, se = output(stdout[0], R.stdout)
+    sr, se = output(p_stdout[0], R.stdout)
     if sr == nil then
       R.error = se
       return nil, R
     end
-    sr, se = output(stderr[0], R.stderr)
+    sr, se = output(p_stderr[0], R.stderr)
     if sr == nil then
       R.error = se
       return nil, R
     end
-    C.close(stdin[0])
-    C.close(stdin[1])
-    C.close(stdout[0])
-    C.close(stdout[1])
-    C.close(stderr[0])
-    C.close(stderr[1])
+    C.close(p_stdin[0])
+    C.close(p_stdin[1])
+    C.close(p_stdout[0])
+    C.close(p_stdout[1])
+    C.close(p_stderr[0])
+    C.close(p_stderr[1])
     C.close(pipe[0])
     C.close(pipe[1])
   end
@@ -293,8 +296,8 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
   elseif errexit then
     return panic("<errexit> %s %s\n  -- ERROR --\n%s\n  -- STDERR --\n%s\n  -- STDOUT --\n%s\n", exe, table.concat(args, " "),
         R.error or "",
-        table.concat(R.stderr, "\n"),
-        table.concat(R.stdout, "\n"))
+        table.concat(R.p_stderr, "\n"),
+        table.concat(R.p_stdout, "\n"))
   else
     return nil, R
   end
@@ -329,7 +332,7 @@ exec.cmd = setmetatable({},
         else
           args = {...}
         end
-        return exec.spawn(exe, args, args.env, args.cwd, args.stdin, args.stdout, args.stderr, args.ignore, args.errexit)
+        return exec.spawn(exe, args, args.env, args.cwd, args.p_stdin, args.p_stdout, args.p_stderr, args.ignore, args.errexit)
       end
     end
   })
