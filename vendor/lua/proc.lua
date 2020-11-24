@@ -174,7 +174,7 @@ function M.exec(cmd, args, env, dir, stdin, stdout, stderr, autokill)
   local flags = ext.retry(C.fcntl)(pipefds[1], F_GETFD)
   local flags = bit.bor(flags, FD_CLOEXEC)
   if ext.retry(C.fcntl)(pipefds[1], F_SETFD, ffi.cast('int', flags)) ~= 0 then
-    return err'fcnt'
+    return err'fcntl'
   end
 
   local ppid_before_fork = autokill and C.getpid()
