@@ -176,7 +176,7 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
     end
     argv[0] = exe
     argv[#args + 1] = nil
-    C.execvp(exe, ffi.cast("char *const*", argv))
+    C.execve(exe, ffi.cast("char *const*", argv))
     assert(nil, "assertion failed: exec.spawn (should be unreachable!)")
   else
     if stdin_string then
