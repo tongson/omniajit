@@ -7,7 +7,7 @@ local panic = function(str, ...)
   os.exit(1)
 end
 local ffi = require "ffi"
-local ffiext = require "ffiext"
+local ffiext = require "ffi_ext"
 local C = ffi.C
 local exec = {}
 ffi.cdef([[
@@ -206,10 +206,12 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
     local output = function(i, o)
       local F_GETFL = 0x03
       local F_SETFL = 0x04
+      local FD_CLOEXEC = 0x01
       local O_NONBLOCK = 0x800
       local buf = ffi.new("char[?]", 1)
       local flags = C.fcntl(i, F_GETFL, 0)
       flags = bit.bor(flags, O_NONBLOCK)
+      flags = bit.bor(flags, FD_CLOEXEC)
       if C.fcntl(i, F_SETFL, ffi.new("int", flags)) == -1 then
         return nil, strerror(errno(), "fcntl(2) failed")
       end
