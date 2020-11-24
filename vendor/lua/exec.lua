@@ -39,6 +39,7 @@ local fcntl = ffiext.retry(C.fcntl)
 local fork = ffiext.retry(C.fork)
 local waitpid = ffiext.retry(C.waitpid)
 local strerror = ffiext.strerror
+local open = ffiext.open
 local errno = ffi.errno
 -- dest should be either 0 or 1 (STDOUT or STDERR)
 local redirect = function(io_or_filename, dest_fd)
@@ -53,7 +54,7 @@ local redirect = function(io_or_filename, dest_fd)
     -- otherwise handle file-based redirection
   else
     local fd, r, e
-    fd, e = ffiext.open(io_or_filename)
+    fd, e = open(io_or_filename)
     if fd == -1 then return nil, strerror(e, "open(2) failed") end
     r, e = dup2(fd, dest_fd)
     if r == -1 then
