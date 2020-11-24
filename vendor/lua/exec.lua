@@ -192,6 +192,7 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
         C._exit(0)
       end
     end
+    C.close(pipe[1])
     argv[0] = exe
     argv[#args + 1] = nil
     execvp(exe, ffi.cast("char *const*", argv))
