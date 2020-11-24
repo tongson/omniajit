@@ -18,7 +18,7 @@ ffiext.dprintf = function(fd, s, ...)
 end
 ffiext.strerror = function(e, s)
   s = s or "error"
-  return string.format("%s: %s\n", s, ffi.string(C.strerror(e)))
+  return string.format("%s: %s", s, ffi.string(C.strerror(e)))
 end
 ffiext.retry = function(fn)
   return function(...)
