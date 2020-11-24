@@ -260,7 +260,7 @@ function proc:exit_code()
     return nil, 'invalid pid'
   end
   local status = int(1)
-  local pid = C.waitpid(self.id, status, WNOHANG)
+  local pid = ext.retry(C.waitpid)(self.id, status, WNOHANG)
   if pid < 0 then
     return err'waitpid'
   end
