@@ -282,6 +282,8 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
     C.close(stdout[1])
     C.close(stderr[0])
     C.close(stderr[1])
+    C.close(pipe[0])
+    C.close(pipe[1])
   end
   if ret == 0 or ignore then
     return pid, R
