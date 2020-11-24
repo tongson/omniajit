@@ -1,5 +1,5 @@
 .DEFAULT_GOAL= release
-EXE:= rugby
+EXE:= ll
 SRC:=
 SRC_DIR:=
 VENDOR:= lib ring exec ffi_ext
