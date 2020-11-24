@@ -4,6 +4,7 @@
 --Modified by Eduardo Tongson. Removed Windows support.
 local ffi = require'ffi'
 local bit = require'bit'
+local ext = require'ffi_ext'
 local M = {}
 local proc = {}
 
@@ -177,7 +178,7 @@ function M.exec(cmd, args, env, dir, stdin, stdout, stderr, autokill)
   end
 
   local ppid_before_fork = autokill and C.getpid()
-  local pid = C.fork()
+  local pid = ext.retry(C.fork)()
 
   if pid == -1 then --in parent process
 
