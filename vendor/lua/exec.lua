@@ -126,7 +126,7 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
       if r == -1 then
         local err = int(1, ffi.errno())
         write(pipe[1], err, ffi.sizeof(err))
-	C._exit(0)
+        C._exit(0)
       end
     end
     if stdout_redirect then
@@ -134,14 +134,14 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
       if r == nil then
         local err = int(1, ffi.errno())
         write(pipe[1], err, ffi.sizeof(err))
-	C._exit(0)
+        C._exit(0)
       end
     else
       local r, e = dup2(stdout[1], STDOUT)
       if r == -1 then
         local err = int(1, ffi.errno())
         write(pipe[1], err, ffi.sizeof(err))
-	C._exit(0)
+        C._exit(0)
       end
     end
     if stderr_redirect then
@@ -149,14 +149,14 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
       if r == nil then
         local err = int(1, ffi.errno())
         write(pipe[1], err, ffi.sizeof(err))
-	C._exit(0)
+        C._exit(0)
       end
     else
       local r, e = dup2(stderr[1], STDERR)
       if r == -1 then
         local err = int(1, ffi.errno())
         write(pipe[1], err, ffi.sizeof(err))
-	C._exit(0)
+        C._exit(0)
       end
     end
     C.close(stdin[0])
@@ -176,7 +176,7 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
         if C.setenv(name, value, overwrite_flag) == -1 then
           local err = int(1, ffi.errno())
           write(pipe[1], err, ffi.sizeof(err))
-	  C._exit(0)
+          C._exit(0)
         end
       end
       for name, value in pairs(env or {}) do
@@ -187,7 +187,7 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
       if C.chdir(tostring(cwd)) == -1 then
         local err = int(1, ffi.errno())
         write(pipe[1], err, ffi.sizeof(err))
-	C._exit(0)
+        C._exit(0)
       end
     end
     argv[0] = exe
