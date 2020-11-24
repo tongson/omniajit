@@ -171,9 +171,9 @@ function M.exec(cmd, args, env, dir, stdin, stdout, stderr, autokill)
   if C.pipe(pipefds) ~= 0 then
     return err'pipe'
   end
-  local flags = C.fcntl(pipefds[1], F_GETFD)
+  local flags = ext.retry(C.fcntl)(pipefds[1], F_GETFD)
   local flags = bit.bor(flags, FD_CLOEXEC)
-  if C.fcntl(pipefds[1], F_SETFD, ffi.cast('int', flags)) ~= 0 then
+  if ext.retry(C.fcntl)(pipefds[1], F_SETFD, ffi.cast('int', flags)) ~= 0 then
     return err'fcnt'
   end
 
