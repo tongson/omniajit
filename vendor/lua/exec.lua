@@ -8,9 +8,11 @@ local panic = function(str, ...)
 end
 local ffi = require "ffi"
 local ffiext = require "ffi_ext"
+local int = ffi.typeof'int[?]'
 local C = ffi.C
 local exec = {}
 ffi.cdef([[
+void _exit(int status);
 typedef int32_t pid_t;
 pid_t fork(void);
 pid_t waitpid(pid_t pid, int *status, int options);
@@ -31,6 +33,11 @@ local STDIN = 0
 local STDOUT = 1
 local STDERR = 2
 local dup2 = ffiext.retry(C.dup2)
+local write = ffiext.retry(C.write)
+local execvp = ffiext.retry(C.execvp)
+local fcntl = ffiext.retry(C.fcntl)
+local fork = ffiext.retry(C.fork)
+local waitpid = ffiext.retry(C.waitpid)
 local strerror = ffiext.strerror
 local errno = ffi.errno
 -- dest should be either 0 or 1 (STDOUT or STDERR)
@@ -87,6 +94,7 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
   local stdin = ffi.new("int[2]")
   local stdout = ffi.new("int[2]")
   local stderr = ffi.new("int[2]")
+  local pipe = ffi.new("int[2]")
   if C.pipe(stdin) == -1 then
      R.error = strerror(errno(), "pipe(2) for STDIN failed")
      return nil, R
@@ -99,6 +107,11 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
      R.error = strerror(errno(), "pipe(2) for STDERR failed")
      return nil, R
   end
+  if C.pipe(pipe) == -1 then
+     R.error = strerror(errno(), "pipe(2) for errno pipe failed")
+     return nil, R
+  end
+
   local pid = C.fork()
   if pid < 0 then
     R.error = strerror(errno(), "fork(2) failed")
@@ -107,37 +120,43 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
     C.close(stdin[1])
     C.close(stdout[0])
     C.close(stderr[0])
+    C.close(pipe[0])
     if stdin_string then
       local r, e = dup2(stdin[0], STDIN)
       if r == -1 then
-        R.error = strerror(e, "dup2(2) failed")
-        return nil, R
+        local err = int(1, ffi.errno())
+        write(pipe[1], err, ffi.sizeof(err))
+	C._exit(0)
       end
     end
     if stdout_redirect then
       local r, es = redirect(stdout_redirect, STDOUT)
       if r == nil then
-        R.error = es
-        return nil, R
+        local err = int(1, ffi.errno())
+        write(pipe[1], err, ffi.sizeof(err))
+	C._exit(0)
       end
     else
       local r, e = dup2(stdout[1], STDOUT)
       if r == -1 then
-        R.error = strerror(e, "dup2(2) failed")
-        return nil, R
+        local err = int(1, ffi.errno())
+        write(pipe[1], err, ffi.sizeof(err))
+	C._exit(0)
       end
     end
     if stderr_redirect then
       local r, es = redirect(stderr_redirect, STDERR)
       if r == nil then
-        R.error = es
-        return nil, R
+        local err = int(1, ffi.errno())
+        write(pipe[1], err, ffi.sizeof(err))
+	C._exit(0)
       end
     else
       local r, e = dup2(stderr[1], STDERR)
       if r == -1 then
-        R.error = strerror(e, "dup2(2) failed")
-        return nil, R
+        local err = int(1, ffi.errno())
+        write(pipe[1], err, ffi.sizeof(err))
+	C._exit(0)
       end
     end
     C.close(stdin[0])
@@ -155,35 +174,41 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
       local function setenv(name, value)
         local overwrite_flag = 1
         if C.setenv(name, value, overwrite_flag) == -1 then
-          return nil, strerror(errno(), "setenv(3) failed")
-        else
-          return value
+          local err = int(1, ffi.errno())
+          write(pipe[1], err, ffi.sizeof(err))
+	  C._exit(0)
         end
       end
       for name, value in pairs(env or {}) do
-        local x, es = setenv(name, tostring(value))
-        if x == nil then
-          R.error = es
-          return nil, R
-        end
+        setenv(name, tostring(value))
       end
     end
     if cwd then
       if C.chdir(tostring(cwd)) == -1 then
-        R.error = strerror(errno(), "chdir(2) failed")
-        return nil, R
+        local err = int(1, ffi.errno())
+        write(pipe[1], err, ffi.sizeof(err))
+	C._exit(0)
       end
     end
     argv[0] = exe
     argv[#args + 1] = nil
-    C.execve(exe, ffi.cast("char *const*", argv))
+    execvp(exe, ffi.cast("char *const*", argv))
     assert(nil, "assertion failed: exec.spawn (should be unreachable!)")
   else
+    C.close(pipe[1])
+    local err = int(1)
+    local n = C.read(pipe[0], err, ffi.sizeof(err))
+    C.close(pipe[0])
+    if n > 0 then
+      R.error = strerror(errno(), "exec failed")
+      return nil, R
+    end
+
     if stdin_string then
       local len = string.len(stdin_string)
       local str = ffi.new("char[?]", len + 1)
       ffi.copy(str, stdin_string, len)
-      local r, e = ffiext.retry(C.write)(stdin[1], str, len)
+      local r, e = write(stdin[1], str, len)
       if r == -1 then
         R.error = strerror(e, "write(2) failed")
         return nil, R
@@ -200,7 +225,7 @@ exec.spawn = function (exe, args, env, cwd, stdin_string, stdout_redirect, stder
         return nil, R
       end
       ret = bit.rshift(bit.band(status[0], 0xff00), 8)
-      if ret == 1 then R.error = "execvp(2) failed" end
+      if ret == 1 then R.error = strerror(errno(), "execvp(2) failed") end
       R.code = ret
     end
     local output = function(i, o)
