@@ -319,8 +319,9 @@ exec.cmd = function(exe)
     __index = function(_, a)
       return function(_, ...)
         local args = { a }
-        for _, k in ipairs({...}) do
-          args[#args+1] = k
+        local a = table.pack(...)
+        for i=1,a.n do
+          args[#args+1] = a[i]
         end
         return exec.spawn(exe,
                          args,
