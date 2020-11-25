@@ -319,7 +319,6 @@ exec.cmd = function(exe)
     __index = function(_, a)
       return function(_, ...)
         local args = { a }
-        local n = select("#", ...)
         for _, k in ipairs({...}) do
           args[#args+1] = k
         end
