@@ -313,6 +313,29 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
     return nil, R
   end
 end
+exec.init = function(exe)
+  local set = {}
+  return setmetatable(set, {
+    __index = function(_, a)
+      return function(_, ...)
+        local args = { a }
+        local n = select("#", ...)
+        for _, k in ipairs({...}) do
+          args[#args+1] = k
+        end
+        return exec.spawn(exe,
+                         args,
+           rawget(set, "env"),
+           rawget(set, "cwd"),
+         rawget(set, "stdin"),
+        rawget(set, "stdout"),
+        rawget(set, "stderr"),
+        rawget(set, "ignore"),
+       rawget(set, "errexit"))
+      end
+    end
+  })
+end
 exec.context = function(exe)
   local set = {}
   return setmetatable(set, {__call = function(_, ...)
