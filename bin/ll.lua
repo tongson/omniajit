@@ -5,7 +5,7 @@ local function traceback (message)
   if type(debug) ~= "table" then return message end
   local tb = debug.traceback
   if type(tb) ~= "function" then return message end
-  return tb(message, 2)
+  return tb(message, 4)
 end
 local function l_message (pname, msg)
   local stderr = io.stderr
@@ -34,18 +34,17 @@ local function report(status, msg)
   end
   return status
 end
-local function handle_script(argv)
-  _G.arg = getargs(argv)  -- collect arguments
+do
+  local argv = arg
+  _G.arg = getargs(arg)  -- collect arguments
   local fname = argv[1]
   local status, msg = loadfile(fname)
   if status then
     status, msg = xpcall(status, traceback, unpack(_G.arg))
     -- force a complete garbage collection in case of errors
     if not status then collectgarbage("collect") end
+    if not report(status, msg) then os.exit(1) end
   end
-  return report(status, msg)
 end
-do
-  local argv = arg
-  if not handle_script(argv) then os.exit(1) end
-end
+os.exit(0)
+
