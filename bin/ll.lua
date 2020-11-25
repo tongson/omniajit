@@ -37,9 +37,6 @@ end
 local function handle_script(argv)
   _G.arg = getargs(argv)  -- collect arguments
   local fname = argv[1]
-  if fname == "-" then
-    fname = nil  -- stdin
-  end
   local status, msg = loadfile(fname)
   if status then
     status, msg = xpcall(status, traceback, unpack(_G.arg))
