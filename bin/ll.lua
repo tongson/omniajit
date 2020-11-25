@@ -1,3 +1,4 @@
+local clone = require"table.clone"
 local function traceback (message)
   local tp = type(message)
   if tp ~= "string" and tp ~= "number" then return message end
@@ -14,17 +15,10 @@ local function l_message (pname, msg)
   stderr:write(format("%s\n", msg))
   stderr:flush()
 end
-local function getargs (argv)
-  local arg = {}
-  for i=1,#argv do arg[i - 1] = argv[i] end
-  if _G.arg then
-    local i = 0
-    while _G.arg[i] do
-      arg[i - 1] = _G.arg[i]
-      i = i - 1
-    end
-  end
-  return arg
+local function getargs()
+  local a = clone(_G.arg)
+  for i=1,#a do a[i - 1] = _G.arg[i] end
+  return a
 end
 local function report(status, msg)
   if not status and msg ~= nil then
@@ -35,16 +29,14 @@ local function report(status, msg)
   return status
 end
 do
-  local argv = arg
-  _G.arg = getargs(arg)  -- collect arguments
-  local fname = argv[1]
+  local fname = _G.arg[1]
+  _G.arg = getargs()
   local status, msg = loadfile(fname)
   if status then
-    status, msg = xpcall(status, traceback, unpack(_G.arg))
+    status, msg = xpcall(status, traceback, _G.arg)
     -- force a complete garbage collection in case of errors
     if not status then collectgarbage("collect") end
     if not report(status, msg) then os.exit(1) end
   end
 end
 os.exit(0)
-
