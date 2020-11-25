@@ -313,7 +313,7 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
     return nil, R
   end
 end
-exec.init = function(exe)
+exec.cmd = function(exe)
   local set = {}
   return setmetatable(set, {
     __index = function(_, a)
@@ -354,7 +354,7 @@ exec.context = function(exe)
   end})
 end
 exec.ctx = exec.context
-exec.cmd = setmetatable({},
+exec.exec = setmetatable({},
   {__index =
     function (_, exe)
       return function(...)
