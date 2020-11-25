@@ -343,7 +343,7 @@ exec.cmd = setmetatable({},
         else
           args = {...}
         end
-        return exec.spawn(exe, args, args.env, args.cwd, args.p_stdin, args.p_stdout, args.p_stderr, args.ignore, args.errexit)
+        return exec.spawn(exe, args, args.env, args.cwd, args.stdin, args.stdout, args.stderr, args.ignore, args.errexit)
       end
     end
   })
