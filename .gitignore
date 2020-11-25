@@ -8,3 +8,13 @@
 /tests/*.so
 /Makefile
 /.envrc
+/lib/luajit/src/host/buildvm
+/lib/luajit/src/host/buildvm_arch.h
+/lib/luajit/src/host/minilua
+/lib/luajit/src/jit/vmdef.lua
+/lib/luajit/src/lj_bcdef.h
+/lib/luajit/src/lj_ffdef.h
+/lib/luajit/src/lj_folddef.h
+/lib/luajit/src/lj_libdef.h
+/lib/luajit/src/lj_recdef.h
+/lib/luajit/src/lj_vm.S
