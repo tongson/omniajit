@@ -97,7 +97,7 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
   local p_stdin = ffi.new("int[2]")
   local p_stdout = ffi.new("int[2]")
   local p_stderr = ffi.new("int[2]")
-  local pipe = ffi.new("int[2]")
+  local p_errno = ffi.new("int[2]")
   if C.pipe(p_stdin) == -1 then
      R.error = strerror(errno(), "pipe(2) for STDIN failed")
      return nil, R
@@ -110,7 +110,7 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
      R.error = strerror(errno(), "pipe(2) for STDERR failed")
      return nil, R
   end
-  if C.pipe(pipe) == -1 then
+  if C.pipe(p_errno) == -1 then
      R.error = strerror(errno(), "pipe(2) for errno pipe failed")
      return nil, R
   end
@@ -118,9 +118,9 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
   local F_GETFD = 1
   local F_SETFD = 2
   local FD_CLOEXEC = 1
-  local flags = fcntl(pipe[1], F_GETFD)
+  local flags = fcntl(p_errno[1], F_GETFD)
   local flags = bit.bor(flags, FD_CLOEXEC)
-  if fcntl(pipe[1], F_SETFD, ffi.cast('int', flags)) ~= 0 then
+  if fcntl(p_errno[1], F_SETFD, ffi.cast('int', flags)) ~= 0 then
     R.error = strerror(errno(), "fcntl(2) for errno pipe failed")
     return nil, R
   end
@@ -133,12 +133,12 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
     C.close(p_stdin[1])
     C.close(p_stdout[0])
     C.close(p_stderr[0])
-    C.close(pipe[0])
+    C.close(p_errno[0])
     if stdin then
       local r, e = dup2(p_stdin[0], STDIN)
       if r == -1 then
         local err = int(1, ffi.errno())
-        write(pipe[1], err, ffi.sizeof(err))
+        write(p_errno[1], err, ffi.sizeof(err))
         C._exit(0)
       end
     end
@@ -146,14 +146,14 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
       local r, es = redirect(stdout, STDOUT)
       if r == nil then
         local err = int(1, ffi.errno())
-        write(pipe[1], err, ffi.sizeof(err))
+        write(p_errno[1], err, ffi.sizeof(err))
         C._exit(0)
       end
     else
       local r, e = dup2(p_stdout[1], STDOUT)
       if r == -1 then
         local err = int(1, ffi.errno())
-        write(pipe[1], err, ffi.sizeof(err))
+        write(p_errno[1], err, ffi.sizeof(err))
         C._exit(0)
       end
     end
@@ -161,14 +161,14 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
       local r, es = redirect(stderr, STDERR)
       if r == nil then
         local err = int(1, ffi.errno())
-        write(pipe[1], err, ffi.sizeof(err))
+        write(p_errno[1], err, ffi.sizeof(err))
         C._exit(0)
       end
     else
       local r, e = dup2(p_stderr[1], STDERR)
       if r == -1 then
         local err = int(1, ffi.errno())
-        write(pipe[1], err, ffi.sizeof(err))
+        write(p_errno[1], err, ffi.sizeof(err))
         C._exit(0)
       end
     end
@@ -188,7 +188,7 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
         local overwrite_flag = 1
         if C.setenv(name, value, overwrite_flag) == -1 then
           local err = int(1, ffi.errno())
-          write(pipe[1], err, ffi.sizeof(err))
+          write(p_errno[1], err, ffi.sizeof(err))
           C._exit(0)
         end
       end
@@ -199,11 +199,11 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
     if cwd then
       if C.chdir(tostring(cwd)) == -1 then
         local err = int(1, ffi.errno())
-        write(pipe[1], err, ffi.sizeof(err))
+        write(p_errno[1], err, ffi.sizeof(err))
         C._exit(0)
       end
     end
-    C.close(pipe[1])
+    C.close(p_errno[1])
     argv[0] = exe
     argv[#args + 1] = nil
     execvp(exe, ffi.cast("char *const*", argv))
@@ -224,10 +224,10 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
       C.close(p_stdin[1])
     end
 
-    C.close(pipe[1])
+    C.close(p_errno[1])
     local err = int(1)
-    local n = read(pipe[0], err, ffi.sizeof(err))
-    C.close(pipe[0])
+    local n = read(p_errno[0], err, ffi.sizeof(err))
+    C.close(p_errno[0])
     if n > 0 then
       R.error = strerror(errno(), "exec failed")
       return nil, R
@@ -299,8 +299,8 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
     C.close(p_stdout[1])
     C.close(p_stderr[0])
     C.close(p_stderr[1])
-    C.close(pipe[0])
-    C.close(pipe[1])
+    C.close(p_errno[0])
+    C.close(p_errno[1])
   end
   if ret == 0 or ignore then
     return pid, R
