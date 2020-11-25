@@ -7,12 +7,6 @@ local function traceback (message)
   if type(tb) ~= "function" then return message end
   return tb(message, 2)
 end
-local function docall(f, a)
-  local result = table.pack(xpcall(f, traceback, unpack(a)))
-  -- force a complete garbage collection in case of errors
-  if not result[1] then collectgarbage("collect") end
-  return unpack(result, 1, result.n)
-end
 local function l_message (pname, msg)
   local stderr = io.stderr
   local format = string.format
@@ -48,7 +42,9 @@ local function handle_script(argv)
   end
   local status, msg = loadfile(fname)
   if status then
-    status, msg = docall(status, _G.arg)
+    status, msg = xpcall(status, traceback, unpack(_G.arg))
+    -- force a complete garbage collection in case of errors
+    if not status then collectgarbage("collect") end
   end
   return report(status, msg)
 end
