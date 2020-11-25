@@ -7,13 +7,10 @@ local function traceback (message)
   if type(tb) ~= "function" then return message end
   return tb(message, 2)
 end
-local tuple = table.pack or function(...)
-  return {n=select('#', ...), ...}
-end
 local function docall(f, ...)
   local tp = {...}  -- no need in tuple (string arguments only)
   local F = function() return f(unpack(tp)) end
-  local result = tuple(xpcall(F, traceback))
+  local result = table.pack(xpcall(F, traceback))
   -- force a complete garbage collection in case of errors
   if not result[1] then collectgarbage("collect") end
   return unpack(result, 1, result.n)
@@ -23,13 +20,13 @@ local function l_message (pname, msg)
   io_stderr:write(string_format("%s\n", msg))
   io_stderr:flush()
 end
-local function getargs (argv, n)
+local function getargs (argv)
   local arg = {}
-  for i=1,#argv do arg[i - n] = argv[i] end
+  for i=1,#argv do arg[i - 1] = argv[i] end
   if _G.arg then
     local i = 0
     while _G.arg[i] do
-      arg[i - n] = _G.arg[i]
+      arg[i - 1] = _G.arg[i]
       i = i - 1
     end
   end
@@ -43,10 +40,10 @@ local function report(status, msg)
   end
   return status
 end
-local function handle_script(argv, n)
-  _G.arg = getargs(argv, n)  -- collect arguments
-  local fname = argv[n]
-  if fname == "-" and argv[n-1] ~= "--" then
+local function handle_script(argv)
+  _G.arg = getargs(argv)  -- collect arguments
+  local fname = argv[1]
+  if fname == "-" then
     fname = nil  -- stdin
   end
   local status, msg = loadfile(fname)
@@ -55,6 +52,6 @@ local function handle_script(argv, n)
   end
   return report(status, msg)
 end
-local argv = {...}
-local status = handle_script(argv, 1)
+local argv = arg
+local status = handle_script(argv)
 if not status then os_exit(1) end
