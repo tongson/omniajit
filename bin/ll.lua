@@ -48,6 +48,7 @@ local function handle_script(argv)
   end
   return report(status, msg)
 end
-local argv = arg
-local status = handle_script(argv)
-if not status then os.exit(1) end
+do
+  local argv = arg
+  if not handle_script(argv) then os.exit(1) end
+end
