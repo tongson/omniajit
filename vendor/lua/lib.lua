@@ -571,20 +571,6 @@ local head = function(file)
   return str
 end
 
--- NOTE: Use the uuid module if you need a random string for a security context.
-local random_string
-random_string = function(length)
-  local charset = {}
-  do -- [0-9a-zA-Z]
-    for c = 48, 57  do table.insert(charset, string.char(c)) end
-    for c = 65, 90  do table.insert(charset, string.char(c)) end
-    for c = 97, 122 do table.insert(charset, string.char(c)) end
-  end
-  if not length or length <= 0 then return '' end
-  math.randomseed(os.clock()^5)
-  return random_string(length - 1) .. charset[math.random(1, #charset)]
-end
-
 -- From: http://lua-users.org/wiki/HexDump
 -- [first] begin dump at 16 byte-aligned offset containing 'first' byte
 -- [last] end dump at 16 byte-aligned offset containing 'last' byte
@@ -698,7 +684,6 @@ return {
     return_if = return_if,
     return_if_not = return_if_not,
     echo = echo,
-    random_string = random_string,
     split = split,
     escape_sql = escape_sql,
   }
