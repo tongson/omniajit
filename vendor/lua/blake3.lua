@@ -5,11 +5,13 @@ const char *hash(const char *h);
 ]]
 
 local p = package.ffipath
-if package.ffipath == "/" then
-    p = "./"
+if p == nil then
+  return nil, "package.ffipath not set."
+if p == "/" then
+  p = "."
 end
 
-M = ffi.load(p.."libblake3_c.so")
+local M = ffi.load(p.."/libblake3_c.so")
 
 return {
     base64 = function (s)
