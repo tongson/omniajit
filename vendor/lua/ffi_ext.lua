@@ -55,7 +55,8 @@ ffiext.getrandom = function(s)
   end
   return ffi.string(buf, s)
 end
-ffiext.random_string = function(length)
+local random_string
+random_string = function(length)
   local r = ffiext.getrandom(4)
   local a = string.byte(r)
   local b = string.byte(r, 2)
@@ -72,4 +73,5 @@ ffiext.random_string = function(length)
   math.randomseed(seed)
   return random_string(length - 1) .. charset[math.random(1, #charset)]
 end
+ffiext.random_string = random_string
 return ffiext
