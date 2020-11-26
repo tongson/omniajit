@@ -7,7 +7,7 @@ const char *hash(const char *h);
 local p = package.ffipath
 if p == nil then
   return nil, "package.ffipath not set."
-if p == "/" then
+elseif p == "/" then
   p = "."
 end
 
