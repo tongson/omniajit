@@ -1,7 +1,5 @@
-OmniaJIT
+omniajit
 ========
-
-Fork of [Omnia](https://github.com/tongson/omnia), LuaJIT instead of PUC-Rio Lua.
 
 Compile Lua 5.1, LuaJIT, and MoonScript source code into standalone executables. This makes it easy to use them for general purpose scripting.
 
@@ -24,9 +22,6 @@ Note: Linux 3.17+ (5 Oct 2014) only.
 The SRC, VENDOR split is just for organization. Underneath they are using the same Make routines.
 
 1. Run `make`<br/>
-If you want to link statically run `make STATIC=1`<br/>
-During developlement or debugging run `make DEBUG=1`
-
 2. The executable will be located under the `bin/` directory
 
 #### Adding plain Lua and MoonScript modules. (NOTE: VENDOR and SRC are interchangeable.)
