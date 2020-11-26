@@ -55,4 +55,21 @@ ffiext.getrandom = function(s)
   end
   return ffi.string(buf, s)
 end
+ffiext.random_string = function(length)
+  local r = ffiext.getrandom(4)
+  local a = string.byte(r)
+  local b = string.byte(r, 2)
+  local c = string.byte(r, 3)
+  local d = string.byte(r, 4)
+  local seed = a*0x1000000 + b*0x10000 + c*0x100 + d
+  local charset = {}
+  do -- [0-9a-zA-Z]
+    for c = 48, 57  do table.insert(charset, string.char(c)) end
+    for c = 65, 90  do table.insert(charset, string.char(c)) end
+    for c = 97, 122 do table.insert(charset, string.char(c)) end
+  end
+  if not length or length <= 0 then return '' end
+  math.randomseed(seed)
+  return random_string(length - 1) .. charset[math.random(1, #charset)]
+end
 return ffiext
