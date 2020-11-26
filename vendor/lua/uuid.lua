@@ -147,7 +147,7 @@ function M.seed()
   local b = string.byte(r, 2)
   local c = string.byte(r, 3)
   local d = string.byte(r, 4)
-  local seed = a*0x1000000 + b*0x10000 + c *0x100 + d
+  local seed = a*0x1000000 + b*0x10000 + c*0x100 + d
   return M.randomseed(seed)
 end
 
