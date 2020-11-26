@@ -5,11 +5,13 @@ const char *clean_text(const char *h);
 ]]
 
 local p = package.ffipath
-if package.ffipath == "/" then
-    p = "./"
-end   
+if p == nil then
+  return nil, "package.ffipath not set."
+if p == "/" then
+  p = "."
+end
 
-M = ffi.load(p.."libammonia_c.so")
+local M = ffi.load(p.."/libammonia_c.so")
 
 return {
     clean = function (s)
