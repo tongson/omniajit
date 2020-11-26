@@ -253,26 +253,6 @@ local f_to_seq = function(file, fmt)
   end
 end
 
-local clone
-clone = function(tbl, seen)
-  seen = seen or {}
-  if tbl == nil then
-    return nil, "Table to be copied required."
-  end
-  local new
-  if type(tbl) == "table" then
-    new = {}
-    seen[tbl] = new
-    for k, v in next, tbl, nil do
-      new[clone(k, seen)] = clone(v, seen)
-    end
-    setmetatable(new, clone(getmetatable(tbl), seen))
-  else
-    new = tbl
-  end
-  return new
-end
-
 local split = function(path)
   local l = string.len(path)
   local c = string.sub(path, l, l)
@@ -636,7 +616,6 @@ return {
     to_seq = t_to_seq,
     to_array = t_to_seq,
     filter = t_filter,
-    clone = clone,
     insert_if = insert_if,
     auto = autotable,
     len = t_len,
