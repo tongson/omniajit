@@ -1,7 +1,8 @@
+local format = string.format
 local panic = function(str, ...)
   local o = io.output()
   io.output(io.stderr)
-  io.stdout:write(string.format(str, ...))
+  io.stdout:write(format(str, ...))
   io.output(o)
   io.stdout:flush()
   os.exit(1)
