@@ -238,14 +238,18 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
     end
 
     do
-      local status = ffi.new("int[?]", 1)
-      local r, e = C.waitpid(pid, status, 0)
+      local status = int(1)
+      local r, e = waitpid(pid, status, 0)
       if r == -1 then
         R.error = strerror(e, "waitpid(2) failed")
         return nil, R
       end
-      ret = bit.rshift(bit.band(status[0], 0xff00), 8)
-      if ret > 0 then R.error = strerror(errno(), "execvp(2) failed") end
+      if bit.band(status[0], 0x7f) == 0 then
+        ret = bit.rshift(bit.band(status[0], 0xff00), 8)
+      else
+        R.error = "Killed."
+        return nil, R
+      end
       R.code = ret
     end
     local output = function(i, o)
@@ -260,51 +264,44 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
       if fcntl(i, F_SETFL, ffi.new("int", flags)) == -1 then
         return nil, strerror(errno(), "fcntl(2) failed")
       end
-      local n, s, c
+      local n = 0
+      local c
+      local s = ''
       -- Do not wrap C.read
       while true do
         n = C.read(i, buf, 1)
-        if n == 0 then
-          break
-        elseif n > 0 then
+        if n == -1 and (errno() == C.EAGAIN or errno() == C.EINTR) then
+          n = 0
+        elseif n == 1 then
           c = ffi.string(buf, 1)
           if c ~= "\n" then
-            s = string.format("%s%s", s or "", c)
-          elseif ffi.errno() == C.EAGAIN then
-            o[#o+1] = s
-            break
+            s = format("%s%s", s, c)
           else
             o[#o+1] = s
-            s = nil
+            s = ''
           end
-        elseif ffi.errno() == C.EAGAIN then
-          o[#o+1] = s
-          break
         else
-          return nil, strerror(errno(), "read(2) failed")
+          -- finalize
+          o[#o+1] = s
+          C.close(i)
+          break
         end
       end
       return true
     end
     local sr, se
     sr, se = output(p_stdout[0], R.stdout)
+    C.close(p_stdout[0])
     if sr == nil then
       R.error = se
       return nil, R
     end
     sr, se = output(p_stderr[0], R.stderr)
+    C.close(p_stderr[0])
     if sr == nil then
       R.error = se
       return nil, R
     end
-    C.close(p_stdin[0])
-    C.close(p_stdin[1])
-    C.close(p_stdout[0])
-    C.close(p_stdout[1])
-    C.close(p_stderr[0])
-    C.close(p_stderr[1])
-    C.close(p_errno[0])
-    C.close(p_errno[1])
   end
   if ret == 0 or ignore then
     return pid, R
