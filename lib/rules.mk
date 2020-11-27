@@ -21,23 +21,23 @@ $(LUA_T): $(LIBLUAJIT_A)
 	mv lib/luajit/src/luajit bin/lua
 
 $(VENDOR_TOP):
-	$(ECHOT) CP VENDOR
+#	$(ECHOT) BUNDLE sources
 	for f in $(VENDOR); do $(CP) $(VENDOR_P)/$$f.lua .; done
 
 $(SRC_TOP):
-	$(ECHOT) CP SRC
+#	$(ECHOT) BUNDLE sources
 	for f in $(SRC); do $(CP) $(SRC_P)/$$f.lua .; done
 
 $(SRC_LUA):
-	$(ECHOT) CP SRC_DIR
+#	$(ECHOT) BUNDLE directory
 	for d in $(SRC_DIRS); do [ -d $$d ] || $(CPR) $(SRC_P)/$$d .; done
 
 $(VENDOR_LUA):
-	$(ECHOT) CP VENDOR_DIR
+#	$(ECHOT) BUNDLE directory
 	for d in $(VENDOR_DIRS); do [ -d $$d ] || $(CPR) $(VENDOR_P)/$$d .; done
 
 $(EXE_T): $(LIBLUAJIT_A) $(LUA_T) $(VENDOR_TOP) $(SRC_TOP) $(SRC_LUA) $(VENDOR_LUA)
-	$(ECHOT) LN $(EXE_T)
+	$(ECHOT) LINK $(EXE_T)
 	CC=$(CC) NM=$(NM) $(LUA_T) $(LUASTATIC) $(MAIN) \
 	   $(SRC_LUA) $(VENDOR_LUA) $(VENDOR_TOP) $(SRC_TOP) $(LIBLUAJIT_A) \
 	   $(FLAGS) $(PIE) $(LDFLAGS) 2>&1 >/dev/null
