@@ -1,3 +1,4 @@
+#!../bin/moon
 exec = require "exec"
 sed = exec.ctx("/bin/sed")
 sed.stdin ="tt"
@@ -6,3 +7,6 @@ print(e)
 print(r.stdout[1])
 print(r.error)
 print(r.code)
+print(arg[1])
+print(arg[2])
+print(arg[3])
