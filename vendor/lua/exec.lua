@@ -131,10 +131,6 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
     R.error = strerror(errno(), "fork(2) failed")
     return nil, R
   elseif pid == 0 then -- child process
-    C.close(p_stdin[1])
-    C.close(p_stdout[0])
-    C.close(p_stderr[0])
-    C.close(p_errno[0])
     if stdin then
       local r, e = dup2(p_stdin[0], STDIN)
       if r == -1 then
@@ -173,9 +169,6 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
         C._exit(0)
       end
     end
-    C.close(p_stdin[0])
-    C.close(p_stdout[1])
-    C.close(p_stderr[1])
     local string_array_t = ffi.typeof('const char *[?]')
     -- local char_p_k_p_t   = ffi.typeof('char *const*')
     -- args is 1-based Lua table, argv is 0-based C array
@@ -205,12 +198,22 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
       end
     end
     C.close(p_errno[1])
+    C.close(p_stdin[1])
+    C.close(p_stdout[0])
+    C.close(p_stderr[0])
+    C.close(p_errno[0])
+    C.close(p_stdin[0])
+    C.close(p_stdout[1])
+    C.close(p_stderr[1])
+
     argv[0] = exe
     argv[#args + 1] = nil
     execvp(exe, ffi.cast("char *const*", argv))
     assert(nil, "assertion failed: exec.spawn (should be unreachable!)")
   else
-
+    C.close(p_stdin[0])
+    C.close(p_stdout[1])
+    C.close(p_stderr[1])
     if stdin then
       local len = string.len(stdin)
       local str = ffi.new("char[?]", len + 1)
