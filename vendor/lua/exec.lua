@@ -197,7 +197,6 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
         C._exit(0)
       end
     end
-    C.close(p_errno[1])
     C.close(p_stdin[1])
     C.close(p_stdout[0])
     C.close(p_stderr[0])
@@ -209,7 +208,9 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
     argv[0] = exe
     argv[#args + 1] = nil
     execvp(exe, ffi.cast("char *const*", argv))
-    assert(nil, "assertion failed: exec.spawn (should be unreachable!)")
+    local err = int(1, errno())
+    write(p_errno[1], err, ffi.sizeof(err))
+    C._exit(0)
   else
     C.close(p_stdin[0])
     C.close(p_stdout[1])
