@@ -134,7 +134,7 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
     if stdin then
       local r, e = dup2(p_stdin[0], STDIN)
       if r == -1 then
-        local err = int(1, ffi.errno())
+        local err = int(1, errno())
         write(p_errno[1], err, ffi.sizeof(err))
         C._exit(0)
       end
@@ -142,14 +142,14 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
     if stdout then
       local r, es = redirect(stdout, STDOUT)
       if r == nil then
-        local err = int(1, ffi.errno())
+        local err = int(1, errno())
         write(p_errno[1], err, ffi.sizeof(err))
         C._exit(0)
       end
     else
       local r, e = dup2(p_stdout[1], STDOUT)
       if r == -1 then
-        local err = int(1, ffi.errno())
+        local err = int(1, errno())
         write(p_errno[1], err, ffi.sizeof(err))
         C._exit(0)
       end
@@ -157,14 +157,14 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
     if stderr then
       local r, es = redirect(stderr, STDERR)
       if r == nil then
-        local err = int(1, ffi.errno())
+        local err = int(1, errno())
         write(p_errno[1], err, ffi.sizeof(err))
         C._exit(0)
       end
     else
       local r, e = dup2(p_stderr[1], STDERR)
       if r == -1 then
-        local err = int(1, ffi.errno())
+        local err = int(1, errno())
         write(p_errno[1], err, ffi.sizeof(err))
         C._exit(0)
       end
@@ -181,7 +181,7 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
       local function setenv(name, value)
         local overwrite_flag = 1
         if C.setenv(name, value, overwrite_flag) == -1 then
-          local err = int(1, ffi.errno())
+          local err = int(1, errno())
           write(p_errno[1], err, ffi.sizeof(err))
           C._exit(0)
         end
@@ -192,7 +192,7 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
     end
     if cwd then
       if C.chdir(tostring(cwd)) == -1 then
-        local err = int(1, ffi.errno())
+        local err = int(1, errno())
         write(p_errno[1], err, ffi.sizeof(err))
         C._exit(0)
       end
