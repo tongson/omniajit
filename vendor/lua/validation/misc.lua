@@ -2,8 +2,10 @@ local validation   = require "validation"
 local lh           = require "lhutil"
 local base64       = require "base64"
 local re           = require "re"
+local ammonia      = require "ammonia"
 local escapeuri    = lh.encodeURI
 local unescapeuri  = lh.decodeURI
+local htmlentities = ammonia.clean_text
 local base64enc    = base64.encode
 local base64dec    = base64.decode
 local match        = re.match
@@ -17,6 +19,11 @@ end
 function factory.unescapeuri()
     return function(value)
         return true, unescapeuri(value)
+    end
+end
+function factory.htmlentities()
+    return function(value)
+        return true, htmlentities(value)
     end
 end
 function factory.base64enc()
@@ -40,11 +47,13 @@ function factory.regex(regex, options)
 end
 validators.escapeuri   = factory.escapeuri()
 validators.unescapeuri = factory.unescapeuri()
+validators.htmlentities = factory.htmlentities()
 validators.base64enc   = factory.base64enc()
 validators.base64dec   = factory.base64dec()
 return {
     escapeuri   = validators.escapeuri,
     unescapeuri = validators.unescapeuri,
+    htmlentities= validators.htmlentities,
     base64enc   = validators.base64enc,
     base64dec   = validators.base64dec,
     md5         = validators.md5,
