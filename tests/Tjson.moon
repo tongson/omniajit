@@ -1,4 +1,4 @@
-#!/usr/bin/env moon
+#!../bin/moon
 lj = require 'json'
 
 test = (round) ->
