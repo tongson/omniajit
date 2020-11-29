@@ -75,6 +75,7 @@ Module                                                            | Version     
 [etlua](https://github.com/leafo/etlua)                           | 8dda2e5a        | MIT
 [ffi_list](https://github.com/laluwue/ffi_list)                   | 7f8ee88a        | MIT
 [ffi_ammonia](https://github.com/tongson/ammonia_c)               | HEAD            | MIT
+[tsort](https://github.com/bungle/lua-resty-tsort)                | HEAD            | BSD2
 
 [1] Renamed to lpeg. `require"lpeg"` to require it.<br/>
 [2] Incomplete import. Some files, utility type code only.<br/>
