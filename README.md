@@ -64,7 +64,6 @@ Module                                                            | Version     
 [moonscript](https://moonscript.org)                              | dba4b10         | MIT
 [lunajson](https://github.com/grafi-tt/lunajson)                  | 1dcf3fa         | MIT
 [CBOR](https://framagit.org/fperrad/lua-ConciseSerialization)     | 0.2.2           | MIT
-[salt](https://github.com/VaiN474/salt)                           | fa0d48f         | MIT
 [base64](https://github.com/jsolman/luajit-mime-base64/)          | 769e16d         | APL2
 [sqlite3](https://github.com/stepelu/lua-ljsqlite3)[3]            | d742002         | MIT
 [inspect](https://github.com/kikito/inspect.lua)                  | b611db6         | MIT
