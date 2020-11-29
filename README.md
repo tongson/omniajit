@@ -65,7 +65,7 @@ Module                                                            | Version     
 [lunajson](https://github.com/grafi-tt/lunajson)                  | 1dcf3fa         | MIT
 [CBOR](https://framagit.org/fperrad/lua-ConciseSerialization)     | 0.2.2           | MIT
 [salt](https://github.com/VaiN474/salt)                           | fa0d48f         | MIT
-[ffi_base64](https://github.com/jsolman/luajit-mime-base64/)      | 769e16d         | APL2
+[base64](https://github.com/jsolman/luajit-mime-base64/)          | 769e16d         | APL2
 [sqlite3](https://github.com/stepelu/lua-ljsqlite3)[3]            | d742002         | MIT
 [inspect](https://github.com/kikito/inspect.lua)                  | b611db6         | MIT
 [lpeg_patterns](https://github.com/daurnimator/lpeg_patterns)     | 0da7cad         | MIT
@@ -73,9 +73,9 @@ Module                                                            | Version     
 [luassert](https://github.com/Olivine-Labs/luassert)[2]           | 36fc3af         | MIT
 [cgilua](https://github.com/keplerproject/cgilua)[2]              | 6.0.2           | MIT
 [etlua](https://github.com/leafo/etlua)                           | 8dda2e5a        | MIT
-[ffi_list](https://github.com/laluwue/ffi_list)                   | 7f8ee88a        | MIT
-[ffi_ammonia](https://github.com/tongson/ammonia_c)               | HEAD            | MIT
-[ffi_blake3](https://github.com/tongson/blake3_c)                 | HEAD            | MIT
+[list](https://github.com/laluwue/ffi_list)                       | 7f8ee88a        | MIT
+[ammonia](https://github.com/tongson/ammonia_c)                   | HEAD            | MIT
+[blake3](https://github.com/tongson/blake3_c)                     | HEAD            | MIT
 [tsort](https://github.com/bungle/lua-resty-tsort)                | HEAD            | BSD2
 [validation](https://github.com/bungle/lua-resty-validation)      | HEAD            | BSD2
 
