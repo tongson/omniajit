@@ -2,15 +2,14 @@ local type, pcall, setmetatable, ipairs, next, pairs, error, getmetatable, selec
       type, pcall, setmetatable, ipairs, next, pairs, error, getmetatable, select
 local F = string.format
 
-local fix_return_values = function(ok, ...)
-  if ok then
-    return ...
-  else
-    return nil, (...)
-  end
-end
-
 local pcall_f = function(fn)
+  local fix_return_values = function(ok, ...)
+    if ok then
+      return ...
+    else
+      return nil, (...)
+    end
+  end
   return function(...)
     return fix_return_values(pcall(fn, ...))
   end
