@@ -1,7 +1,6 @@
 local type, pcall, setmetatable, ipairs, next, pairs, error, getmetatable, select =
       type, pcall, setmetatable, ipairs, next, pairs, error, getmetatable, select
 local F = string.format
-local ring = require "ring"
 
 local fix_return_values = function(ok, ...)
   if ok then
@@ -353,6 +352,7 @@ local script = function(str, ignore)
 end
 
 local pctx = function()
+  local ring = require "ring"
   local set = {}
   set.errexit = true
   set.unset = true
