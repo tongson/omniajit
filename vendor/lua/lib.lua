@@ -75,7 +75,7 @@ local assertf = function(v, str, ...)
   if v then
     return true
   else
-    errorf(str, ...)
+    panicf(str, ...)
   end
 end
 
