@@ -676,10 +676,8 @@ return {
     script = script,
     ctx = pctx
   },
-  log = {
-    file = l_file
-  },
   util = {
+    log = l_file
     truthy = truthy,
     falsy = falsy,
     return_if = return_if,
