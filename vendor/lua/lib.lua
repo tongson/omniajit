@@ -57,7 +57,9 @@ local fprintf = function(file, str, ...)
 end
 
 local warnf = function(str, ...)
-  return fprintf(io.stderr, str, ...)
+  local stderr = io.stderr
+  stderr:write(F(str, ...))
+  stderr:flush()
 end
 
 local panicf = function(str, ...)
