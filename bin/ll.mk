@@ -2,7 +2,7 @@
 EXE:= ll
 SRC:=
 SRC_DIR:=
-VENDOR:= lib ring exec ffi_ext
+VENDOR:= std exec ffi_ext
 VENDOR+= uuid lhutil lautil sqlite3 csv json curler etlua
 VENDOR+= list ammonia base64 blake3
 VENDOR+= lpcap lpcode lpeg lpprint lpvm re
