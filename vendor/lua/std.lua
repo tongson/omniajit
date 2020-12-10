@@ -659,6 +659,7 @@ return {
     line_to_array = line_to_seq,
     word_to_table = word_to_seq,
     word_to_array = word_to_seq,
+    to_seq   = s_to_seq,
     to_table = s_to_seq,
     to_array = s_to_seq,
     template = template,
