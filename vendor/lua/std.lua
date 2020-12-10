@@ -91,7 +91,7 @@ end
 local fprintf = function(file, str, ...)
   local o = io.output()
   io.output(file)
-  local ret, err = printf(str, ...)
+  local ret, err = io.write(F(str, ...))
   io.output(o)
   return ret, err
 end
