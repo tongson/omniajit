@@ -721,7 +721,7 @@ return {
     ctx = pctx
   },
   util = {
-    log = l_file
+    log = l_file,
     truthy = truthy,
     falsy = falsy,
     return_if = return_if,
