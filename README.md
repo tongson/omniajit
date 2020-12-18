@@ -77,6 +77,7 @@ Module                                                            | Version     
 [blake3](https://github.com/tongson/blake3_c)                     | HEAD            | MIT
 [tsort](https://github.com/bungle/lua-resty-tsort)                | HEAD            | BSD2
 [validation](https://github.com/bungle/lua-resty-validation)      | HEAD            | BSD2
+[ahsm](https://github.com/xopxe/ahsm)                             | HEAD            | MIT
 
 [1] Renamed to lpeg. `require"lpeg"` to require it.<br/>
 [2] Incomplete import. Some files, utility type code only.<br/>
