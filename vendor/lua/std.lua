@@ -358,6 +358,7 @@ local f_line = function(file, ln)
     i = i + 1
     if i == ln then return l end
   end
+  return ""
 end
 
 local template = function(s, v)
