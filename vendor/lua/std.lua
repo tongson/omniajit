@@ -194,7 +194,11 @@ end
 local t_find = function(tbl, str, plain)
   for _, tval in next, tbl do
     tval = string.gsub(tval, '[%c]', '')
-    if string.find(tval, str, 1, plain) then return true end
+    if string.find(tval, str, 1, plain) then
+      return true
+    else
+      return false
+    end
   end
 end
 
