@@ -644,7 +644,6 @@ local escape_sql = function(v)
 end
 
 return {
-  ring = ring,
   table = {
     find = t_find,
     to_dict = t_to_dict,
@@ -735,5 +734,6 @@ return {
     echo = echo,
     split = split,
     escape_sql = escape_sql,
+    ring = ring,
   }
 }
