@@ -54,7 +54,7 @@ run = function()
   }
   args[-1] = arg[0]
   args[0] = opts.script
-  local lib = require"lib"
+  local lib = require"std"
   local spath = lib.util.split(script_fname)
   package.path = string.format("%s/?.lua;%s/?/init.lua;./?.lua;./?/init.lua", spath, spath)
   package.ffipath = string.format("%s/", spath)
