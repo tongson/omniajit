@@ -4,12 +4,12 @@ local F = string.format
 
 local ring = {}
 function ring.new(max_size)
-   local hist = { __index = ring }
-   setmetatable(hist, hist)
-   hist.max_size = max_size
-   hist.size = 0
-   hist.cursor = 1
-   return hist
+  local hist = { __index = ring }
+  setmetatable(hist, hist)
+  hist.max_size = max_size
+  hist.size = 0
+  hist.cursor = 1
+  return hist
 end
 function ring:concat(c)
   local s = ""
