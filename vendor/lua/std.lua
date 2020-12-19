@@ -289,8 +289,8 @@ end
 
 local f_to_seq = function(file, fmt)
   fmt = fmt or "*L"
-  local _, fd = pcall(io.open, file, 're')
-  if fd then
+  local e, fd = pcall(io.open, file, 'r')
+  if e == true then
     io.flush(fd)
     local tbl = {}
     for ln in fd:lines(fmt) do
@@ -298,6 +298,8 @@ local f_to_seq = function(file, fmt)
     end
     io.close(fd)
     return tbl
+  else
+    return {}
   end
 end
 
