@@ -207,6 +207,8 @@ local f_find = function(file, str, plain, fmt)
   for s in io.lines(file, fmt) do
     if string.find(s, str, 1, plain) then
       return true
+    else
+      return false
     end
   end
 end
