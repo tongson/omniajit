@@ -645,7 +645,7 @@ end
 
 return {
   ring = ring,
-  tbl = {
+  table = {
     find = t_find,
     to_dict = t_to_dict,
     to_hash = t_to_dict,
@@ -659,7 +659,7 @@ return {
     unique = t_unique,
     uniq = t_unique,
   },
-  str = {
+  string = {
     append = append,
     line_to_table = line_to_seq,
     line_to_array = line_to_seq,
