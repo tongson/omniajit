@@ -613,10 +613,11 @@ local read_all = function(file)
 end
 
 local head = function(file)
+  local str = ""
   local o = io.input()
   local fd = io.open(file)
   io.input(fd)
-  local str = io.read("*l")
+  str = io.read("*l")
   io.close()
   io.input(o)
   return str
