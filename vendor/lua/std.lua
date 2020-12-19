@@ -329,9 +329,6 @@ local test = function(file)
 end
 
 local f_read = function(file)
-  if not test(file) then
-    return nil, "io.open: File not found or no permissions to read file."
-  end
   local str = ""
   for s in io.lines(file, 2^12) do
     str = F("%s%s", str, s)
