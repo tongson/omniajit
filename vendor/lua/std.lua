@@ -510,6 +510,16 @@ local l_file = function(file, ident, msg)
   return nil, "log.file: Cannot open file."
 end
 
+local ql_file = function(file, str, ...)
+  local fd = io.open(file, "w+")
+  if fd then
+    fd:setvbuf('full')
+    fd:write(F(str, ...))
+    io.flush(fd)
+    io.close(fd)
+  end
+end
+
 local insert_if = function(bool, list, pos, value)
   if bool then
     if type(value) == "table" then
@@ -734,6 +744,7 @@ return {
   },
   util = {
     log = l_file,
+    qlog = ql_file,
     truthy = truthy,
     falsy = falsy,
     return_if = return_if,
