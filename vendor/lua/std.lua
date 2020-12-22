@@ -510,11 +510,11 @@ local l_file = function(file, ident, msg)
   return nil, "log.file: Cannot open file."
 end
 
-local ql_file = function(file, str, ...)
+local ql_file = function(file, str)
   local fd = io.open(file, "w+")
   if fd then
     fd:setvbuf('full')
-    fd:write(F(str, ...))
+    fd:write(str)
     io.flush(fd)
     io.close(fd)
   end
