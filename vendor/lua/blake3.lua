@@ -8,7 +8,7 @@ local p = package.__ffi or '.'
 local M = ffi.load(p.."/libblake.so")
 
 return {
-    hash = function (s)
-        return ffi.string(M.hash(B.encode(s)))
-    end,
+  hash = function (s)
+    return ffi.string(M.hash(B.encode(s)))
+  end,
 }
