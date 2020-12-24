@@ -24,5 +24,5 @@ local compute = function(key, msg, op, ip)
   key = key..Rep('\0', 64-#key)
   op = op or opad(key)
   ip = ip or ipad(key)
-  return Hash(opad..Hash(ip..msg))
+  return Hash(op..Hash(ip..msg))
 end
