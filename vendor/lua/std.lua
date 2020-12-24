@@ -44,19 +44,6 @@ function ring:iterator()
   end
 end
 
-local pcall_f = function(fn)
-  local fix_return_values = function(ok, ...)
-    if ok then
-      return ...
-    else
-      return nil, (...)
-    end
-  end
-  return function(...)
-    return fix_return_values(pcall(fn, ...))
-  end
-end
-
 local assert_f = function(fn)
   return function(ok, ...)
     if ok then
@@ -689,8 +676,6 @@ return {
     hexdump = hexdump,
   },
   func = {
-    pcall_f = pcall_f,
-    pcall = pcall_f,
     assert_f = assert_f,
     assert = assert_f,
     try_f = try_f,
