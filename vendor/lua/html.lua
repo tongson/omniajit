@@ -19,6 +19,6 @@ T.clean_text = function (s)
 end
 T.form_token = function (i, u)
   local m = F([[%s..%s..%s]], i, Time.ymd(), u)
-  return Hmac.compute(package.__hmackey, m)
+  return Hmac.compute(package.__secret, m)
 end
 return T
