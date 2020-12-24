@@ -27,5 +27,7 @@ local compute = function(key, msg, op, ip)
   return Hash(op..Hash(ip..msg))
 end
 return {
+  opad = opad,
+  ipad = ipad,
   compute = compute,
 }
