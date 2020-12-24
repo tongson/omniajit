@@ -19,7 +19,7 @@ local ipad = function(key)
 end
 local compute = function(key, msg, op, ip)
   if #key > 64 then
-   key = Hash(key)
+    key = Hash(key)
   end
   key = key..Rep('\0', 64-#key)
   op = op or opad(key)
