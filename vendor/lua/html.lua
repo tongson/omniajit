@@ -1,6 +1,6 @@
 local F = string.format
 local Hmac = require 'hmac'
-local Time = require 'std'.util.time
+local Time = require 'std'.time
 local ffi = require 'ffi'
 ffi.cdef [[
 const char *clean(const char *);
