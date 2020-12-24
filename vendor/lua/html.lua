@@ -5,7 +5,7 @@ const char *clean_text(const char *);
 ]]
 
 local p = package.__ffi or '.'
-local M = ffi.load(p.."/libhtml.so")
+local M = ffi.load(p..'/libhtml.so')
 local T = require 'lhutil'
 -- These are HTML strings so just ignore 8-bit clean strings.
 T.clean = function (s)
