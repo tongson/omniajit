@@ -43,6 +43,8 @@ do
       collectgarbage("collect")
     end
   end
-  if not report(status, msg) then os.exit(1) end
+  if not report(status, msg) then
+    os.exit(1)
+  end
 end
 os.exit(0)
