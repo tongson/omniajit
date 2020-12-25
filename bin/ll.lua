@@ -39,7 +39,9 @@ do
   if status then
     status, msg = xpcall(status, traceback, _G.arg)
     -- force a complete garbage collection in case of errors
-    if not status then collectgarbage("collect") end
+    if not status then
+      collectgarbage("collect")
+    end
   end
   if not report(status, msg) then os.exit(1) end
 end
