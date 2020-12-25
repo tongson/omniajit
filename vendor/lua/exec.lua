@@ -259,10 +259,10 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
       -- FD_CLOEXEC set earlier
       local O_NONBLOCK = 0x800
       local buf = ffi.new("char[?]", 1)
-      local flags = C.fcntl(i, F_GETFL, 0)
-      flags = bit.bor(flags, O_NONBLOCK)
-      flags = bit.bor(flags, FD_CLOEXEC)
-      if fcntl(i, F_SETFL, ffi.new("int", flags)) == -1 then
+      local oflags = C.fcntl(i, F_GETFL, 0)
+      oflags = bit.bor(oflags, O_NONBLOCK)
+      oflags = bit.bor(oflags, FD_CLOEXEC)
+      if fcntl(i, F_SETFL, ffi.new("int", oflags)) == -1 then
         return nil, strerror(errno(), "fcntl(2) failed")
       end
       local n = 0
