@@ -24,7 +24,7 @@ local function report(status, msg)
   if not status and msg ~= nil then
     msg = (type(msg) == 'string' or type(msg) == 'number') and tostring(msg)
           or "(error object is not a string)"
-    l_message(progname, msg);
+    l_message(_G.arg[1], msg);
   end
   return status
 end
