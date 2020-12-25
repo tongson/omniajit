@@ -19,7 +19,9 @@ local function l_message (pname, msg)
 end
 local function getargs()
   local a = clone(_G.arg)
-  for i=1,#a do a[i - 1] = _G.arg[i] end
+  for i=1,#a do
+    a[i - 1] = _G.arg[i]
+  end
   return a
 end
 local function report(status, msg)
