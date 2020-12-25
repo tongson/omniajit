@@ -106,32 +106,27 @@ local assertf = function(v, str, ...)
   end
 end
 
-local minfo = function(...)
-  local str
+local minfo = function(str)
   io.stdout:write(F("%s[%s] %s+ %sinfo  %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[36m", "\27[34m", "\27[0m", F(str)))
   return io.stdout:flush()
 end
 
-local mok = function(...)
-  local str
+local mok = function(str)
   io.stdout:write(F("%s[%s] %s* %sok    %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[36m", "\27[32m", "\27[0m", F(str)))
   return io.stdout:flush()
 end
 
-local mdebug = function(...)
-  local str
+local mdebug = function(str)
   io.stdout:write(F("%s[%s] %s. %sdebug %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[36m", "\27[33m", "\27[0m", F(str)))
   return io.stdout:flush()
 end
 
-local mfatal = function(...)
-  local str
+local mfatal = function(str)
   io.stderr:write(F("%s[%s] %s! %sfatal %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[36m", "\27[31m", "\27[0m", F(str)))
   return io.stderr:flush()
 end
 
-local mwarn = function(...)
-  local str
+local mwarn = function(str)
   io.stderr:write(F("%s[%s] %s? %swarn  %s%s\n",  "\27[35m", os.date("%H:%M:%S"), "\27[36m", "\27[31m", "\27[0m", F(str)))
   return io.stderr:flush()
 end
