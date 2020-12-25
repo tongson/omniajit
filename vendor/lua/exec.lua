@@ -21,7 +21,7 @@ int open(const char *pathname, int flags, int mode);
 int close(int fd);
 int dup2(int oldfd, int newfd);
 int setenv(const char*, const char*, int);
-int execvp(const char *file, char *const argv[]);
+int execv(const char *file, char *const argv[]);
 int chdir(const char *);
 int pipe(int fd[2]);
 typedef long unsigned int size_t;
@@ -35,7 +35,7 @@ local STDOUT = 1
 local STDERR = 2
 local dup2 = ffiext.retry(C.dup2)
 local write = ffiext.retry(C.write)
-local execvp = ffiext.retry(C.execvp)
+local execv = ffiext.retry(C.execv)
 local fcntl = ffiext.retry(C.fcntl)
 local fork = ffiext.retry(C.fork)
 local waitpid = ffiext.retry(C.waitpid)
@@ -207,7 +207,7 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
 
     argv[0] = exe
     argv[#args + 1] = nil
-    execvp(exe, ffi.cast("char *const*", argv))
+    execv(exe, ffi.cast("char *const*", argv))
     local err = int(1, errno())
     write(p_errno[1], err, ffi.sizeof(err))
     C._exit(0)
