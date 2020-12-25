@@ -51,7 +51,7 @@ ffiext.getrandom = function(s)
   local buf = ffi.new(ffi.typeof("char[?]"), s)
   local r, e = ffiext.retry(C.getrandom)(buf, s, bit.bor(C.GRND_NONBLOCK))
   if r ~= s then
-    return nil, e
+    return nil, ffiext.strerror(e)
   end
   return ffi.string(buf, s)
 end
