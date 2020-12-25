@@ -362,7 +362,6 @@ local script = function(str, ignore)
 end
 
 local pctx = function()
-  local ring = require "ring"
   local set = {}
   set.errexit = true
   set.unset = true
