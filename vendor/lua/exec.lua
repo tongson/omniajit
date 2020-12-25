@@ -309,8 +309,8 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
   elseif errexit then
     return panic("<errexit> %s %s\n  -- ERROR --\n%s\n  -- STDERR --\n%s\n  -- STDOUT --\n%s\n", exe, table.concat(args, " "),
         R.error or "",
-        table.concat(R.p_stderr, "\n"),
-        table.concat(R.p_stdout, "\n"))
+        table.concat(R.stderr, "\n"),
+        table.concat(R.stdout, "\n"))
   else
     return nil, R
   end
