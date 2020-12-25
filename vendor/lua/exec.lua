@@ -256,7 +256,7 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
     local output = function(i, o)
       local F_GETFL = 0x03
       local F_SETFL = 0x04
-      local FD_CLOEXEC = 0x01
+      -- FD_CLOEXEC set earlier
       local O_NONBLOCK = 0x800
       local buf = ffi.new("char[?]", 1)
       local flags = C.fcntl(i, F_GETFL, 0)
