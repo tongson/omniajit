@@ -120,7 +120,7 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
   local F_SETFD = 2
   local FD_CLOEXEC = 1
   local flags = fcntl(p_errno[1], F_GETFD)
-  local flags = bit.bor(flags, FD_CLOEXEC)
+  flags = bit.bor(flags, FD_CLOEXEC)
   if fcntl(p_errno[1], F_SETFD, ffi.cast('int', flags)) ~= 0 then
     R.error = strerror(errno(), "fcntl(2) for errno pipe failed")
     return nil, R
