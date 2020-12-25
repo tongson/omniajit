@@ -11,7 +11,9 @@ end
 local function l_message (pname, msg)
   local stderr = io.stderr
   local format = string.format
-  if pname then stderr:write(format("%s: ", pname)) end
+  if pname then
+    stderr:write(format("%s: ", pname))
+  end
   stderr:write(format("%s\n", msg))
   stderr:flush()
 end
