@@ -265,14 +265,14 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
       if fcntl(i, F_SETFL, ffi.new("int", oflags)) == -1 then
         return nil, strerror(errno(), "fcntl(2) failed")
       end
-      local n = 0
+      local on = 0
       local c
       local s = ''
       -- Do not wrap C.read
       while true do
-        n = C.read(i, buf, 1)
-        if n == -1 and (errno() == C.EAGAIN or errno() == C.EINTR) then
-          n = 0
+        on = C.read(i, buf, 1)
+        if on == -1 and (errno() == C.EAGAIN or errno() == C.EINTR) then
+          on = 0
         elseif n == 1 then
           c = ffi.string(buf, 1)
           if c ~= "\n" then
