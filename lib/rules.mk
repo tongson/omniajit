@@ -37,6 +37,8 @@ $(VENDOR_LUA):
 	for d in $(VENDOR_DIRS); do [ -d $$d ] || $(CPR) $(VENDOR_P)/$$d .; done
 
 $(EXE_T): $(LIBLUAJIT_A) $(LUA_T) $(VENDOR_TOP) $(SRC_TOP) $(SRC_LUA) $(VENDOR_LUA)
+	$(ECHOT) LINT $(MAIN)
+	selene $(MAIN)
 	$(ECHOT) LINK $(EXE_T)
 	CC=$(CC) NM=$(NM) $(LUA_T) $(LUASTATIC) $(MAIN) \
 	   $(SRC_LUA) $(VENDOR_LUA) $(VENDOR_TOP) $(SRC_TOP) $(LIBLUAJIT_A) \
