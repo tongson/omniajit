@@ -34,7 +34,9 @@ ffiext.retry = function(fn)
   end
 end
 ffiext.open = function(filename)
-  local octal = function(n) return tonumber(n, 8) end
+  local octal = function(n)
+    return tonumber(n, 8)
+  end
   local O_WRONLY = octal('0001')
   local O_CREAT  = octal('0100')
   local S_IRUSR  = octal('00400') -- user has read permission
