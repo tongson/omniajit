@@ -29,7 +29,7 @@ ffiext.retry = function(fn)
       if (r ~= -1) or ((r == -1) and (e ~= C.EINTR) and (e ~= C.EAGAIN)) then
         break
       end
-    until((e ~= C.EINTR) and (e ~= C.EAGAIN))
+    until (e ~= C.EINTR) and (e ~= C.EAGAIN)
     return r, e
   end
 end
