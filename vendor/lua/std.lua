@@ -451,6 +451,10 @@ local escape_quotes = function(str)
   return str
 end
 
+local get_domain = function(str)
+  return string.match(str, '[^%.]+%.(.*)')
+end
+
 local l_file = function(file, ident, msg)
   local fd = io.open(file, "a+")
   if fd then
@@ -706,6 +710,7 @@ return {
     echo = echo,
     split = split,
     escape_sql = escape_sql,
+    get_domain = get_domain,
     ring = ring,
   }
 }
