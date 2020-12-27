@@ -49,7 +49,7 @@ development: $(LUA_T) $(VENDOR_LUA) $(VENDOR_TOP)
 	$(RMRF) $(SRC_DIRS)
 	for d in $(SRC_DIRS); do $(CPR) $(SRC_P)/$$d .; done
 	$(ECHOT) RUN selene
-	selene $(SRC_TOP) $(MAIN)
+	selene $(SRC_TOP) $(MAIN) $(SRC_CHECK)
 
 clean: $(CLEAN)
 	$(ECHO) "Cleaning up..."
