@@ -21,4 +21,7 @@ T.form_token = function (i, u)
   local m = F([[%s..%s..%s]], i, Time.ymd(), u)
   return Hmac.compute(package.__secret, m)
 end
+T.get_domain = function(str)
+  return string.match(str, '[^%.]+%.(.*)')
+end
 return T
