@@ -45,9 +45,6 @@ $(EXE_T): $(LIBLUAJIT_A) $(LUA_T) $(VENDOR_TOP) $(SRC_TOP) $(SRC_LUA) $(VENDOR_L
 	$(RMRF) $(VENDOR_DIRS) $(SRC_DIRS)
 
 lint: $(LUA_T) $(VENDOR_LUA) $(VENDOR_TOP)
-	for f in $(SRC); do $(CP) $(SRC_P)/$$f.lua .; done
-	$(RMRF) $(SRC_DIRS)
-	for d in $(SRC_DIRS); do $(CPR) $(SRC_P)/$$d .; done
 	$(ECHOT) RUN selene
 	selene $(SRC_TOP) $(MAIN) $(SRC_CHECK)
 
