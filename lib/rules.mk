@@ -48,16 +48,15 @@ development: $(LUA_T) $(VENDOR_LUA) $(VENDOR_TOP)
 	for f in $(SRC); do $(CP) $(SRC_P)/$$f.lua .; done
 	$(RMRF) $(SRC_DIRS)
 	for d in $(SRC_DIRS); do $(CPR) $(SRC_P)/$$d .; done
-	$(ECHOT) RUN luacheck
-	-bin/luacheck.lua $(SRC_TOP) $(MAIN) $(SRC_CHECK) --exclude-files 'vendor/lua/*'
-	$(RM) $(RMFLAGS) luacov.stats.out
+	$(ECHOT) RUN selene
+	selene $(SRC_TOP) $(MAIN)
 
 clean: $(CLEAN)
 	$(ECHO) "Cleaning up..."
 	$(RM) $(RMFLAGS) $(BUNDLE) $(LUA_T) $(EXE_T) \
 	   $(LIBLUAJIT_A) $(VENDOR_TOP) $(SRC_TOP)
 	$(RMRF) $(SRC_DIRS) $(VENDOR_DIRS)
-	$(RMRF) *.a bin/*.dSYM luacheck luacov luacov.report.out luacov.stats.out
+	$(RMRF) *.a bin/*.dSYM
 	$(MAKE) -C lib/luajit/src clean
 	$(ECHO) "Done!"
 
