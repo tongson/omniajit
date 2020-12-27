@@ -73,7 +73,7 @@ Module                                                            | Version     
 [cgilua](https://github.com/keplerproject/cgilua)[2]              | 6.0.2           | MIT
 [etlua](https://github.com/leafo/etlua)                           | 8dda2e5a        | MIT
 [list](https://github.com/laluwue/ffi_list)                       | 7f8ee88a        | MIT
-[ammonia](https://github.com/tongson/ammonia_c)                   | HEAD            | MIT
+[html](https://github.com/tongson/ammonia)                        | HEAD            | MIT
 [blake3](https://github.com/tongson/blake3_c)                     | HEAD            | MIT
 [tsort](https://github.com/bungle/lua-resty-tsort)                | HEAD            | BSD2
 [validation](https://github.com/bungle/lua-resty-validation)      | HEAD            | BSD2
