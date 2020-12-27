@@ -44,7 +44,7 @@ $(EXE_T): $(LIBLUAJIT_A) $(LUA_T) $(VENDOR_TOP) $(SRC_TOP) $(SRC_LUA) $(VENDOR_L
 	$(RM) $(RMFLAGS) $(BUNDLE) $(VENDOR_TOP) $(SRC_TOP)
 	$(RMRF) $(VENDOR_DIRS) $(SRC_DIRS)
 
-development: $(LUA_T) $(VENDOR_LUA) $(VENDOR_TOP)
+lint: $(LUA_T) $(VENDOR_LUA) $(VENDOR_TOP)
 	for f in $(SRC); do $(CP) $(SRC_P)/$$f.lua .; done
 	$(RMRF) $(SRC_DIRS)
 	for d in $(SRC_DIRS); do $(CPR) $(SRC_P)/$$d .; done
