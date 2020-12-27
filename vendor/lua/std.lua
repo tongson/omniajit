@@ -476,6 +476,29 @@ local ql_file = function(file, str)
   end
 end
 
+local month = function(n)
+  n = tostring(n)
+  if n[1] == '0' then
+    n = n[2]
+  end
+  n = tonumber(n)
+  local t = {
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  }
+  return t[n]
+end
+
 local insert_if = function(bool, list, pos, value)
   if bool then
     if type(value) == "table" then
@@ -697,6 +720,7 @@ return {
     ctx = pctx
   },
   util = {
+    month = month,
     log = l_file,
     qlog = ql_file,
     truthy = truthy,
