@@ -24,7 +24,8 @@ end
 T.get_domain = function(str)
   return string.match(str, '[^%.]+%.(.*)')
 end
-T.authelia_logout = function(domain)
+T.authelia_logout = function(host)
+  local domain = T.get_domain(host)
   return "https://"..arg.settings.authelia_subdomain.."."..domain.."/logout"
 end
 return T
