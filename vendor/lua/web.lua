@@ -24,8 +24,8 @@ end
 T.split_host = function(str)
   return string.match(str, '([^%.]+)%.(.*)')
 end
-T.authelia_logout = function(host)
+T.authelia_logout = function(sub, host)
   local _, domain  = T.split_host(host)
-  return "https://"..arg.settings.authelia_subdomain.."."..domain.."/logout"
+  return "https://"..sub.."."..domain.."/logout"
 end
 return T
