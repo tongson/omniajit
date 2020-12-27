@@ -273,7 +273,7 @@ exec.spawn = function (exe, args, env, cwd, stdin, stdout, stderr, ignore, errex
         on = C.read(i, buf, 1)
         if on == -1 and (errno() == C.EAGAIN or errno() == C.EINTR) then
           on = 0
-        elseif n == 1 then
+        elseif on == 1 then
           c = ffi.string(buf, 1)
           if c ~= "\n" then
             s = format("%s%s", s, c)
