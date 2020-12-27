@@ -21,11 +21,11 @@ T.form_token = function (i, u)
   local m = F([[%s..%s..%s]], i, Time.ymd(), u)
   return Hmac.compute(arg.settings.secret, m)
 end
-T.get_domain = function(str)
-  return string.match(str, '[^%.]+%.(.*)')
+T.split_host = function(str)
+  return string.match(str, '([^%.]+)%.(.*)')
 end
 T.authelia_logout = function(host)
-  local domain = T.get_domain(host)
+  local _, domain  = T.split_host(host)
   return "https://"..arg.settings.authelia_subdomain.."."..domain.."/logout"
 end
 return T
