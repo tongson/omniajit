@@ -324,7 +324,7 @@ end
 
 local truthy = function(s)
   local _
-  _, s = pcall(string.lower, s)
+  _, s = pcall(string.lower, tostring(s))
   if s == "yes" or s == "true" or s == "on" or s == "1" then
     return true
   else
@@ -334,7 +334,7 @@ end
 
 local falsy = function(s)
   local _
-  _, s = pcall(string.lower, s)
+  _, s = pcall(string.lower, tostring(s))
   if s == "no" or s == "false" or s == "off" or s == "0" then
     return true
   else
