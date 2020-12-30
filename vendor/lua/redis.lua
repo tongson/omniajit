@@ -7,8 +7,7 @@ const char *get(const char *);
 const char *json_set(const char *);
 const char *set(const char *);
 ]]
-local p = arg.path.ffi or '.'
-local M = ffi.load(p..'/librediz.so')
+local M = ffi.load(arg.path.ffi..'/librediz.so')
 local C = string.char
 local J = require 'json'
 local B = require 'base64'
