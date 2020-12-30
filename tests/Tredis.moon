@@ -44,14 +44,17 @@ T["redis.json_get"] = ->
     l = { key: 'REJSON_test', path: '.location' }
     a = { key: 'REJSON_test', path: '.age' }
     f = { key: 'REJSON_test', path: '.father' }
+    x = { key: 'REJSON_test', path: '.none' }
     n = R.json_get(n)
     l = R.json_get(l)
     a = R.json_get(a)
     f = R.json_get(f)
+    x = R.json_get(x)
     T.equal(n, 'ed')
     T.equal(l, 'earth')
     T.equal(a, 40)
     T.is_true(f)
+    T.is_nil(x)
 T["redis finish"] = ->
     R.del 'REJSON_test'
     n = { key: 'REJSON_test', path: '.name' }
