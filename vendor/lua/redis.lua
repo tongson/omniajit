@@ -3,7 +3,6 @@ ffi.cdef [[
 const char *del(const char *);
 const char *incr(const char *);
 const char *get(const char *);
-const char *qget(const char *);
 const char *set(const char *);
 ]]
 local p = arg.path.ffi or '.'
@@ -46,21 +45,7 @@ return {
     elseif r == C(18) then
       return nil, "redis.get: Error preparing client."
     elseif r == "" then
-      return nil, "redis.qget: Empty."
-    else
-      return B.decode(r)
-    end
-  end,
-  qget = function(k)
-    local r = ffi.string(M.qget(k))
-    if     r == C(21) then
-      return nil, "redis.qget: Error in query."
-    elseif r == C(20) then
-      return nil, "redis.qget: Unable to connect to redis."
-    elseif r == C(18) then
-      return nil, "redis.qget: Error preparing client."
-    elseif r == "" then
-      return nil, "redis.qget: Empty."
+      return nil, "redis.get: Empty."
     else
       return r
     end
