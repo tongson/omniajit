@@ -60,6 +60,8 @@ T["redis.json_get"] = ->
     T.is_nil(x)
 T["redis finish"] = ->
     R.del 'REJSON_test'
+    R.del 'fourth'
+    R.del 'test_incr'
     n = { key: 'REJSON_test', path: '.name' }
     n = R.json_get(n)
     T.is_nil(n)
