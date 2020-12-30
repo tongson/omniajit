@@ -3,6 +3,7 @@ ffi.cdef [[
 const char *del(const char *);
 const char *incr(const char *);
 const char *get(const char *);
+const char *json_get(const char *);
 const char *set(const char *);
 ]]
 local p = arg.path.ffi or '.'
@@ -34,6 +35,20 @@ return {
       return nil, "redis.incr: Unable to connect to redis."
     elseif r == C(18) then
       return nil, "redis.incr: Error preparing client."
+    end
+  end,
+  json_get = function(k)
+    local r = ffi.string(M.json_get(J.encode(k)))
+    if     r == C(21) then
+      return nil, "redis.json_get: Error in query."
+    elseif r == C(20) then
+      return nil, "redis.json_get: Unable to connect to redis."
+    elseif r == C(18) then
+      return nil, "redis.json_get: Error preparing client."
+    elseif r == "" then
+      return nil, "redis.json_get: Empty."
+    else
+      return J.decode(r)
     end
   end,
   get = function(k)
