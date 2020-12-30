@@ -1,11 +1,8 @@
-#!/usr/bin/env moon
+#!../bin/moon
 T = require "u-test"
 arg.path = {}
 arg.path.ffi = "."
 R = require 'redis'
-T["redis.incr"] = ->
-    r = R.incr 'test_incr'
-    T.is_true(r)
 T["redis.set"] = ->
     t = {
         expire: 60,
@@ -30,6 +27,12 @@ T["redis.get"] = ->
     r3 = R.get 'third'
     T.equal(r1, "one")
     T.equal(r3, "three")
+T["redis.incr"] = ->
+    r = R.incr 'test_incr'
+    T.is_true(r)
+    g = R.get 'test_incr'
+    n = tonumber(g)
+    T.is_true(n > 0)
 T["redis.del"] = ->
     R.del 'third'
     r = R.get 'third'
