@@ -9,7 +9,8 @@ local ACK = string.char(6)
 local NAK = string.char(21)
 local base64 = require 'base64'
 local json = require 'json'
-local M = ffi.load(arg.path.ffi.."/libfastkapow.so")
+local p = arg.path.ffi or "."
+local M = ffi.load(p.."/libfastkapow.so")
 
 return {
   qget = function (s)
