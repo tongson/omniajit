@@ -2,8 +2,9 @@ local ffi = require 'ffi'
 ffi.cdef [[
 const char *del(const char *);
 const char *incr(const char *);
-const char *get(const char *);
 const char *json_get(const char *);
+const char *get(const char *);
+const char *json_set(const char *);
 const char *set(const char *);
 ]]
 local p = arg.path.ffi or '.'
@@ -65,6 +66,25 @@ return {
       return r
     end
   end,
+  json_set = function(t)
+    if not t.nx then
+      t.nx = "false"
+    else
+      t.nx = "true"
+    end
+    t.data = B.encode(J.encode(t.data))
+    local r = ffi.string(M.json_set(J.encode(t)))
+    if     r == C(6) then
+      return true
+    elseif r == C(21) then
+      return nil, "redis.json_set: Error in query."
+    elseif r == C(20) then
+      return nil, "redis.json_set: Unable to connect to redis."
+    elseif r == C(18) then
+      return nil, "redis.json_set: Error preparing client."
+    end
+  end,
+
   set = function(t)
     if not t.expire then
       t.expire = "0"
