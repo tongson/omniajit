@@ -1,4 +1,6 @@
 #!/usr/bin/env moon
+arg.path = {}
+arg.path.ffi = '.'
 T = require "u-test"
 blake3 = require "blake3"
 T["ffi_blake3.hash"] = ->
