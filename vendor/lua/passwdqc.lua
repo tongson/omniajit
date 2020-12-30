@@ -4,7 +4,8 @@ ffi.cdef [[
 unsigned int score(const char *h);
 ]]
 
-local M = ffi.load(arg.path.ffi.."/libpasswdqc.so")
+local p = arg.path.ffi or '.'
+local M = ffi.load(p..'/libpasswdqc.so')
 
 return {
   score = function (t)
