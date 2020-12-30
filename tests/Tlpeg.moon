@@ -1,3 +1,3 @@
-#!/usr/bin/env moon
+#!../bin/moon
 dofile("lpeg/test.lua")
 
