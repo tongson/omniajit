@@ -52,3 +52,8 @@ T["redis.json_get"] = ->
     T.equal(l, 'earth')
     T.equal(a, 40)
     T.is_true(f)
+T["redis finish"] = ->
+    R.del 'REJSON_test'
+    n = { key: 'REJSON_test', path: '.name' }
+    n = R.json_get(n)
+    T.is_nil(n)
