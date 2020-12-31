@@ -639,6 +639,10 @@ local escape_sql = function(v)
   end
 end
 
+local clean_sql = function(s)
+  return (s:gsub(string.char(0,9,10,11,12,13,14), ''))
+end
+
 return {
   table = {
     find = t_find,
