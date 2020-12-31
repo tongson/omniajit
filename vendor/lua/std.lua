@@ -734,6 +734,7 @@ return {
     echo = echo,
     split = split,
     escape_sql = escape_sql,
+    clean_sql = clean_sql,
     ring = ring,
   }
 }
