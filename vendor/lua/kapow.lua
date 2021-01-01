@@ -51,6 +51,7 @@ return {
         return nil, e
       end
     end
+    os.exit(0)
   end,
   redirect = function (u)
     do
@@ -65,5 +66,6 @@ return {
         return nil, e
       end
     end
+    os.exit(0)
   end,
 }
