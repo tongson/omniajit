@@ -52,4 +52,18 @@ return {
       end
     end
   end,
+  redirect = function (u)
+    do
+      local r, e = set { resource = '/response/status', data = '303' }
+      if not r then
+        return nil, e
+      end
+    end
+    do
+      local r, e = set { resource = '/response/headers/Location', data = u }
+      if not r then
+        return nil, e
+      end
+    end
+  end,
 }
