@@ -53,6 +53,21 @@ return {
     end
     os.exit(0)
   end,
+  warn = function (s)
+    do
+      local r, e = set { resource = '/response/status', data = '202'}
+      if not r then
+        return nil, e
+      end
+    end
+    do
+      local r, e = set { resource = '/response/body', data = s }
+      if not r then
+        return nil, e
+      end
+    end
+    os.exit(0)
+  end,
   fail = function (s)
     do
       local r, e = set { resource = '/response/status', data = '500'}
