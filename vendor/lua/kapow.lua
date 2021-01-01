@@ -11,6 +11,15 @@ local base64 = require 'base64'
 local json = require 'json'
 local M = ffi.load(arg.path.ffi.."/libfastkapow.so")
 
+local set = function (t)
+  local r = ffi.string(M.set(json.encode(t)))
+  if r == ACK then
+    return true
+  else
+    return nil, 'fastkapow.set: Error in fetching data or missing ENV variables.'
+  end
+end
+
 return {
   qget = function (s)
     local r = ffi.string(M.get(s))
@@ -28,12 +37,19 @@ return {
       return nil, 'fastkapow.get: Error in fetching data or missing ENV variables.'
     end
   end,
-  set = function (t)
-    local r = ffi.string(M.set(json.encode(t)))
-    if r == ACK then
-      return true
-    else
-      return nil, 'fastkapow.set: Error in fetching data or missing ENV variables.'
+  set = set,
+  ok = function (s)
+    do
+      local r, e = set { resource = '/response/status', data = '200'}
+      if not r then
+        return nil, e
+      end
+    end
+    do
+      local r, e = set { resource = '/response/body', data = s }
+      if not r then
+        return nil, e
+      end
     end
   end,
 }
