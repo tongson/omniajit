@@ -10,6 +10,8 @@ local NAK = string.char(21)
 local base64 = require 'base64'
 local json = require 'json'
 local M = ffi.load(arg.path.ffi.."/libfastkapow.so")
+local id = string.match(os.getenv('KAPOW_HANDLER_ID'), '(%P+).*')
+
 
 local set = function (t)
   local r = ffi.string(M.set(json.encode(t)))
@@ -69,6 +71,7 @@ return {
     os.exit(0)
   end,
   fail = function (s)
+    s = s..'; code: '..id
     do
       local r, e = set { resource = '/response/status', data = '500'}
       if not r then
