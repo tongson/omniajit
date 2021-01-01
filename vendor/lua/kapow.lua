@@ -101,4 +101,19 @@ return {
     end
     os.exit(0)
   end,
+  forbid = function (s)
+    do
+      local r, e = set { resource = '/response/status', data = '403' }
+      if not r then
+        return nil, e
+      end
+    end
+    do
+      local r, e = set { resource = '/response/body', data = s }
+      if not r then
+        return nil, e
+      end
+    end
+    os.exit(0)
+  end,
 }
