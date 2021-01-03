@@ -116,4 +116,13 @@ return {
     end
     os.exit(0)
   end,
+  not_allowed = function ()
+    do
+      local r, e = set { resource = '/response/status', data = '405' }
+      if not r then
+        return nil, e
+      end
+    end
+    os.exit(0)
+  end,
 }
