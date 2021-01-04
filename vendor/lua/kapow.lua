@@ -123,4 +123,11 @@ return {
     end
     os.exit(0)
   end,
+  no_content = function ()
+    local r, e = set { resource = '/response/status', data = '204' }
+    if not r then
+      return nil, e
+    end
+    os.exit(0)
+  end,
 }
