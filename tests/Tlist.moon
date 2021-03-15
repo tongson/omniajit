@@ -1,4 +1,4 @@
-#!/usr/bin/env moon
+#!../bin/moon
 lst = require("list").new()
 T = require("u-test")
 
