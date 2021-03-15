@@ -1,4 +1,6 @@
-#!/usr/bin/env moon
+#!../bin/moon
+arg.path = {}
+arg.path.ffi = '.'
 sql = require "sqlite3"
 conn = sql.open("") -- Open a temporary in-memory database.
   
