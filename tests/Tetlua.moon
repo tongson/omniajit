@@ -1,4 +1,4 @@
-#!/usr/bin/env moon
+#!../bin/moon
 T = require "u-test"
 import compile, render, Parser from require "etlua"
 
