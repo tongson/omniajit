@@ -1,4 +1,4 @@
-#!/usr/bin/env moon
+#!../bin/moon
 la = require 'lautil'
 same = la.deepcompare
 T = require 'u-test'
