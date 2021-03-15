@@ -1,4 +1,4 @@
-#!/usr/bin/env moon
+#!../bin/moon
 csv = require "csv"
 la = require "lautil"
 same = la.deepcompare
