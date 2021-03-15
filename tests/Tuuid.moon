@@ -1,4 +1,4 @@
-#!/usr/bin/env moon
+#!../bin/moon
 uuid = require("uuid")
 T = require("u-test")
 
