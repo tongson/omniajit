@@ -77,6 +77,7 @@ Module                                                            | Version     
 [validation](https://github.com/bungle/lua-resty-validation)      | becccf4         | BSD2
 [ahsm](https://github.com/xopxe/ahsm)                             | c214c16         | MIT
 [yaml](https://github.com/peposso/lua-tinyyaml)                   | d280b04         | MIT
+[lz4](https://github.com/CheyiLin/ljlz4)                          | d2a88dc         | MIT
 
 [1] Renamed to lpeg. `require"lpeg"` to require it.<br/>
 [2] Incomplete import. Some files, utility type code only.<br/>
