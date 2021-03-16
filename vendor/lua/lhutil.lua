@@ -1,3 +1,4 @@
+-- Source: https://github.com/daurnimator/lua-http/commits/master/http/util.lua
 -- Encodes a character as a percent encoded string
 local function char_to_pchar(c)
 	return string.format("%%%02X", c:byte(1,1))
