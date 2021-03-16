@@ -2,11 +2,7 @@
 -- lua-ConciseSerialization : <https://fperrad.frama.io/lua-ConciseSerialization/>
 --
 
-local r, jit = pcall(require, 'jit')
-if not r then
-    jit = nil
-end
-
+local jit = true
 local SIZEOF_NUMBER = string.pack and #string.pack('n', 0.0) or 8
 local maxinteger
 local mininteger
