@@ -38,7 +38,7 @@ local ffi_sizeof = ffi.sizeof
 local ffi_copy = ffi.copy
 local ffi_string = ffi.string
 
-local clz4 = ffi.load("lz4")
+local clz4 = ffi.load(arg.path.ffi.."/liblz4.so.1.9.3")
 
 ffi.cdef [[
 	int LZ4_versionNumber(void);
