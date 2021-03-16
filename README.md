@@ -71,8 +71,8 @@ Module                                                            | Version     
 [lua-http](https://github.com/daurnimator/lua-http)[2]            | 8582db9         | MIT
 [luassert](https://github.com/Olivine-Labs/luassert)[2]           | 36fc3af         | MIT
 [cgilua](https://github.com/keplerproject/cgilua)[2]              | 6.0.2           | MIT
-[etlua](https://github.com/leafo/etlua)                           | 8dda2e5a        | MIT
-[list](https://github.com/laluwue/ffi_list)                       | 7f8ee88a        | MIT
+[etlua](https://github.com/leafo/etlua)                           | 8dda2e5         | MIT
+[list](https://github.com/laluwue/ffi_list)                       | 7f8ee88         | MIT
 [html](https://github.com/tongson/ammonia)                        | HEAD            | MIT
 [blake3](https://github.com/tongson/blake3_c)                     | HEAD            | MIT
 [tsort](https://github.com/bungle/lua-resty-tsort)                | 07754a8         | BSD2
