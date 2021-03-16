@@ -61,7 +61,7 @@ Module                                                            | Version     
 [u-test](https://github.com/IUdalov/u-test)                       | 113259f         | MIT
 [argparse](https://github.com/luarocks/argparse)                  | 20c1445         | MIT
 [ftcsv](https://github.com/FourierTransformer/ftcsv)              | 8668631 / 1.2.0 | MIT
-[moonscript](https://moonscript.org)                              | dba4b10         | MIT
+[moonscript](https://moonscript.org)                              | 29d8ccc         | MIT
 [lunajson](https://github.com/grafi-tt/lunajson)                  | 1dcf3fa         | MIT
 [CBOR](https://framagit.org/fperrad/lua-ConciseSerialization)     | 0.2.2           | MIT
 [base64](https://github.com/jsolman/luajit-mime-base64/)          | 769e16d         | APL2
