@@ -198,7 +198,7 @@ local function run_test(test_suite, test_name, test_function, ...)
 
     log(run_tag .. " " .. full_test_name)
 
-    local start = os.time()
+    local start = os.clock()
 
     local status, err
     for _, f in ipairs({test_suite.start_up,  test_function, test_suite.tear_down}) do
@@ -209,13 +209,13 @@ local function run_test(test_suite, test_name, test_function, ...)
         end
     end
 
-    local stop = os.time()
+    local stop = os.clock()
 
     local is_test_failed = not status or failed
-    log(string.format("%s %s %d sec",
+    log(string.format("%s %s %.4f sec",
                             is_test_failed and fail_tag or ok_tag,
                             full_test_name,
-                            os.difftime(stop, start)))
+                            stop-start))
 
     if is_test_failed then
         table.insert(failed_list, full_test_name)
