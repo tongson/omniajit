@@ -75,7 +75,7 @@ Module                                                            | Version     
 [list](https://github.com/laluwue/ffi_list)                       | 7f8ee88a        | MIT
 [html](https://github.com/tongson/ammonia)                        | HEAD            | MIT
 [blake3](https://github.com/tongson/blake3_c)                     | HEAD            | MIT
-[tsort](https://github.com/bungle/lua-resty-tsort)                | HEAD            | BSD2
+[tsort](https://github.com/bungle/lua-resty-tsort)                | 07754a8         | BSD2
 [validation](https://github.com/bungle/lua-resty-validation)      | becccf4         | BSD2
 [ahsm](https://github.com/xopxe/ahsm)                             | c214c16         | MIT
 [yaml](https://github.com/peposso/lua-tinyyaml)                   | d280b04         | MIT
