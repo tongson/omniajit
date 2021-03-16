@@ -78,7 +78,7 @@ Module                                                            | Version     
 [tsort](https://github.com/bungle/lua-resty-tsort)                | HEAD            | BSD2
 [validation](https://github.com/bungle/lua-resty-validation)      | HEAD            | BSD2
 [ahsm](https://github.com/xopxe/ahsm)                             | HEAD            | MIT
-[yaml](https://github.com/peposso/lua-tinyyaml)                   | HEAD            | MIT
+[yaml](https://github.com/peposso/lua-tinyyaml)                   | d280b04         | MIT
 
 [1] Renamed to lpeg. `require"lpeg"` to require it.<br/>
 [2] Incomplete import. Some files, utility type code only.<br/>
