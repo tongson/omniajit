@@ -1,4 +1,4 @@
-#!/usr/bin/env moon
+#!../bin/moon
 arg.path = {}
 arg.path.ffi = '.'
 T = require "u-test"
