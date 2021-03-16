@@ -1,4 +1,4 @@
-#!/usr/bin/env moon
+#!../bin/moon
 b64 = require"base64"
 fast = require"base64_fast".fast
 T = require "u-test"
