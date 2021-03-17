@@ -4,7 +4,7 @@ int *hash(const char *, unsigned char*, size_t);
 ]]
 
 local B = require 'base64'
-local M = ffi.load(arg.path.ffi.."/libblake.so")
+local M = ffi.load(arg.path.ffi.."/libblake.so.a3e0958")
 
 return {
   hash = function (s)
