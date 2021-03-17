@@ -7,7 +7,7 @@ const char *clean(const char *);
 const char *clean_text(const char *);
 ]]
 
-local M = ffi.load(arg.path.ffi..'/libhtml.so')
+local M = ffi.load(arg.path.ffi..'/libhtml.so.5eea2c1')
 local T = require 'lhutil'
 -- These are HTML strings so just ignore 8-bit clean strings.
 T.clean = function (s)
