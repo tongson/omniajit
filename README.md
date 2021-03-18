@@ -1,7 +1,7 @@
 omniajit
 ========
 
-Compile Lua 5.1, LuaJIT, and MoonScript source code into standalone executables. This makes it easy to use them for general purpose scripting.
+Compile Lua 5.1 and LuaJIT source code into standalone executables. This makes it easy to use them for general purpose scripting.
 
 Requires: GNU Make, a compiler and binutils (or equivalent). Installing development tools e.g. the package build-essential should have everything you need. Does not require autotools.<br/>
 Note: Linux 3.17+ (5 Oct 2014) and glibc 2.25+ only for getrandom().
@@ -24,11 +24,11 @@ The SRC, VENDOR split is just for organization. Underneath they are using the sa
 1. Run `make`<br/>
 2. The executable will be located under the `bin/` directory
 
-#### Adding plain Lua and MoonScript modules. (NOTE: VENDOR and SRC are interchangeable.)
+#### Adding plain Lua modules. (NOTE: VENDOR and SRC are interchangeable.)
 
 Adding plain modules is trivial. $(NAME) is the name of the module passed to `VENDOR`.
 
-1. Copy the module to `vendor/lua/$(NAME).{lua,moon}`<br/>
+1. Copy the module to `vendor/lua/$(NAME).lua`<br/>
   example: `cp ~/Downloads/dkjson.lua vendor/lua`
 1. Add `$(NAME)` to `VENDOR`<br/>
   example: `VENDOR= re dkjson`
