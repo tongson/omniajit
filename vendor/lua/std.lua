@@ -633,7 +633,15 @@ local escape_sql = function(v)
   local vt = type(v)
   if "string" == vt then
     local s = "'" .. (v:gsub("'", "''")) .. "'"
-    return (s:gsub(string.char(0,9,10,11,12,13,14), ""))
+    return (s:gsub('.', {
+      [string.char(0)] = "",
+      [string.char(9)] = "",
+      [string.char(10)] = "",
+      [string.char(11)] = "",
+      [string.char(12)] = "",
+      [string.char(13)] = "",
+      [string.char(14)] = "",
+    }))
   elseif "boolean" == vt then
     return v and "TRUE" or "FALSE"
   end
