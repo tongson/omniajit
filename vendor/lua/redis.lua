@@ -7,6 +7,7 @@ int get(const char *, const char *, unsigned char *);
 int json_set(const char *, const char *);
 int set(const char *, const char *);
 int hset(const char *, const char *);
+int hsetnx(const char *, const char *);
 int hget(const char *, const char *, unsigned char *);
 int hdel(const char *, const char *);
 ]]
@@ -67,7 +68,7 @@ return {
     local b = ffi.new('unsigned char[?]', MAX)
     local r = M.get(h, k, b)
     if r > 0 then
-      return ffi.string(b, r)
+      return B.decode(ffi.string(b, r))
     else
       return nil, E('get', r)
     end
@@ -94,6 +95,7 @@ return {
     else
       t.expire = tostring(t.expire)
     end
+    t.value = B.encode(t.value)
     local r = M.set(h, J.encode(t))
     if r == OK then
       return true
@@ -103,6 +105,7 @@ return {
   end,
   hset = function(t, h)
     h = h or LOCALHOST
+    t.value = B.encode(t.value)
     local r = M.hset(h, J.encode(t))
     if r == OK then
       return true
@@ -110,12 +113,24 @@ return {
       return nil, E('hset', r)
     end
   end,
+  hsetnx = function(t, h)
+    h = h or LOCALHOST
+    t.value = B.encode(t.value)
+    local r = M.hsetnx(h, J.encode(t))
+    if r == 1 then
+      return true
+    elseif r == 0 then
+      return false
+    else
+      return nil, E('hsetnx', r)
+    end
+  end,
   hget = function(t, h)
     h = h or LOCALHOST
     local b = ffi.new('unsigned char[?]', MAX)
     local r = M.hget(h, J.encode(t), b)
     if r > 0 then
-      return ffi.string(b, r)
+      return B.decode(ffi.string(b, r))
     else
       return nil, E('hget', r)
     end
