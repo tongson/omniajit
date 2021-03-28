@@ -21,6 +21,7 @@ local ECONN = -13
 local ECLIENT = -43
 local EINVALID = -9
 local EQUERY = -4
+local EMAX = -11
 local OK = 0
 local MAX = 536870912
 
@@ -30,6 +31,7 @@ local E = function(n, r)
     [ECLIENT]  = F('redis.%s: Failure preparing Redis client.', n),
     [EQUERY]   = F('redis.%s: Problem with the Redis query.', n),
     [EINVALID] = F('redis.%s: Invalid JSON.', n),
+    [EMAX]     = F('redis.%s: Value exceeds 512MB.', n),
   }
   return rt[r] or F('redis.%s: Invalid return value.', n)
 end
@@ -38,8 +40,10 @@ return {
   del = function(k, h)
     h = h or LOCALHOST
     local r = M.del(h, k)
-    if r == OK then
+    if r == 1 then
       return true
+    elseif r == 0 then
+      return false
     else
       return nil, E('del', r)
     end
@@ -47,8 +51,8 @@ return {
   incr = function(k, h)
     h = h or LOCALHOST
     local r = M.incr(h, k)
-    if r == OK then
-      return true
+    if r >= 0 then
+      return r
     else
       return nil, E('incr', r)
     end
@@ -67,8 +71,8 @@ return {
     h = h or LOCALHOST
     local b = ffi.new('unsigned char[?]', MAX)
     local r = M.get(h, k, b)
-    if r > 0 then
-      return B.decode(ffi.string(b, r))
+    if r >= 0 then
+      return ffi.string(b, r)
     else
       return nil, E('get', r)
     end
@@ -95,7 +99,9 @@ return {
     else
       t.expire = tostring(t.expire)
     end
-    t.value = B.encode(t.value)
+    if #t.value > MAX then
+      return nil, E('set', -11)
+    end
     local r = M.set(h, J.encode(t))
     if r == OK then
       return true
@@ -105,7 +111,9 @@ return {
   end,
   hset = function(t, h)
     h = h or LOCALHOST
-    t.value = B.encode(t.value)
+    if #t.value > MAX then
+      return nil, E('hset', -11)
+    end
     local r = M.hset(h, J.encode(t))
     if r == OK then
       return true
@@ -115,7 +123,9 @@ return {
   end,
   hsetnx = function(t, h)
     h = h or LOCALHOST
-    t.value = B.encode(t.value)
+    if #t.value > MAX then
+      return nil, E('hsetnx', -11)
+    end
     local r = M.hsetnx(h, J.encode(t))
     if r == 1 then
       return true
@@ -129,8 +139,8 @@ return {
     h = h or LOCALHOST
     local b = ffi.new('unsigned char[?]', MAX)
     local r = M.hget(h, J.encode(t), b)
-    if r > 0 then
-      return B.decode(ffi.string(b, r))
+    if r >= 0 then
+      return ffi.string(b, r)
     else
       return nil, E('hget', r)
     end
@@ -138,8 +148,10 @@ return {
   hdel = function(t, h)
     h = h or LOCALHOST
     local r = M.hdel(h, J.encode(t))
-    if r == OK then
+    if r == 1 then
       return true
+    elseif r == 0 then
+      return false
     else
       return nil, E('hdel', r)
     end
