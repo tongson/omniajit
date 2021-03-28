@@ -44,6 +44,33 @@ T["redis.hdel"] = ->
     }
     r, e = R.hget(t)
     T.equal(r, 'diyes')
+T["redis.hsetnx"] = ->
+    t = {
+        test: {
+            dup: 'dup',
+            delete: 'delete',
+        }
+    }
+    r, e = R.hset(t)
+    T.is_true(r)
+    t1 = {
+        test: {
+            dup: 'dup',
+        }
+    }
+    r, e = R.hsetnx(t1)
+    T.is_false(r)
+    t2 = {
+        test: {
+            new: 'new',
+        }
+    }
+    r, e = R.hsetnx(t2)
+    T.is_true(r)
+    R.hdel({
+        hash: 'test',
+        field: 'new',
+    })
 T["redis.set (no expire)"] = ->
     t = {
         data: {
