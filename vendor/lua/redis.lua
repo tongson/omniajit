@@ -16,7 +16,7 @@ local B = require 'base64'
 local LOCALHOST = '127.0.0.1'
 local ECONN = -13
 local ECLIENT = -43
-local EINVALID = -7
+local EINVALID = -9
 local EQUERY = -4
 local OK = 0
 local MAX = 536870912
@@ -101,11 +101,6 @@ return {
   end,
   hset = function(t, h)
     h = h or LOCALHOST
-    if not t.expire then
-      t.expire = "0"
-    else
-      t.expire = tostring(t.expire)
-    end
     local r = M.hset(h, J.encode(t))
     if r == OK then
       return true
