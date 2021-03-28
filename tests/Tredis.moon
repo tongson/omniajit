@@ -3,95 +3,97 @@ T = require "u-test"
 arg.path = {}
 arg.path.ffi = "."
 R = require 'redis'
+B = require 'base64'
+std = require 'std'
 T["redis.set"] = ->
     t = {
         expire: 60,
-        data: {
-            first: "one",
-            second: "two",
-        }
+        key: 'first',
+        value: 'one',
     }
     r, e = R.set(t)
     T.is_true(r)
 T["redis.hset"] = ->
     t = {
-        hash: {
-            nine: "nueve",
-            ten: "diyes",
-        },
+        key: 'hash',
+        field: 'nine',
+        value: 'nueve',
     }
     r, e = R.hset(t)
     T.is_true(r)
 T["redis.hget"] = ->
     t = {
-        hash: 'hash',
-        field: 'ten',
+        key: 'hash',
+        field: 'nine',
     }
     r, e = R.hget(t)
-    T.equal(r, 'diyes')
+    T.equal(r, 'nueve')
 T["redis.hdel"] = ->
     t = {
-        hash: 'hash',
+        key: 'hash',
         field: 'nine',
     }
     r, e = R.hdel(t)
     T.is_true(r)
     r, e = R.hget(t)
-    T.is_nil(r)
-    t = {
-        hash: 'hash',
-        field: 'ten',
+    T.equal(r, '')
+T["redis.hset (binary)"] = ->
+    ls = std.file.read('/bin/ls')
+    t1 = {
+        key: 'bin,'
+        field: 'contents',
+        value: B.encode(ls),
     }
-    r, e = R.hget(t)
-    T.equal(r, 'diyes')
+    r, e = R.hset(t1)
+    T.is_true(r)
+    t2 = {
+        key: 'bin',
+        field: 'contents'
+    }
+    r, e = R.hget(t2)
+    T.equal(ls, B.decode(r))
 T["redis.hsetnx"] = ->
     t = {
-        test: {
-            dup: 'dup',
-            delete: 'delete',
-        }
+        key: 'test'
+        field: 'dup'
+        value: 'dup'
     }
     r, e = R.hset(t)
     T.is_true(r)
-    t1 = {
-        test: {
-            dup: 'dup',
-        }
-    }
-    r, e = R.hsetnx(t1)
+    r, e = R.hsetnx(t)
     T.is_false(r)
     t2 = {
-        test: {
-            new: 'new',
-        }
+        key: 'test'
+        field: 'new'
+        value: 'new'
     }
     r, e = R.hsetnx(t2)
     T.is_true(r)
     R.hdel({
-        hash: 'test',
+        key: 'test',
         field: 'new',
     })
 T["redis.set (no expire)"] = ->
     t = {
-        data: {
-            third: "three",
-            fourth: "four",
-        }
+        key: 'third'
+        value: 'three'
     }
     r, e = R.set(t)
     T.is_true(r)
 T["redis.get"] = ->
-    r1 = R.get 'first'
     r3 = R.get 'third'
-    T.equal(r1, "one")
     T.equal(r3, "three")
 T["redis.incr"] = ->
     r = R.incr 'test_incr'
-    T.is_true(r)
+    ret = false
+    if r > 0
+        ret = true
+    T.is_true(ret)
     g = R.get 'test_incr'
     n = tonumber(g)
-    T.is_true(n > 0)
+    T.equal(n, r)
 T["redis.del"] = ->
-    R.del 'third'
+    r = R.del 'third'
+    T.is_true(r)
     r = R.get 'third'
-    T.is_nil(r)
+    T.equal(r, '')
