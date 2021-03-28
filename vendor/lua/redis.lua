@@ -2,9 +2,7 @@ local ffi = require 'ffi'
 ffi.cdef [[
 int del(const char *, const char *);
 int incr(const char *, const char *);
-int json_get(const char *, const char *, unsigned char *);
 int get(const char *, const char *, unsigned char *);
-int json_set(const char *, const char *);
 int set(const char *, const char *);
 int hset(const char *, const char *);
 int hsetnx(const char *, const char *);
@@ -57,16 +55,6 @@ return {
       return nil, E('incr', r)
     end
   end,
-  json_get = function(k, h)
-    h = h or LOCALHOST
-    local b = ffi.new('unsigned char[?]', MAX)
-    local r = M.json_get(h, J.encode(k), b)
-    if r > 0 then
-      return J.decode(ffi.string(b, r))
-    else
-      return nil, E('json_get', r)
-    end
-  end,
   get = function(k, h)
     h = h or LOCALHOST
     local b = ffi.new('unsigned char[?]', MAX)
@@ -75,21 +63,6 @@ return {
       return ffi.string(b, r)
     else
       return nil, E('get', r)
-    end
-  end,
-  json_set = function(t, h)
-    h = h or LOCALHOST
-    if not t.nx then
-      t.nx = "false"
-    else
-      t.nx = "true"
-    end
-    t.data = B.encode(J.encode(t.data))
-    local r = M.json_set(h, J.encode(t))
-    if r == OK then
-      return true
-    else
-      return nil, E('json_set', r)
     end
   end,
   set = function(t, h)
