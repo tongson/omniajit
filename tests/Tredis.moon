@@ -13,6 +13,37 @@ T["redis.set"] = ->
     }
     r, e = R.set(t)
     T.is_true(r)
+T["redis.hset"] = ->
+    t = {
+        hash: {
+            nine: "nueve",
+            ten: "diyes",
+        },
+    }
+    r, e = R.hset(t)
+    T.is_true(r)
+T["redis.hget"] = ->
+    t = {
+        hash: 'hash',
+        field: 'ten',
+    }
+    r, e = R.hget(t)
+    T.equal(r, 'diyes')
+T["redis.hdel"] = ->
+    t = {
+        hash: 'hash',
+        field: 'nine',
+    }
+    r, e = R.hdel(t)
+    T.is_true(r)
+    r, e = R.hget(t)
+    T.is_nil(r)
+    t = {
+        hash: 'hash',
+        field: 'ten',
+    }
+    r, e = R.hget(t)
+    T.equal(r, 'diyes')
 T["redis.set (no expire)"] = ->
     t = {
         data: {
@@ -37,31 +68,3 @@ T["redis.del"] = ->
     R.del 'third'
     r = R.get 'third'
     T.is_nil(r)
-T["redis.json_set"] = ->
-    t = { name: 'ed', location: 'earth', age: 40, father: true }
-    x = { key: 'REJSON_test', path: '.', data: t }
-    r = R.json_set(x)
-    T.is_true(r)
-T["redis.json_get"] = ->
-    n = { key: 'REJSON_test', path: '.name' }
-    l = { key: 'REJSON_test', path: '.location' }
-    a = { key: 'REJSON_test', path: '.age' }
-    f = { key: 'REJSON_test', path: '.father' }
-    x = { key: 'REJSON_test', path: '.none' }
-    n = R.json_get(n)
-    l = R.json_get(l)
-    a = R.json_get(a)
-    f = R.json_get(f)
-    x = R.json_get(x)
-    T.equal(n, 'ed')
-    T.equal(l, 'earth')
-    T.equal(a, 40)
-    T.is_true(f)
-    T.is_nil(x)
-T["redis finish"] = ->
-    R.del 'REJSON_test'
-    R.del 'fourth'
-    R.del 'test_incr'
-    n = { key: 'REJSON_test', path: '.name' }
-    n = R.json_get(n)
-    T.is_nil(n)
