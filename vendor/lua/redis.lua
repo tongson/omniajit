@@ -8,6 +8,7 @@ int json_set(const char *, const char *);
 int set(const char *, const char *);
 int hset(const char *, const char *);
 int hget(const char *, const char *, unsigned char *);
+int hdel(const char *, const char *);
 ]]
 local M = ffi.load(arg.path.ffi..'/libljredis.so.0.1.0')
 local F = string.format
@@ -117,6 +118,15 @@ return {
       return ffi.string(b, r)
     else
       return nil, E('hget', r)
+    end
+  end,
+  hdel = function(t, h)
+    h = h or LOCALHOST
+    local r = M.hdel(h, J.encode(t))
+    if r == OK then
+      return true
+    else
+      return nil, E('hdel', r)
     end
   end,
 }
