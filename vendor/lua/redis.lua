@@ -12,7 +12,6 @@ int hdel(const char *, const char *);
 local M = ffi.load(arg.path.ffi..'/libljredis.so.0.1.0')
 local F = string.format
 local J = require 'json'
-local B = require 'base64'
 
 local LOCALHOST = '127.0.0.1'
 local ECONN = -13
