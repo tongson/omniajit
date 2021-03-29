@@ -3,4 +3,5 @@ base = "lua51"
 name = "omniajit"
 
 [arg]
-any = true
+property = true
+writable = "new-fields"
