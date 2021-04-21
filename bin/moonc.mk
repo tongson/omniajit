@@ -5,9 +5,10 @@ SRC_DIR:=
 VENDOR:= argparse lfs lpcap lpcode lpeg lpprint lpvm
 VENDOR_DIR:= moonscript moonscript/parse moonscript/compile moonscript/transform moonscript/cmd
 MAKEFLAGS= --silent
-HOST_CC= cc
-CROSS=
-CROSS_CC=
+CC= gcc
+AR= gcc-ar
+NM= gcc-nm
+RANLIB= gcc-ranlib
 CCOPT= -Os -mtune=generic -mmmx -msse -msse2 -fomit-frame-pointer -pipe
 LDFLAGS= -Wl,--strip-all
 TARGET_CCOPT= $(CCOPT)
