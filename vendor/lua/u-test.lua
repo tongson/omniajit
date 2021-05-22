@@ -1,19 +1,20 @@
+local _tostring = tostring
 local tostring = function(s)
-  return string.format('„%s“', tostring(s))
+  return string.format('„%s“', _tostring(s))
 end
-local function red(str)    return grey and str or "\27[1;31m" .. str .. "\27[0m" end
-local function blue(str)   return grey and str or "\27[1;34m" .. str .. "\27[0m" end
-local function green(str)  return grey and str or "\27[1;32m" .. str .. "\27[0m" end
-local function yellow(str) return grey and str or "\27[1;33m" .. str .. "\27[0m" end
+local function red(str)    return grey and str or "\27[7;1;31m" .. str .. "\27[0m" end
+local function blue(str)   return grey and str or "\27[7;1;34m" .. str .. "\27[0m" end
+local function green(str)  return grey and str or "\27[7;1;32m" .. str .. "\27[0m" end
+local function yellow(str) return grey and str or "\27[7;1;33m" .. str .. "\27[0m" end
 
-local tab_tag      = blue   "[----------]"
-local done_tag     = blue   "[==========]"
-local run_tag      = blue   "[ RUN      ]"
-local ok_tag       = green  "[       OK ]"
-local fail_tag     = red    "[      FAIL]"
-local disabled_tag = yellow "[ DISABLED ]"
-local passed_tag   = green  "[  PASSED  ]"
-local failed_tag   = red    "[  FAILED  ]"
+local tab_tag      = blue   "--------"
+local done_tag     = blue   "========"
+local run_tag      = blue   "  RUNS  "
+local ok_tag       = green  "   OK   "
+local fail_tag     = red    "  FAIL  "
+local disabled_tag = yellow "DISABLED"
+local passed_tag   = green  " PASSED "
+local failed_tag   = red    " FAILED "
 
 local ntests = 0
 local failed = false
@@ -42,8 +43,8 @@ end
 
 local function fail(msg, start_frame)
     failed = true
-    print("Fail: " .. msg)
-    trace(start_frame or 4)
+    print("✕  FAIL\n" .. msg)
+    trace(start_frame or 2)
 end
 
 local function stringize_var_arg(...)
@@ -76,15 +77,38 @@ api.assert = function (cond)
     end
 end
 
+api.expected = function(e)
+	local pretty_prefix = function(header, prefix, str)
+		local n
+		if str:len() > 0 then
+			local replacement = ("\n %s > "):format(prefix)
+			str, n = str:gsub("\n", replacement)
+			if n == 0 then
+				str = str .. ("\n %s > "):format(prefix)
+			end
+			return ("%s\n %s >\n %s > %s\n"):format(header, prefix, prefix, str)
+		else
+			return ""
+		end
+	end
+	return setmetatable({}, {
+		__call = function(_, received)
+			if e ~= received then
+				fail(pretty_prefix("", "expected", _tostring(e)) .. pretty_prefix("", "received", _tostring(received)) )
+			end
+		end
+	})
+end
+
 api.equal = function (l, r)
     if l ~= r then
-        fail(tostring(l) .. " ~= " .. tostring(r))
+	fail(tostring(l) .. "\n≠\n" .. tostring(r))
     end
 end
 
 api.not_equal = function (l, r)
     if l == r then
-        fail(tostring(l) .. " == " .. tostring(r))
+        fail(tostring(l) .. "\n==\n" .. tostring(r))
     end
 end
 
@@ -96,19 +120,19 @@ end
 
 api.is_false = function (maybe_false)
     if maybe_false or type(maybe_false) ~= "boolean" then
-        fail("got " .. tostring(maybe_false) .. " instead of false")
+        fail("GOT " .. tostring(maybe_false) .. " instead of false")
     end
 end
 
 api.is_true = function (maybe_true)
     if not maybe_true or type(maybe_true) ~= "boolean" then
-        fail("got " .. tostring(maybe_true) .. " instead of true")
+        fail("GOT " .. tostring(maybe_true) .. " instead of true")
     end
 end
 
 api.is_not_nil = function (maybe_not_nil)
     if type(maybe_not_nil) == "nil" then
-        fail("got nil")
+        fail("GOT nil")
     end
 end
 
@@ -139,7 +163,7 @@ end
 local function make_type_checker(typename)
     api["is_" .. typename] = function (maybe_type)
         if type(maybe_type) ~= typename then
-            fail("got " .. tostring(maybe_type) .. " instead of " .. typename, 4)
+            fail("GOT " .. tostring(maybe_type) .. " instead of " .. typename, 4)
         end
     end
 end
