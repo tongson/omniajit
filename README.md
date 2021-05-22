@@ -63,21 +63,14 @@ Module                                                            | Version     
 [ftcsv](https://github.com/FourierTransformer/ftcsv)              | 8668631 / 1.2.0 | MIT
 [moonscript](https://moonscript.org)                              | 29d8ccc         | MIT
 [lunajson](https://github.com/grafi-tt/lunajson)                  | 1dcf3fa         | MIT
-[CBOR](https://framagit.org/fperrad/lua-ConciseSerialization)     | 0.2.2           | MIT
 [base64](https://github.com/jsolman/luajit-mime-base64/)          | 769e16d         | APL2
 [sqlite3](https://github.com/stepelu/lua-ljsqlite3)[3]            | d742002         | MIT
-[inspect](https://github.com/kikito/inspect.lua)                  | b611db6         | MIT
-[lpeg_patterns](https://github.com/daurnimator/lpeg_patterns)     | 0da7cad         | MIT
-[lua-http](https://github.com/daurnimator/lua-http)[2]            | 8582db9         | MIT
 [luassert](https://github.com/Olivine-Labs/luassert)[2]           | 36fc3af         | MIT
-[cgilua](https://github.com/keplerproject/cgilua)[2]              | 6.0.2           | MIT
-[etlua](https://github.com/leafo/etlua)                           | 8dda2e5         | MIT
 [list](https://github.com/lalawue/ffi_list.lua)                   | 7f8ee88         | MIT
 [tsort](https://github.com/bungle/lua-resty-tsort)                | 07754a8         | BSD2
 [validation](https://github.com/bungle/lua-resty-validation)      | becccf4         | BSD2
 [ahsm](https://github.com/xopxe/ahsm)                             | c214c16         | MIT
 [yaml](https://github.com/peposso/lua-tinyyaml)                   | d280b04         | MIT
-[lz4](https://github.com/CheyiLin/ljlz4)                          | d2a88dc         | MIT
 
 [1] Renamed to lpeg. `require"lpeg"` to require it.<br/>
 [2] Incomplete import. Some files, utility type code only.<br/>
