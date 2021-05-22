@@ -60,16 +60,12 @@ Module                                                            | Version     
 [luafilesystem](https://github.com/spacewander/luafilesystem)     | 0.3             | MIT
 [u-test](https://github.com/IUdalov/u-test)                       | 113259f         | MIT
 [argparse](https://github.com/luarocks/argparse)                  | 20c1445         | MIT
-[ftcsv](https://github.com/FourierTransformer/ftcsv)              | 8668631 / 1.2.0 | MIT
 [moonscript](https://moonscript.org)                              | 29d8ccc         | MIT
 [lunajson](https://github.com/grafi-tt/lunajson)                  | 1dcf3fa         | MIT
 [base64](https://github.com/jsolman/luajit-mime-base64/)          | 769e16d         | APL2
 [sqlite3](https://github.com/stepelu/lua-ljsqlite3)[3]            | d742002         | MIT
 [luassert](https://github.com/Olivine-Labs/luassert)[2]           | 36fc3af         | MIT
 [list](https://github.com/lalawue/ffi_list.lua)                   | 7f8ee88         | MIT
-[tsort](https://github.com/bungle/lua-resty-tsort)                | 07754a8         | BSD2
-[validation](https://github.com/bungle/lua-resty-validation)      | becccf4         | BSD2
-[ahsm](https://github.com/xopxe/ahsm)                             | c214c16         | MIT
 [yaml](https://github.com/peposso/lua-tinyyaml)                   | d280b04         | MIT
 
 [1] Renamed to lpeg. `require"lpeg"` to require it.<br/>
