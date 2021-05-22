@@ -1,3 +1,5 @@
+# ARCHIVED: Checkout LadyLua for your standalone Lua programs.
+
 omniajit
 ========
 
