@@ -1,6 +1,6 @@
 local included = pcall(debug.getlocal, 6, 1)
 local b64 = require("base64")
-local fast = require("base64_fast").fast
+local fast = require("tests.base64_fast").fast
 local T = require("u-test")
 local rfc4647_plain = function()
 	T.equal(b64.encode(""), "")
@@ -28,6 +28,8 @@ if included then
 else
 	T["RFC4647 PLAIN"] = rfc4647_plain
 	T["RFC4648 FAST"] = rfc4648_fast
+end
+--[[
 
 	local bench
 	bench = function(fn)
@@ -46,4 +48,5 @@ else
 	end
 	bench(fast)
 	bench(b64.encode)
-end
+
+]]

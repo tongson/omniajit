@@ -1,0 +1,8 @@
+local T = require("u-test")
+T["base64 =>"] = dofile("tests/Tbase64.lua")
+T["json =>"] = dofile("tests/Tjson.lua")
+T["list =>"] = dofile("tests/Tlist.lua")
+T["lpeg =>"] = dofile("tests/Tlpeg.lua")
+T["uuid =>"] = dofile("tests/Tuuid.lua")
+T["yaml =>"] = dofile("tests/Tyaml.lua")
+T.summary()

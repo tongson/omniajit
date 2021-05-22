@@ -1,0 +1,11 @@
+local exec = require("exec")
+local sed = exec.ctx("/bin/sed")
+sed.stdin = "tt"
+local e, r = sed("s|tt|gg|")
+print(e)
+print(r.stdout[1])
+print(r.error)
+print(r.code)
+print(arg[1])
+print(arg[2])
+return print(arg[3])
