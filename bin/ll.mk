@@ -12,8 +12,8 @@ CC= gcc
 AR= gcc-ar
 NM= gcc-nm
 RANLIB= gcc-ranlib
-CFLAGS= -pipe -ffunction-sections -fdata-sections -fomit-frame-pointer -flto -fuse-linker-plugin
-CCOPT= -O3 -march=nehalem -mtune=haswell -msse4.2
+CFLAGS= -pipe -ffunction-sections -fdata-sections -fomit-frame-pointer -fgnu89-inline -flto -fuse-linker-plugin -fno-semantic-interposition -mno-avx2
+CCOPT= -Ofast -march=nehalem -mtune=haswell -msse4.2
 LDFLAGS= -Wl,--gc-sections,--as-needed,--sort-common,--strip-all,-flto
 include lib/tests.mk
 include lib/std.mk
